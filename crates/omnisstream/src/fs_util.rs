@@ -52,10 +52,6 @@ pub fn read_to_string_if_exists(path: &Path) -> io::Result<Option<String>> {
     }
 }
 
-pub fn path_display(path: &Path) -> String {
-    path.to_string_lossy().into_owned()
-}
-
 pub fn ensure_dir(path: &Path) -> io::Result<PathBuf> {
     std::fs::create_dir_all(path)?;
     Ok(path.to_path_buf())

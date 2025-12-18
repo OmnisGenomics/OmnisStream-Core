@@ -17,10 +17,53 @@ jobs:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
       - name: spec pin
-        run: git submodule status --recursive
+        run: |
+          echo "SPEC_PIN.txt=$(cat SPEC_PIN.txt)"
+          echo "submodule=$(git -C spec/omnisstream-spec rev-parse HEAD)"
+          git submodule status --recursive
+          test "$(cat SPEC_PIN.txt)" = "$(git -C spec/omnisstream-spec rev-parse HEAD)"
       - name: fmt
         run: cargo fmt --all -- --check
       - name: clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
       - name: test
         run: cargo test --all-features
+
+  spec-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: spec pin
+        run: |
+          echo "SPEC_PIN.txt=$(cat SPEC_PIN.txt)"
+          echo "submodule=$(git -C spec/omnisstream-spec rev-parse HEAD)"
+          git submodule status --recursive
+          test "$(cat SPEC_PIN.txt)" = "$(git -C spec/omnisstream-spec rev-parse HEAD)"
+      - name: verify vectors
+        run: |
+          cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb
+          cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb
+      - name: inspect vectors
+        run: |
+          cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb > /dev/null
+          cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb > /dev/null
+      - name: corruption flips fail verify
+        run: |
+          tmp="$(mktemp -d)"
+          cp -a spec/omnisstream-spec/test-vectors/vector-minimal "$tmp/vector-minimal"
+          OMNIS_TMP="$tmp" python3 - <<'PY'
+import os
+import pathlib
+p = pathlib.Path(os.environ["OMNIS_TMP"]) / "vector-minimal" / "parts" / "part-0002.bin"
+b = p.read_bytes()
+p.write_bytes(bytes([b[0] ^ 0xFF]) + b[1:])
+PY
+          set +e
+          cargo run -p omnisstream_cli -- verify "$tmp/vector-minimal/manifest.pb"
+          code="$?"
+          set -e
+          test "$code" -ne 0

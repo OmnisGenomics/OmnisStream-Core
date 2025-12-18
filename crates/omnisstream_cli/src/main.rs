@@ -4,9 +4,7 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
 
-use omnisstream::manifest::Manifest;
-use omnisstream::part_store::PartStore;
-use omnisstream::reader::{cat, range, verify, PartResolver};
+use omnisstream::{Manifest, PartStore, Reader};
 
 #[derive(Debug, Parser)]
 #[command(name = "omnisstream")]
@@ -52,15 +50,15 @@ fn main() -> anyhow::Result<()> {
         Command::Cat { manifest } => {
             let manifest_path = manifest;
             let manifest = load_manifest(&manifest_path)?;
-            let resolver = resolver_for_manifest(repo_root.as_deref(), &manifest, &manifest_path)?;
+            let reader = reader_for_manifest(repo_root.as_deref(), manifest, &manifest_path)?;
             let mut stdout = std::io::stdout().lock();
-            cat(&manifest, &resolver, &mut stdout)?;
+            reader.cat(&mut stdout)?;
         }
         Command::Verify { manifest } => {
             let manifest_path = manifest;
             let manifest = load_manifest(&manifest_path)?;
-            let resolver = resolver_for_manifest(repo_root.as_deref(), &manifest, &manifest_path)?;
-            let summary = verify(&manifest, &resolver)?;
+            let reader = reader_for_manifest(repo_root.as_deref(), manifest, &manifest_path)?;
+            let summary = reader.verify()?;
             eprintln!("ok: parts={} bytes={}", summary.parts, summary.bytes);
         }
         Command::Range {
@@ -70,15 +68,14 @@ fn main() -> anyhow::Result<()> {
         } => {
             let manifest_path = manifest;
             let manifest = load_manifest(&manifest_path)?;
-            let resolver = resolver_for_manifest(repo_root.as_deref(), &manifest, &manifest_path)?;
+            let reader = reader_for_manifest(repo_root.as_deref(), manifest, &manifest_path)?;
             let mut stdout = std::io::stdout().lock();
-            range(&manifest, &resolver, offset, len, &mut stdout)?;
+            reader.range(offset, len, &mut stdout)?;
         }
         Command::Inspect { manifest } => {
             let manifest_path = manifest;
             let manifest = load_manifest(&manifest_path)?;
-            let s = omnisstream::inspect::format_manifest(&manifest);
-            print!("{s}");
+            print!("{}", manifest.inspect());
         }
     }
 
@@ -87,28 +84,22 @@ fn main() -> anyhow::Result<()> {
 
 fn load_manifest(path: &Path) -> anyhow::Result<Manifest> {
     let bytes = std::fs::read(path)?;
-    let manifest = Manifest::from_pb_bytes(&bytes)?;
-    Ok(manifest)
+    Ok(Manifest::from_pb_bytes(&bytes)?)
 }
 
-fn resolver_for_manifest(
+fn reader_for_manifest(
     repo_root: Option<&Path>,
-    manifest: &Manifest,
+    manifest: Manifest,
     manifest_path: &Path,
-) -> anyhow::Result<PartResolver> {
+) -> anyhow::Result<Reader> {
     let base_dir = manifest_path.parent().unwrap_or_else(|| Path::new("."));
-    let mut resolver = PartResolver::new(base_dir);
+    let mut reader = Reader::new(manifest, base_dir);
 
-    let needs_part_store = manifest
-        .pb()
-        .parts
-        .iter()
-        .any(|p| p.relative_path.is_empty());
-    if needs_part_store {
+    if reader.manifest().needs_part_store() {
         let repo = repo_root.unwrap_or_else(|| Path::new("."));
         let part_store = PartStore::new(repo.join("parts"))?;
-        resolver = resolver.with_part_store(part_store);
+        reader = reader.with_part_store(part_store);
     }
 
-    Ok(resolver)
+    Ok(reader)
 }

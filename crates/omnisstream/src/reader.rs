@@ -8,7 +8,7 @@ use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
 
 #[derive(Clone, Debug)]
-pub struct PartResolver {
+pub(crate) struct PartResolver {
     base_dir: PathBuf,
     part_store: Option<PartStore>,
 }
@@ -41,7 +41,7 @@ impl PartResolver {
     }
 }
 
-pub fn cat(
+pub(crate) fn cat(
     manifest: &Manifest,
     resolver: &PartResolver,
     out: &mut impl Write,
@@ -62,7 +62,10 @@ pub fn cat(
     Ok(())
 }
 
-pub fn verify(manifest: &Manifest, resolver: &PartResolver) -> Result<VerifySummary, ReaderError> {
+pub(crate) fn verify(
+    manifest: &Manifest,
+    resolver: &PartResolver,
+) -> Result<VerifySummary, ReaderError> {
     manifest.validate_basic()?;
 
     let mut total_bytes = 0_u64;
@@ -105,7 +108,7 @@ pub struct VerifySummary {
     pub bytes: u64,
 }
 
-pub fn range(
+pub(crate) fn range(
     manifest: &Manifest,
     resolver: &PartResolver,
     offset: u64,

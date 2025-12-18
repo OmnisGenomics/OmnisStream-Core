@@ -1,7 +1,7 @@
 use crate::manifest::Manifest;
 use crate::pb::omnisstream::v1 as pbv1;
 
-pub fn format_manifest(manifest: &Manifest) -> String {
+pub(crate) fn format_manifest(manifest: &Manifest) -> String {
     let pb = manifest.pb();
     let mut out = String::new();
 

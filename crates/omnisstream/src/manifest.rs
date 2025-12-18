@@ -10,15 +10,16 @@ pub struct Manifest {
 }
 
 impl Manifest {
-    pub fn new(pb: pbv1::ObjectManifest) -> Self {
+    pub(crate) fn new(pb: pbv1::ObjectManifest) -> Self {
         Self { pb }
     }
 
-    pub fn pb(&self) -> &pbv1::ObjectManifest {
+    pub(crate) fn pb(&self) -> &pbv1::ObjectManifest {
         &self.pb
     }
 
-    pub fn into_pb(self) -> pbv1::ObjectManifest {
+    #[cfg(test)]
+    pub(crate) fn into_pb(self) -> pbv1::ObjectManifest {
         self.pb
     }
 
@@ -33,6 +34,10 @@ impl Manifest {
 
     pub fn validate_basic(&self) -> Result<(), ManifestValidationError> {
         validate_manifest_basic(&self.pb)
+    }
+
+    pub fn needs_part_store(&self) -> bool {
+        self.pb.parts.iter().any(|p| p.relative_path.is_empty())
     }
 }
 

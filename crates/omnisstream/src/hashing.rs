@@ -54,32 +54,6 @@ pub fn blake3_256_bytes(bytes: &[u8]) -> Blake3Digest {
     Blake3Digest(*blake3::hash(bytes).as_bytes())
 }
 
-pub fn crc32c_reader(reader: &mut impl Read) -> io::Result<Crc32c> {
-    let mut crc = 0_u32;
-    let mut buf = [0_u8; 64 * 1024];
-    loop {
-        let n = reader.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        crc = crc32c::crc32c_append(crc, &buf[..n]);
-    }
-    Ok(Crc32c(crc))
-}
-
-pub fn blake3_256_reader(reader: &mut impl Read) -> io::Result<Blake3Digest> {
-    let mut hasher = blake3::Hasher::new();
-    let mut buf = [0_u8; 64 * 1024];
-    loop {
-        let n = reader.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-    }
-    Ok(Blake3Digest(*hasher.finalize().as_bytes()))
-}
-
 /// Computes CRC32C + BLAKE3-256 in a single streaming pass.
 pub fn hash_reader(reader: &mut impl Read) -> io::Result<HashSummary> {
     let mut crc = 0_u32;
@@ -102,10 +76,6 @@ pub fn hash_reader(reader: &mut impl Read) -> io::Result<HashSummary> {
         crc32c: Crc32c(crc),
         blake3_256: Blake3Digest(*hasher.finalize().as_bytes()),
     })
-}
-
-pub fn version() -> &'static str {
-    env!("CARGO_PKG_VERSION")
 }
 
 #[cfg(test)]

@@ -13,37 +13,18 @@ use crate::manifest::Manifest;
 use crate::object_version::{compute_object_version, ObjectVersionEntry};
 use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
-use crate::upload::UploadManager;
 
 #[derive(Clone, Debug)]
-pub struct Repository {
+pub(crate) struct Repository {
     root: PathBuf,
     part_store: PartStore,
-    uploads: UploadManager,
 }
 
 impl Repository {
-    pub fn open(root: impl AsRef<Path>) -> io::Result<Self> {
+    pub(crate) fn open(root: impl AsRef<Path>) -> io::Result<Self> {
         let root = ensure_dir(root.as_ref())?;
         let part_store = PartStore::new(root.join("parts"))?;
-        let uploads = UploadManager::new(root.join("uploads"), part_store.clone())?;
-        Ok(Self {
-            root,
-            part_store,
-            uploads,
-        })
-    }
-
-    pub fn root(&self) -> &Path {
-        &self.root
-    }
-
-    pub fn part_store(&self) -> &PartStore {
-        &self.part_store
-    }
-
-    pub fn uploads(&self) -> &UploadManager {
-        &self.uploads
+        Ok(Self { root, part_store })
     }
 
     pub fn ingest_file(

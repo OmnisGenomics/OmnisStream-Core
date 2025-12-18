@@ -12,7 +12,7 @@ use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
 
 #[derive(Clone, Debug)]
-pub struct UploadManager {
+pub(crate) struct UploadManager {
     root: PathBuf,
     part_store: PartStore,
 }
