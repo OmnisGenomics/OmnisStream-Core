@@ -1,0 +1,17 @@
+[package]
+name = "omnisstream_cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "omnisstream"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+omnisstream = { path = "../omnisstream" }
+tracing-subscriber.workspace = true
+
