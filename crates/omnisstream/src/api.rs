@@ -1,12 +1,18 @@
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(feature = "backend-unstable")]
+use omnisstream_backend_api::IngestBackend;
+
 pub use crate::hashing::{Blake3Digest, Crc32c, HashSummary};
 pub use crate::manifest::{Manifest, ManifestDecodeError, ManifestValidationError};
 pub use crate::part_store::PartStore;
 pub use crate::reader::{ReaderError, VerifySummary};
 pub use crate::repo::{IngestError, IngestResult};
 pub use crate::upload::UploadError;
+
+/// Supported manifest schema range for this build of OmnisStream core.
+pub const SUPPORTED_MANIFEST_SCHEMA: &str = "0.1.x";
 
 /// Stable, minimal reader API for reconstructing/validating an object described by a `Manifest`.
 #[derive(Clone, Debug)]
@@ -94,6 +100,24 @@ pub fn ingest_file(
 ) -> Result<IngestResult, IngestError> {
     let repo = crate::repo::Repository::open(repo_root)?;
     repo.ingest_file(path, part_size)
+}
+
+/// Ingest using a custom backend (positional reads only).
+///
+/// # Stability
+/// This API is **unstable** and gated behind the `backend-unstable` Cargo feature. It exists so
+/// external backends (e.g. io_uring) can plug into core ingest without forking core logic.
+#[cfg(feature = "backend-unstable")]
+pub fn ingest_file_with_backend<B: IngestBackend>(
+    repo_root: impl AsRef<Path>,
+    path: impl AsRef<Path>,
+    part_size: u64,
+    backend: B,
+) -> Result<IngestResult, IngestError> {
+    let repo = crate::repo::Repository::open(repo_root)?;
+    let path = path.as_ref();
+    let file_len = std::fs::metadata(path)?.len();
+    crate::repo::ingest_file_with_backend(&repo, path, file_len, part_size, backend)
 }
 
 impl Manifest {

@@ -49,7 +49,7 @@ pub enum ManifestDecodeError {
 
 #[derive(Debug, thiserror::Error)]
 pub enum ManifestValidationError {
-    #[error("manifest_version must be SemVer MAJOR.MINOR.PATCH with supported major; got {manifest_version:?}")]
+    #[error("manifest_version must be SemVer MAJOR.MINOR.PATCH with supported schema 0.1.x; got {manifest_version:?}")]
     InvalidManifestVersion { manifest_version: String },
 
     #[error("object_id must be non-empty")]
@@ -115,7 +115,7 @@ pub enum ManifestValidationError {
 pub fn validate_manifest_basic(pb: &pbv1::ObjectManifest) -> Result<(), ManifestValidationError> {
     let v = semver::Version::parse(pb.manifest_version.trim())
         .ok()
-        .filter(|v| v.pre.is_empty() && v.build.is_empty() && v.major == 0)
+        .filter(|v| v.pre.is_empty() && v.build.is_empty() && v.major == 0 && v.minor == 1)
         .ok_or_else(|| ManifestValidationError::InvalidManifestVersion {
             manifest_version: pb.manifest_version.clone(),
         })?;

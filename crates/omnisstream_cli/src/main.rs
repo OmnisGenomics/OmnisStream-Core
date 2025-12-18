@@ -34,6 +34,9 @@ enum Command {
 
     /// Print a stable, human-readable manifest summary.
     Inspect { manifest: PathBuf },
+
+    /// Print build + spec metadata.
+    Version,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -77,6 +80,9 @@ fn main() -> anyhow::Result<()> {
             let manifest = load_manifest(&manifest_path)?;
             print!("{}", manifest.inspect());
         }
+        Command::Version => {
+            print_version();
+        }
     }
 
     Ok(())
@@ -102,4 +108,18 @@ fn reader_for_manifest(
     }
 
     Ok(reader)
+}
+
+fn print_version() {
+    const SPEC_PIN: &str = include_str!("../../../SPEC_PIN.txt");
+
+    let version = env!("CARGO_PKG_VERSION");
+    let git_commit = option_env!("OMNISSTREAM_GIT_COMMIT").unwrap_or("unknown");
+    let spec_pin = SPEC_PIN.trim();
+    let manifest_schema = omnisstream::SUPPORTED_MANIFEST_SCHEMA;
+
+    println!("omnisstream {version}");
+    println!("git_commit {git_commit}");
+    println!("spec_pin {spec_pin}");
+    println!("manifest_schema {manifest_schema}");
 }

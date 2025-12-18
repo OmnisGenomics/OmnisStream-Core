@@ -5,12 +5,16 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
+[features]
+backend-unstable = []
+
 [dependencies]
 anyhow.workspace = true
 blake3.workspace = true
 bytes.workspace = true
 crc32c.workspace = true
 hex.workspace = true
+omnisstream_backend_api = { path = "../omnisstream_backend_api" }
 prost.workspace = true
 prost-types.workspace = true
 serde.workspace = true

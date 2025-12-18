@@ -4,7 +4,7 @@ use std::io::{self, Read};
 pub struct Crc32c(u32);
 
 impl Crc32c {
-    pub(crate) fn from_u32(value: u32) -> Self {
+    pub fn from_u32(value: u32) -> Self {
         Self(value)
     }
 
@@ -26,7 +26,7 @@ impl Crc32c {
 pub struct Blake3Digest([u8; 32]);
 
 impl Blake3Digest {
-    pub(crate) fn from_bytes(bytes: [u8; 32]) -> Self {
+    pub fn from_bytes(bytes: [u8; 32]) -> Self {
         Self(bytes)
     }
 

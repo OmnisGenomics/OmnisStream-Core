@@ -9,10 +9,12 @@ use std::thread;
 
 use crate::fs_util::{atomic_write_bytes, atomic_write_string, ensure_dir};
 use crate::hashing::{blake3_256_bytes, crc32c_bytes, Blake3Digest, Crc32c};
+use crate::ingest_backend::PreadBackend;
 use crate::manifest::Manifest;
 use crate::object_version::{compute_object_version, ObjectVersionEntry};
 use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
+use omnisstream_backend_api::IngestBackend;
 
 #[derive(Clone, Debug)]
 pub(crate) struct Repository {
@@ -82,17 +84,28 @@ fn ingest_file_impl(
         return Err(IngestError::InvalidPartSize);
     }
 
-    let object_id = path
-        .file_name()
-        .map(|s| s.to_string_lossy().into_owned())
-        .filter(|s| !s.trim().is_empty())
-        .unwrap_or_else(|| "object".to_string());
-
     let file = File::open(path)?;
     let file_len = file.metadata()?.len();
     if file_len == 0 {
         return Err(IngestError::EmptyFile);
     }
+
+    let backend = PreadBackend::new(file);
+    ingest_file_with_backend(repo, path, file_len, part_size, backend)
+}
+
+pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
+    repo: &Repository,
+    path: &Path,
+    file_len: u64,
+    part_size: u64,
+    backend: B,
+) -> Result<IngestResult, IngestError> {
+    let object_id = path
+        .file_name()
+        .map(|s| s.to_string_lossy().into_owned())
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| "object".to_string());
 
     let num_parts_u64 = file_len.div_ceil(part_size);
     let num_parts: usize = num_parts_u64
@@ -119,7 +132,7 @@ fn ingest_file_impl(
     for worker_idx in 0..workers {
         let tx = tx.clone();
         let stop = Arc::clone(&stop);
-        let file = file.try_clone()?;
+        let backend = backend.clone();
         let part_store = repo.part_store.clone();
 
         let start = worker_idx * num_parts / workers;
@@ -140,7 +153,8 @@ fn ingest_file_impl(
                     break;
                 };
 
-                let res = ingest_one_part(&file, &part_store, part_index, part_number, offset, len);
+                let res =
+                    ingest_one_part(&backend, &part_store, part_index, part_number, offset, len);
                 if res.is_err() {
                     stop.store(true, Ordering::Relaxed);
                 }
@@ -243,7 +257,7 @@ fn ingest_file_impl(
 }
 
 fn ingest_one_part(
-    file: &File,
+    backend: &impl IngestBackend,
     part_store: &PartStore,
     part_index: usize,
     part_number: u32,
@@ -251,7 +265,7 @@ fn ingest_one_part(
     len: u64,
 ) -> Result<PartResult, IngestError> {
     let mut buf = vec![0_u8; len as usize];
-    read_exact_at(file, &mut buf, offset)?;
+    backend.read_exact_at(offset, &mut buf)?;
 
     let crc32c = crc32c_bytes(&buf);
     let blake3_256 = blake3_256_bytes(&buf);
@@ -269,23 +283,6 @@ fn ingest_one_part(
     })
 }
 
-fn read_exact_at(file: &File, buf: &mut [u8], offset: u64) -> io::Result<()> {
-    use std::os::unix::fs::FileExt as _;
-
-    let mut read = 0_usize;
-    while read < buf.len() {
-        let n = file.read_at(&mut buf[read..], offset.saturating_add(read as u64))?;
-        if n == 0 {
-            return Err(io::Error::new(
-                io::ErrorKind::UnexpectedEof,
-                "unexpected EOF",
-            ));
-        }
-        read += n;
-    }
-    Ok(())
-}
-
 fn object_paths(root: &Path, object_id: &str, object_version: &str) -> (PathBuf, PathBuf) {
     let object_dir = root.join("objects").join(object_id);
     let version_dir = object_dir.join("versions").join(object_version);
@@ -296,6 +293,8 @@ fn object_paths(root: &Path, object_id: &str, object_version: &str) -> (PathBuf,
 
 #[cfg(test)]
 mod tests {
+    use crate::ingest_backend::MemBackend;
+
     use super::*;
 
     #[test]
@@ -312,5 +311,35 @@ mod tests {
         assert_eq!(r1.object_version, r2.object_version);
         assert_eq!(r1.manifest.to_pb_bytes(), r2.manifest.to_pb_bytes());
         assert!(r1.manifest_path.is_file());
+    }
+
+    #[test]
+    fn manifest_bytes_are_identical_across_backends() {
+        let dir = tempfile::tempdir().unwrap();
+
+        let input_path = dir.path().join("input.bin");
+        std::fs::write(&input_path, b"hello world, this is a test file").unwrap();
+        let bytes = std::fs::read(&input_path).unwrap();
+        let file_len = bytes.len() as u64;
+
+        let repo_default = Repository::open(dir.path().join("repo_default")).unwrap();
+        let repo_dummy = Repository::open(dir.path().join("repo_dummy")).unwrap();
+
+        let part_size = 5;
+        let r_default = repo_default.ingest_file(&input_path, part_size).unwrap();
+        let r_dummy = ingest_file_with_backend(
+            &repo_dummy,
+            &input_path,
+            file_len,
+            part_size,
+            MemBackend::new(bytes),
+        )
+        .unwrap();
+
+        assert_eq!(r_default.object_version, r_dummy.object_version);
+        assert_eq!(
+            r_default.manifest.to_pb_bytes(),
+            r_dummy.manifest.to_pb_bytes()
+        );
     }
 }

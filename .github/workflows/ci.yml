@@ -67,3 +67,94 @@ PY
           code="$?"
           set -e
           test "$code" -ne 0
+
+  ffi_cpp_smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: spec pin
+        run: |
+          echo "SPEC_PIN.txt=$(cat SPEC_PIN.txt)"
+          echo "submodule=$(git -C spec/omnisstream-spec rev-parse HEAD)"
+          git submodule status --recursive
+          test "$(cat SPEC_PIN.txt)" = "$(git -C spec/omnisstream-spec rev-parse HEAD)"
+      - name: build ffi
+        run: cargo build -p omnisstream_ffi --release
+      - name: generate header
+        run: cargo run -p omnisstream_ffi --features header-gen --bin omnisstream_ffi_header
+      - name: header is up to date
+        run: git diff --exit-code include/omnisstream_ffi.h
+      - name: build cpp smoke
+        run: |
+          cmake -S examples/cpp_smoke -B target/cpp_smoke -DCMAKE_BUILD_TYPE=Release
+          cmake --build target/cpp_smoke -j
+      - name: run cpp smoke
+        run: ./target/cpp_smoke/os_cpp_smoke
+
+  bench-mini:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: spec pin
+        run: |
+          echo "SPEC_PIN.txt=$(cat SPEC_PIN.txt)"
+          echo "submodule=$(git -C spec/omnisstream-spec rev-parse HEAD)"
+          git submodule status --recursive
+          test "$(cat SPEC_PIN.txt)" = "$(git -C spec/omnisstream-spec rev-parse HEAD)"
+      - name: run mini bench
+        run: cargo run -p omnisstream_bench --release -- --preset ci --out bench.json
+      - name: validate bench.json schema
+        run: |
+          python3 - <<'PY'
+          import json
+
+          with open("bench.json", "rb") as f:
+            data = json.load(f)
+
+          assert data["schema_version"] == 1
+          for k in ["generated_unix_ms", "tool_version", "params", "results"]:
+            assert k in data
+
+          params = data["params"]
+          for k in ["preset", "file_size_bytes", "part_size_bytes", "range_len_bytes", "range_ops", "seed"]:
+            assert k in params
+
+          results = data["results"]
+          for k in ["ingest", "verify", "range_reads"]:
+            assert k in results
+
+          for name in ["ingest", "verify"]:
+            s = results[name]
+            for k in ["ok", "wall_seconds", "bytes", "bytes_per_sec", "parts"]:
+              assert k in s
+
+          rr = results["range_reads"]
+          for k in ["ok", "wall_seconds", "ops", "ops_per_sec", "bytes", "bytes_per_sec"]:
+            assert k in rr
+          PY
+      - name: benchdiff (no regression)
+        run: cargo run -p omnisstream_benchdiff -- bench.json bench.json --threshold-percent 0
+      - name: benchdiff detects regression
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path("bench.json")
+          data = json.loads(p.read_text())
+          data["results"]["ingest"]["bytes_per_sec"] = max(0.0, data["results"]["ingest"]["bytes_per_sec"] * 0.5)
+          Path("bench_regress.json").write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+          PY
+          set +e
+          cargo run -p omnisstream_benchdiff -- bench.json bench_regress.json --threshold-percent 0
+          code="$?"
+          set -e
+          test "$code" -ne 0

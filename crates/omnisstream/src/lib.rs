@@ -2,6 +2,7 @@
 
 mod fs_util;
 mod hashing;
+mod ingest_backend;
 mod inspect;
 mod manifest;
 mod object_version;
@@ -13,4 +14,4 @@ mod upload;
 
 pub mod api;
 
-pub use api::{ingest_file, Manifest, PartStore, Reader, UploadSession};
+pub use api::{ingest_file, Manifest, PartStore, Reader, UploadSession, SUPPORTED_MANIFEST_SCHEMA};

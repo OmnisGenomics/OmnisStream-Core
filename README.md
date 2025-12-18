@@ -14,6 +14,30 @@ git submodule update --init --recursive
 cargo build
 ```
 
+## Quick start (release artifacts)
+
+Download the zip for your platform from GitHub Releases:
+
+- Linux x86_64: `omnisstream-vX.Y.Z-x86_64-unknown-linux-gnu.zip`
+- Windows x86_64: `omnisstream-vX.Y.Z-x86_64-pc-windows-msvc.zip`
+
+Unzip and run:
+
+```bash
+./omnisstream version
+./omnisstream --help
+```
+
+Verify the downloaded zips against the published `SHA256SUMS`, then (after unzip) verify the package contents `SHA256SUMS`:
+
+```bash
+# In the directory containing the downloaded release assets:
+sha256sum -c SHA256SUMS
+
+# After unzip:
+sha256sum -c SHA256SUMS
+```
+
 ## Test
 
 ```bash

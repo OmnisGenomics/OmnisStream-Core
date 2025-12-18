@@ -1,0 +1,173 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            exe_ext: ""
+            ffi_lib: libomnisstream_ffi.a
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            exe_ext: ".exe"
+            ffi_lib: omnisstream_ffi.lib
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: spec pin
+        run: |
+          echo "SPEC_PIN.txt=$(cat SPEC_PIN.txt)"
+          echo "submodule=$(git -C spec/omnisstream-spec rev-parse HEAD)"
+          git submodule status --recursive
+          test "$(cat SPEC_PIN.txt)" = "$(git -C spec/omnisstream-spec rev-parse HEAD)"
+        shell: bash
+
+      - name: build
+        run: |
+          cargo build --release -p omnisstream_cli -p omnisstream_bench -p omnisstream_ffi
+        shell: bash
+
+      - name: generate header
+        run: |
+          cargo run -p omnisstream_ffi --features header-gen --bin omnisstream_ffi_header
+          git diff --exit-code include/omnisstream_ffi.h
+        shell: bash
+
+      - name: smoke: version output
+        run: |
+          "./target/release/omnisstream${{ matrix.exe_ext }}" version | tee version.txt
+          python - <<'PY'
+          import pathlib
+          text = pathlib.Path("version.txt").read_text(encoding="utf-8", errors="replace")
+          lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+          assert len(lines) >= 4, lines
+          keys = {ln.split(" ", 1)[0] for ln in lines[1:]}
+          assert "git_commit" in keys
+          assert "spec_pin" in keys
+          assert "manifest_schema" in keys
+          PY
+        shell: bash
+
+      - name: package
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          import shutil
+          import zipfile
+          from pathlib import Path
+          
+          tag = os.environ["GITHUB_REF_NAME"]
+          target = os.environ["TARGET_TRIPLE"]
+          exe_ext = os.environ["EXE_EXT"]
+          ffi_lib = os.environ["FFI_LIB"]
+          
+          root = Path.cwd()
+          dist = root / "dist"
+          pkg = dist / f"pkg-{target}"
+          dist.mkdir(parents=True, exist_ok=True)
+          if pkg.exists():
+            shutil.rmtree(pkg)
+          pkg.mkdir(parents=True)
+          
+          def copy(src: Path, dst_name: str):
+            if not src.is_file():
+              raise SystemExit(f"missing expected file: {src}")
+            shutil.copy2(src, pkg / dst_name)
+          
+          copy(root / f"target/release/omnisstream{exe_ext}", f"omnisstream{exe_ext}")
+          copy(root / f"target/release/omnisstream_bench{exe_ext}", f"omnisstream_bench{exe_ext}")
+          copy(root / f"target/release/{ffi_lib}", ffi_lib)
+          copy(root / "include/omnisstream_ffi.h", "omnisstream_ffi.h")
+          copy(root / "SPEC_PIN.txt", "SPEC_PIN.txt")
+          
+          # SHA256SUMS for package contents (excluding SHA256SUMS itself).
+          lines = []
+          for p in sorted(pkg.iterdir(), key=lambda x: x.name):
+            h = hashlib.sha256(p.read_bytes()).hexdigest()
+            lines.append(f"{h}  {p.name}\\n")
+          (pkg / "SHA256SUMS").write_text("".join(lines), encoding="utf-8")
+          
+          zip_path = dist / f"omnisstream-{tag}-{target}.zip"
+          if zip_path.exists():
+            zip_path.unlink()
+          
+          def add_file(zf: zipfile.ZipFile, path: Path):
+            data = path.read_bytes()
+            info = zipfile.ZipInfo(path.name)
+            info.date_time = (1980, 1, 1, 0, 0, 0)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            zf.writestr(info, data)
+          
+          with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for p in sorted(pkg.iterdir(), key=lambda x: x.name):
+              add_file(zf, p)
+          
+          print(f"wrote {zip_path}")
+          PY
+        env:
+          TARGET_TRIPLE: ${{ matrix.target }}
+          EXE_EXT: ${{ matrix.exe_ext }}
+          FFI_LIB: ${{ matrix.ffi_lib }}
+        shell: bash
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.target }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: dist-*
+          merge-multiple: true
+          path: dist
+
+      - name: sha256sums
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          
+          dist = Path("dist")
+          zips = sorted(dist.glob("*.zip"), key=lambda p: p.name)
+          if not zips:
+            raise SystemExit("no zip artifacts found")
+          
+          lines = []
+          for p in zips:
+            h = hashlib.sha256(p.read_bytes()).hexdigest()
+            lines.append(f"{h}  {p.name}\\n")
+          (dist / "SHA256SUMS").write_text("".join(lines), encoding="utf-8")
+          PY
+
+      - name: create github release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/SHA256SUMS
