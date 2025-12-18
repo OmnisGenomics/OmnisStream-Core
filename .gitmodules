@@ -1,0 +1,4 @@
+[submodule "spec/omnisstream-spec"]
+	path = spec/omnisstream-spec
+	url = https://github.com/OmnisGenomics/OmnisStream-Spec.git
+	branch = main
