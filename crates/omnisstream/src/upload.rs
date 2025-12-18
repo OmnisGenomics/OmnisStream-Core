@@ -447,4 +447,20 @@ mod tests {
         uploads.put_part(&upload_id, 2, b"world").unwrap();
         assert!(!tmp_path.exists());
     }
+
+    #[test]
+    fn resume_after_restart_completes() {
+        let dir = tempfile::tempdir().unwrap();
+        let part_store = PartStore::new(dir.path().join("parts")).unwrap();
+
+        let uploads1 = UploadManager::new(dir.path().join("uploads"), part_store.clone()).unwrap();
+        let upload_id = uploads1.create("object-1").unwrap();
+        uploads1.put_part(&upload_id, 1, b"hello").unwrap();
+        drop(uploads1);
+
+        let uploads2 = UploadManager::new(dir.path().join("uploads"), part_store).unwrap();
+        uploads2.put_part(&upload_id, 2, b"world").unwrap();
+        let (manifest, _v) = uploads2.complete(&upload_id).unwrap();
+        manifest.validate_basic().unwrap();
+    }
 }

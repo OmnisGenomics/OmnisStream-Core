@@ -126,3 +126,41 @@ fn enum_name_upload_state(state: i32) -> String {
         Some(pbv1::UploadSessionState::Unspecified) | None => format!("unknown_{state}"),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use super::*;
+
+    fn spec_root() -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/omnisstream-spec")
+    }
+
+    fn load_manifest(vector: &str) -> Manifest {
+        let bytes = std::fs::read(
+            spec_root()
+                .join("test-vectors")
+                .join(vector)
+                .join("manifest.pb"),
+        )
+        .unwrap();
+        Manifest::from_pb_bytes(&bytes).unwrap()
+    }
+
+    #[test]
+    fn inspect_is_deterministic() {
+        let manifest = load_manifest("vector-minimal");
+        assert_eq!(format_manifest(&manifest), format_manifest(&manifest));
+    }
+
+    #[test]
+    fn inspect_works_on_both_vectors() {
+        for vector in ["vector-minimal", "vector-compressed"] {
+            let manifest = load_manifest(vector);
+            let out = format_manifest(&manifest);
+            assert!(out.contains("object_id = "));
+            assert!(out.contains("part_count = "));
+        }
+    }
+}
