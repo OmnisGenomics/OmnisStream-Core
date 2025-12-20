@@ -53,22 +53,76 @@ const char *os_last_error_message(void);
 
 void os_clear_last_error(void);
 
+/**
+ * # Safety
+ * - `root_utf8.ptr` must be valid for `root_utf8.len` bytes for the duration of the call.
+ * - `out_store` must be non-null and writable.
+ * - On success, `*out_store` must be released with `os_partstore_close` exactly once.
+ */
 int os_partstore_open(OsSpan root_utf8, OsPartStore **out_store);
 
+/**
+ * # Safety
+ * - `store` must be a pointer returned by `os_partstore_open` (or null).
+ * - `store` must not be used after this call.
+ * - `store` must not be closed more than once.
+ */
 void os_partstore_close(OsPartStore *store);
 
+/**
+ * # Safety
+ * - `store` must be a pointer returned by `os_partstore_open`.
+ * - `data.ptr` must be valid for `data.len` bytes for the duration of the call.
+ * - `out_digest` must be non-null and writable.
+ */
 int os_partstore_put(OsPartStore *store, OsSpan data, OsDigest *out_digest);
 
+/**
+ * # Safety
+ * - `store` must be a pointer returned by `os_partstore_open`.
+ * - `digest` must be non-null and point to a valid `OsDigest`.
+ * - `out_bytes` must be non-null and writable.
+ * - On success, `out_bytes->ptr` must be released with `os_owned_bytes_free`.
+ */
 int os_partstore_get(OsPartStore *store, const OsDigest *digest, OsOwnedBytes *out_bytes);
 
+/**
+ * # Safety
+ * - `b` must be non-null and writable.
+ * - If `b->ptr` is non-null, it must have been allocated by this library and must not have been
+ *   freed already.
+ */
 void os_owned_bytes_free(OsOwnedBytes *b);
 
+/**
+ * # Safety
+ * - `pb_bytes.ptr` must be valid for `pb_bytes.len` bytes for the duration of the call.
+ * - `out_manifest` must be non-null and writable.
+ * - On success, `*out_manifest` must be released with `os_manifest_free` exactly once.
+ */
 int os_manifest_load_pb(OsSpan pb_bytes, OsManifest **out_manifest);
 
+/**
+ * # Safety
+ * - `m` must be a pointer returned by `os_manifest_load_pb` (or null).
+ * - `m` must not be used after this call.
+ * - `m` must not be freed more than once.
+ */
 void os_manifest_free(OsManifest *m);
 
+/**
+ * # Safety
+ * - `m` must be a pointer returned by `os_manifest_load_pb`.
+ * - `base_dir_utf8.ptr` must be valid for `base_dir_utf8.len` bytes for the duration of the call.
+ */
 int os_verify_manifest_on_disk(OsManifest *m, OsSpan base_dir_utf8);
 
+/**
+ * # Safety
+ * - `m` must be a pointer returned by `os_manifest_load_pb`.
+ * - `out_utf8` must be non-null and writable.
+ * - On success, `out_utf8->ptr` must be released with `os_owned_bytes_free`.
+ */
 int os_manifest_inspect(OsManifest *m, OsOwnedBytes *out_utf8);
 
 #ifdef __cplusplus
