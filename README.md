@@ -72,4 +72,6 @@ Common dev checks (optional but recommended)
 
 ## License
 
-Licensed under the Apache License, Version 2.0. See `LICENSE`.
+This repository is licensed under the Apache License, Version 2.0. See LICENSE.
+
+The specification is vendored as a git submodule at spec/omnisstream-spec and is licensed separately. See spec/omnisstream-spec/LICENSE.
