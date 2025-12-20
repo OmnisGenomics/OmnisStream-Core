@@ -67,3 +67,7 @@ Common dev checks (optional but recommended)
 
 `cargo fmt --all`
 `cargo clippy --all-targets --all-features`
+
+## License
+
+Licensed under the Apache License, Version 2.0. See `LICENSE`.
