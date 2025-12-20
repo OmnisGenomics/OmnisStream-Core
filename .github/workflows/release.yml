@@ -4,6 +4,14 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v0.1.0)"
+        required: true
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
 
 permissions:
   contents: write
@@ -26,6 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ env.RELEASE_TAG }}
           submodules: recursive
 
       - uses: dtolnay/rust-toolchain@stable
@@ -53,7 +62,7 @@ jobs:
           git diff --exit-code include/omnisstream_ffi.h
         shell: bash
 
-      - name: smoke: version output
+      - name: "smoke: version output"
         run: |
           "./target/release/omnisstream${{ matrix.exe_ext }}" version | tee version.txt
           python - <<'PY'
@@ -77,7 +86,7 @@ jobs:
           import zipfile
           from pathlib import Path
           
-          tag = os.environ["GITHUB_REF_NAME"]
+          tag = os.environ["RELEASE_TAG"]
           target = os.environ["TARGET_TRIPLE"]
           exe_ext = os.environ["EXE_EXT"]
           ffi_lib = os.environ["FFI_LIB"]
@@ -168,6 +177,7 @@ jobs:
       - name: create github release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           files: |
             dist/*.zip
             dist/SHA256SUMS

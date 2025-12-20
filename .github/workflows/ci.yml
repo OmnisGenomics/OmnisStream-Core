@@ -56,12 +56,12 @@ jobs:
           tmp="$(mktemp -d)"
           cp -a spec/omnisstream-spec/test-vectors/vector-minimal "$tmp/vector-minimal"
           OMNIS_TMP="$tmp" python3 - <<'PY'
-import os
-import pathlib
-p = pathlib.Path(os.environ["OMNIS_TMP"]) / "vector-minimal" / "parts" / "part-0002.bin"
-b = p.read_bytes()
-p.write_bytes(bytes([b[0] ^ 0xFF]) + b[1:])
-PY
+          import os
+          import pathlib
+          p = pathlib.Path(os.environ["OMNIS_TMP"]) / "vector-minimal" / "parts" / "part-0002.bin"
+          b = p.read_bytes()
+          p.write_bytes(bytes([b[0] ^ 0xFF]) + b[1:])
+          PY
           set +e
           cargo run -p omnisstream_cli -- verify "$tmp/vector-minimal/manifest.pb"
           code="$?"
