@@ -4,6 +4,8 @@ Rust workspace implementing the OmnisStream core formats plus storage primitives
 
 The canonical specification is vendored as a git submodule at `spec/omnisstream-spec`.
 
+Performance benchmarks live in the OmnisStream Service repo: https://github.com/OmnisGenomics/omnisstream-service#benchmarks
+
 ## What’s in here
 
 * Core data model and hashing
