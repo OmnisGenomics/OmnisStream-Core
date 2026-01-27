@@ -5,9 +5,14 @@ use std::path::{Path, PathBuf};
 use crate::fs_util::{fsync_dir, sync_file};
 use crate::hashing::{Blake3Digest, HashSummary};
 
+#[cfg(all(feature = "group-commit", target_os = "linux"))]
+use std::sync::Arc;
+
 #[derive(Clone, Debug)]
 pub struct PartStore {
     root: PathBuf,
+    #[cfg(all(feature = "group-commit", target_os = "linux"))]
+    group_commit: Option<Arc<crate::group_commit::DurabilityBatcher>>,
 }
 
 impl PartStore {
@@ -15,7 +20,18 @@ impl PartStore {
         let root = root.as_ref().to_path_buf();
         std::fs::create_dir_all(&root)?;
         std::fs::create_dir_all(root.join("_tmp"))?;
-        Ok(Self { root })
+
+        #[cfg(all(feature = "group-commit", target_os = "linux"))]
+        let group_commit = match crate::durability::group_commit_config() {
+            Some(cfg) => Some(crate::group_commit::DurabilityBatcher::start(&root, cfg)?),
+            None => None,
+        };
+
+        Ok(Self {
+            root,
+            #[cfg(all(feature = "group-commit", target_os = "linux"))]
+            group_commit,
+        })
     }
 
     pub fn root(&self) -> &Path {
@@ -39,6 +55,11 @@ impl PartStore {
     pub fn put_bytes_with_digest(&self, digest: Blake3Digest, bytes: &[u8]) -> io::Result<()> {
         let final_path = self.path_for_digest(digest);
 
+        #[cfg(all(feature = "group-commit", target_os = "linux"))]
+        if let Some(batcher) = self.group_commit.as_ref() {
+            return self.put_bytes_with_digest_group_commit(batcher, &final_path, bytes);
+        }
+
         if final_path.is_file() {
             return Ok(());
         }
@@ -52,17 +73,22 @@ impl PartStore {
         tmp.as_file_mut().flush()?;
         sync_file(tmp.as_file())?;
 
-        self.rename_atomic(tmp.into_temp_path(), &final_path)
+        self.rename_atomic_strict(tmp.into_temp_path(), &final_path)
     }
 
     pub fn put_reader(&self, reader: &mut impl Read) -> io::Result<(Blake3Digest, HashSummary)> {
         let mut tmp = tempfile::NamedTempFile::new_in(self.tmp_dir())?;
         let summary = copy_and_hash(reader, tmp.as_file_mut())?;
         tmp.as_file_mut().flush()?;
-        sync_file(tmp.as_file())?;
 
         let digest = summary.blake3_256;
         let final_path = self.path_for_digest(digest);
+
+        #[cfg(all(feature = "group-commit", target_os = "linux"))]
+        if let Some(batcher) = self.group_commit.as_ref() {
+            return self.put_reader_group_commit(batcher, tmp, summary, &final_path);
+        }
+
         if final_path.is_file() {
             return Ok((digest, summary));
         }
@@ -71,7 +97,9 @@ impl PartStore {
             std::fs::create_dir_all(parent)?;
         }
 
-        self.rename_atomic(tmp.into_temp_path(), &final_path)?;
+        sync_file(tmp.as_file())?;
+
+        self.rename_atomic_strict(tmp.into_temp_path(), &final_path)?;
         Ok((digest, summary))
     }
 
@@ -85,7 +113,11 @@ impl PartStore {
         self.root.join("_tmp")
     }
 
-    fn rename_atomic(&self, tmp_path: tempfile::TempPath, final_path: &Path) -> io::Result<()> {
+    fn rename_atomic_strict(
+        &self,
+        tmp_path: tempfile::TempPath,
+        final_path: &Path,
+    ) -> io::Result<()> {
         match std::fs::rename(&tmp_path, final_path) {
             Ok(()) => {
                 if let Some(parent) = final_path.parent() {
@@ -96,6 +128,98 @@ impl PartStore {
             Err(e) if e.kind() == io::ErrorKind::AlreadyExists => Ok(()),
             Err(e) => Err(e),
         }
+    }
+
+    #[cfg(all(feature = "group-commit", target_os = "linux"))]
+    fn ensure_durable_if_exists_group_commit(
+        &self,
+        batcher: &crate::group_commit::DurabilityBatcher,
+        final_path: &Path,
+    ) -> io::Result<bool> {
+        let token = {
+            let _guard = batcher.lock_submission();
+            if !final_path.is_file() {
+                return Ok(false);
+            }
+            batcher.flush_if_pending_locked()?
+        };
+        if let Some(token) = token {
+            token.wait()?;
+        }
+        Ok(true)
+    }
+
+    #[cfg(all(feature = "group-commit", target_os = "linux"))]
+    fn put_bytes_with_digest_group_commit(
+        &self,
+        batcher: &Arc<crate::group_commit::DurabilityBatcher>,
+        final_path: &Path,
+        bytes: &[u8],
+    ) -> io::Result<()> {
+        if self.ensure_durable_if_exists_group_commit(batcher, final_path)? {
+            return Ok(());
+        }
+
+        if let Some(parent) = final_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let mut tmp = tempfile::NamedTempFile::new_in(self.tmp_dir())?;
+        tmp.as_file_mut().write_all(bytes)?;
+        tmp.as_file_mut().flush()?;
+
+        let tmp_path = tmp.into_temp_path();
+        let token = {
+            let _guard = batcher.lock_submission();
+            match std::fs::rename(&tmp_path, final_path) {
+                Ok(()) => Some(batcher.submit_write_locked()?),
+                Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
+                    batcher.flush_if_pending_locked()?
+                }
+                Err(e) => return Err(e),
+            }
+        };
+
+        if let Some(token) = token {
+            token.wait()?;
+        }
+        Ok(())
+    }
+
+    #[cfg(all(feature = "group-commit", target_os = "linux"))]
+    fn put_reader_group_commit(
+        &self,
+        batcher: &Arc<crate::group_commit::DurabilityBatcher>,
+        tmp: tempfile::NamedTempFile,
+        summary: HashSummary,
+        final_path: &Path,
+    ) -> io::Result<(Blake3Digest, HashSummary)> {
+        let digest = summary.blake3_256;
+
+        if self.ensure_durable_if_exists_group_commit(batcher, final_path)? {
+            return Ok((digest, summary));
+        }
+
+        if let Some(parent) = final_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let tmp_path = tmp.into_temp_path();
+        let token = {
+            let _guard = batcher.lock_submission();
+            match std::fs::rename(&tmp_path, final_path) {
+                Ok(()) => Some(batcher.submit_write_locked()?),
+                Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
+                    batcher.flush_if_pending_locked()?
+                }
+                Err(e) => return Err(e),
+            }
+        };
+
+        if let Some(token) = token {
+            token.wait()?;
+        }
+        Ok((digest, summary))
     }
 }
 

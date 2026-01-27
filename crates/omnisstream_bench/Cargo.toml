@@ -9,6 +9,9 @@ repository.workspace = true
 name = "omnisstream_bench"
 path = "src/main.rs"
 
+[features]
+group-commit = ["omnisstream/group-commit"]
+
 [dependencies]
 anyhow.workspace = true
 clap.workspace = true

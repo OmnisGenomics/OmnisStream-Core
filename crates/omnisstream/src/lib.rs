@@ -2,6 +2,8 @@
 
 mod durability;
 mod fs_util;
+#[cfg(all(feature = "group-commit", target_os = "linux"))]
+mod group_commit;
 mod hashing;
 mod ingest_backend;
 mod inspect;

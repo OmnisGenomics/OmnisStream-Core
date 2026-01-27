@@ -32,6 +32,15 @@ struct BenchParamsJson {
 
     #[serde(default)]
     relaxed_durability: bool,
+
+    #[serde(default)]
+    group_commit: bool,
+
+    #[serde(default)]
+    group_commit_max_ops: Option<usize>,
+
+    #[serde(default)]
+    group_commit_window_ms: Option<u64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -115,6 +124,9 @@ fn main() -> anyhow::Result<()> {
         || base.params.range_ops != new.params.range_ops
         || base.params.seed != new.params.seed
         || base.params.relaxed_durability != new.params.relaxed_durability
+        || base.params.group_commit != new.params.group_commit
+        || base.params.group_commit_max_ops != new.params.group_commit_max_ops
+        || base.params.group_commit_window_ms != new.params.group_commit_window_ms
     {
         anyhow::bail!("bench params differ; refuse to diff different scenarios");
     }

@@ -49,6 +49,21 @@ struct Args {
     /// Disable fsync/directory fsync for ingest (benchmarking only; breaks durability guarantees).
     #[arg(long)]
     relaxed_durability: bool,
+
+    /// Enable prototype group commit batching (Linux only).
+    #[cfg(feature = "group-commit")]
+    #[arg(long)]
+    group_commit: bool,
+
+    /// Max operations per group commit barrier batch.
+    #[cfg(feature = "group-commit")]
+    #[arg(long, default_value_t = 32)]
+    group_commit_max_ops: usize,
+
+    /// Max time window (ms) to batch operations before the barrier.
+    #[cfg(feature = "group-commit")]
+    #[arg(long, default_value_t = 50)]
+    group_commit_window_ms: u64,
 }
 
 #[derive(Clone, Debug)]
@@ -60,10 +75,44 @@ struct BenchConfig {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    group_commit: bool,
+    group_commit_max_ops: usize,
+    group_commit_window_ms: u64,
 }
 
 impl BenchConfig {
     fn from_args(args: Args) -> Self {
+        let group_commit = {
+            #[cfg(feature = "group-commit")]
+            {
+                args.group_commit
+            }
+            #[cfg(not(feature = "group-commit"))]
+            {
+                false
+            }
+        };
+        let group_commit_max_ops = {
+            #[cfg(feature = "group-commit")]
+            {
+                args.group_commit_max_ops
+            }
+            #[cfg(not(feature = "group-commit"))]
+            {
+                0
+            }
+        };
+        let group_commit_window_ms = {
+            #[cfg(feature = "group-commit")]
+            {
+                args.group_commit_window_ms
+            }
+            #[cfg(not(feature = "group-commit"))]
+            {
+                0
+            }
+        };
+
         let mut cfg = match args.preset {
             Preset::Default => Self {
                 preset: args.preset,
@@ -73,6 +122,9 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                group_commit,
+                group_commit_max_ops,
+                group_commit_window_ms,
             },
             Preset::Ci => Self {
                 preset: args.preset,
@@ -82,6 +134,9 @@ impl BenchConfig {
                 range_ops: 200,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                group_commit,
+                group_commit_max_ops,
+                group_commit_window_ms,
             },
             Preset::Wsl => Self {
                 preset: args.preset,
@@ -91,6 +146,9 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                group_commit,
+                group_commit_max_ops,
+                group_commit_window_ms,
             },
         };
 
@@ -141,6 +199,11 @@ struct BenchParamsJson {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    group_commit: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    group_commit_max_ops: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    group_commit_window_ms: Option<u64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -385,6 +448,28 @@ fn main() -> anyhow::Result<()> {
         omnisstream::api::set_relaxed_durability(true);
     }
 
+    if cfg.group_commit {
+        eprintln!(
+            "WARNING: --group-commit batches durability barriers (syncfs); prototype only (use on dedicated filesystems)."
+        );
+
+        #[cfg(all(feature = "group-commit", target_os = "linux"))]
+        {
+            if cfg.group_commit_max_ops == 0 {
+                anyhow::bail!("--group-commit-max-ops must be >= 1");
+            }
+            omnisstream::api::set_group_commit_config(Some(omnisstream::api::GroupCommitConfig {
+                max_ops: cfg.group_commit_max_ops,
+                window_ms: cfg.group_commit_window_ms,
+            }));
+        }
+
+        #[cfg(all(feature = "group-commit", not(target_os = "linux")))]
+        {
+            eprintln!("WARNING: --group-commit is only supported on Linux; ignoring.");
+        }
+    }
+
     let spec_pin = read_optional_trimmed("SPEC_PIN.txt");
     let git_head = git_head();
     let tool_version = env!("CARGO_PKG_VERSION").to_string();
@@ -448,6 +533,9 @@ fn main() -> anyhow::Result<()> {
             range_ops: cfg.range_ops,
             seed: cfg.seed,
             relaxed_durability: cfg.relaxed_durability,
+            group_commit: cfg.group_commit,
+            group_commit_max_ops: cfg.group_commit.then_some(cfg.group_commit_max_ops),
+            group_commit_window_ms: cfg.group_commit.then_some(cfg.group_commit_window_ms),
         },
         results: BenchResultsJson {
             ingest: ingest_result,
@@ -684,6 +772,9 @@ mod tests {
             range_ops: 1,
             seed: 1,
             relaxed_durability: false,
+            group_commit: false,
+            group_commit_max_ops: 0,
+            group_commit_window_ms: 0,
         };
 
         let bench = BenchJson {
@@ -700,6 +791,9 @@ mod tests {
                 range_ops: cfg.range_ops,
                 seed: cfg.seed,
                 relaxed_durability: cfg.relaxed_durability,
+                group_commit: false,
+                group_commit_max_ops: None,
+                group_commit_window_ms: None,
             },
             results: BenchResultsJson {
                 ingest: BytesScenarioJson {

@@ -391,6 +391,7 @@ dependencies = [
  "prost-build",
  "prost-types",
  "protoc-bin-vendored",
+ "rustix",
  "semver",
  "serde",
  "serde_json",

@@ -21,6 +21,21 @@ pub fn set_relaxed_durability(enabled: bool) {
     crate::durability::set_relaxed_durability(enabled);
 }
 
+/// Prototype-only configuration for group commit durability batching.
+///
+/// This API is only available when `omnisstream` is built with the `group-commit` feature.
+#[cfg(feature = "group-commit")]
+pub use crate::durability::GroupCommitConfig;
+
+/// Enable/disable group commit batching for newly created `PartStore`s.
+///
+/// This is intended for benchmark prototypes only. When enabled, part writes are made durable via
+/// a batched filesystem barrier rather than per-part `fsync`/dir `fsync`.
+#[cfg(feature = "group-commit")]
+pub fn set_group_commit_config(config: Option<GroupCommitConfig>) {
+    crate::durability::set_group_commit_config(config);
+}
+
 /// Supported manifest schema range for this build of OmnisStream core.
 pub const SUPPORTED_MANIFEST_SCHEMA: &str = "0.1.x";
 
