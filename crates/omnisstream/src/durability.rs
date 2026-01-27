@@ -35,6 +35,22 @@ pub struct GroupCommitConfig {
     pub window_ms: u64,
 }
 
+/// Instrumentation snapshot for group commit batching.
+///
+/// This is best-effort telemetry intended for benchmarks (not production SLAs).
+#[cfg(feature = "group-commit")]
+#[derive(Clone, Copy, Debug, Default)]
+pub struct GroupCommitMetrics {
+    pub syncfs_calls: u64,
+    pub syncfs_errors: u64,
+    pub write_tokens: u64,
+    pub waiter_tokens: u64,
+    pub syncfs_wall_ms: u64,
+    pub worker_wait_ms: u64,
+    pub max_write_batch: u64,
+    pub max_total_batch: u64,
+}
+
 #[cfg(feature = "group-commit")]
 static GROUP_COMMIT_CONFIG: Mutex<Option<GroupCommitConfig>> = Mutex::new(None);
 

@@ -25,7 +25,7 @@ pub fn set_relaxed_durability(enabled: bool) {
 ///
 /// This API is only available when `omnisstream` is built with the `group-commit` feature.
 #[cfg(feature = "group-commit")]
-pub use crate::durability::GroupCommitConfig;
+pub use crate::durability::{GroupCommitConfig, GroupCommitMetrics};
 
 /// Enable/disable group commit batching for newly created `PartStore`s.
 ///
@@ -34,6 +34,29 @@ pub use crate::durability::GroupCommitConfig;
 #[cfg(feature = "group-commit")]
 pub fn set_group_commit_config(config: Option<GroupCommitConfig>) {
     crate::durability::set_group_commit_config(config);
+}
+
+/// Return a best-effort snapshot of group commit instrumentation counters.
+#[cfg(feature = "group-commit")]
+pub fn group_commit_metrics() -> Option<GroupCommitMetrics> {
+    #[cfg(target_os = "linux")]
+    {
+        Some(crate::group_commit::metrics_snapshot())
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        None
+    }
+}
+
+/// Reset group commit instrumentation counters (benchmarking only).
+#[cfg(feature = "group-commit")]
+pub fn reset_group_commit_metrics() {
+    #[cfg(target_os = "linux")]
+    {
+        crate::group_commit::reset_metrics();
+    }
 }
 
 /// Supported manifest schema range for this build of OmnisStream core.

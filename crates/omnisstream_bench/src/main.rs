@@ -225,6 +225,8 @@ struct BytesScenarioJson {
     cpu_seconds: Option<f64>,
     cpu_percent: Option<f64>,
     peak_rss_bytes: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    group_commit_metrics: Option<GroupCommitMetricsJson>,
 }
 
 #[derive(Debug, Serialize)]
@@ -239,6 +241,58 @@ struct RangeScenarioJson {
     cpu_seconds: Option<f64>,
     cpu_percent: Option<f64>,
     peak_rss_bytes: Option<u64>,
+}
+
+#[derive(Debug, Serialize)]
+struct GroupCommitMetricsJson {
+    syncfs_calls: u64,
+    syncfs_errors: u64,
+    write_tokens: u64,
+    waiter_tokens: u64,
+    syncfs_wall_ms: u64,
+    worker_wait_ms: u64,
+    max_write_batch: u64,
+    max_total_batch: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    avg_write_batch: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    avg_syncfs_wall_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    avg_worker_wait_ms: Option<f64>,
+}
+
+#[cfg(feature = "group-commit")]
+fn group_commit_metrics_json(m: omnisstream::api::GroupCommitMetrics) -> GroupCommitMetricsJson {
+    let total_tokens = m.write_tokens.saturating_add(m.waiter_tokens);
+    let avg_write_batch = if m.syncfs_calls > 0 {
+        Some(m.write_tokens as f64 / m.syncfs_calls as f64)
+    } else {
+        None
+    };
+    let avg_syncfs_wall_ms = if m.syncfs_calls > 0 {
+        Some(m.syncfs_wall_ms as f64 / m.syncfs_calls as f64)
+    } else {
+        None
+    };
+    let avg_worker_wait_ms = if total_tokens > 0 {
+        Some(m.worker_wait_ms as f64 / total_tokens as f64)
+    } else {
+        None
+    };
+
+    GroupCommitMetricsJson {
+        syncfs_calls: m.syncfs_calls,
+        syncfs_errors: m.syncfs_errors,
+        write_tokens: m.write_tokens,
+        waiter_tokens: m.waiter_tokens,
+        syncfs_wall_ms: m.syncfs_wall_ms,
+        worker_wait_ms: m.worker_wait_ms,
+        max_write_batch: m.max_write_batch,
+        max_total_batch: m.max_total_batch,
+        avg_write_batch,
+        avg_syncfs_wall_ms,
+        avg_worker_wait_ms,
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -490,6 +544,7 @@ fn main() -> anyhow::Result<()> {
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
+                group_commit_metrics: None,
             };
             let verify = BytesScenarioJson {
                 ok: false,
@@ -502,6 +557,7 @@ fn main() -> anyhow::Result<()> {
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
+                group_commit_metrics: None,
             };
             let range_reads = RangeScenarioJson {
                 ok: false,
@@ -568,6 +624,11 @@ fn run_bench(
 
     let repo_root = tmp.path().join("repo");
 
+    #[cfg(feature = "group-commit")]
+    if cfg.group_commit {
+        omnisstream::api::reset_group_commit_metrics();
+    }
+
     // Ingest
     let (ingest_measured, ingest_res) = measure(|| {
         omnisstream::ingest_file(&repo_root, &input_path, cfg.part_size_bytes)
@@ -575,10 +636,31 @@ fn run_bench(
     });
 
     let (ingest, ingest_res) = match ingest_res {
-        Ok(r) => (
-            ingest_json(cfg.file_size_bytes, cfg.part_size_bytes, ingest_measured),
-            Some(r),
-        ),
+        Ok(r) => {
+            let metrics = {
+                #[cfg(feature = "group-commit")]
+                {
+                    if cfg.group_commit {
+                        omnisstream::api::group_commit_metrics().map(group_commit_metrics_json)
+                    } else {
+                        None
+                    }
+                }
+                #[cfg(not(feature = "group-commit"))]
+                {
+                    None
+                }
+            };
+            (
+                ingest_json(
+                    cfg.file_size_bytes,
+                    cfg.part_size_bytes,
+                    ingest_measured,
+                    metrics,
+                ),
+                Some(r),
+            )
+        }
         Err(e) => (
             BytesScenarioJson {
                 ok: false,
@@ -591,6 +673,7 @@ fn run_bench(
                 cpu_seconds: ingest_measured.cpu_seconds,
                 cpu_percent: ingest_measured.cpu_percent,
                 peak_rss_bytes: ingest_measured.peak_rss_bytes,
+                group_commit_metrics: None,
             },
             None,
         ),
@@ -611,6 +694,7 @@ fn run_bench(
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
+                group_commit_metrics: None,
             },
             RangeScenarioJson {
                 ok: false,
@@ -642,6 +726,7 @@ fn run_bench(
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
+            group_commit_metrics: None,
         },
         Err(e) => BytesScenarioJson {
             ok: false,
@@ -654,6 +739,7 @@ fn run_bench(
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
+            group_commit_metrics: None,
         },
     };
 
@@ -693,7 +779,12 @@ fn run_bench(
     Ok((ingest, verify, range_reads))
 }
 
-fn ingest_json(bytes: u64, part_size_bytes: u64, measured: Measured) -> BytesScenarioJson {
+fn ingest_json(
+    bytes: u64,
+    part_size_bytes: u64,
+    measured: Measured,
+    group_commit_metrics: Option<GroupCommitMetricsJson>,
+) -> BytesScenarioJson {
     let part_size_bytes = part_size_bytes.max(1);
     let parts = bytes.div_ceil(part_size_bytes);
     BytesScenarioJson {
@@ -707,6 +798,7 @@ fn ingest_json(bytes: u64, part_size_bytes: u64, measured: Measured) -> BytesSce
         cpu_seconds: measured.cpu_seconds,
         cpu_percent: measured.cpu_percent,
         peak_rss_bytes: measured.peak_rss_bytes,
+        group_commit_metrics,
     }
 }
 
@@ -807,6 +899,7 @@ mod tests {
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,
+                    group_commit_metrics: None,
                 },
                 verify: BytesScenarioJson {
                     ok: true,
@@ -819,6 +912,7 @@ mod tests {
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,
+                    group_commit_metrics: None,
                 },
                 range_reads: RangeScenarioJson {
                     ok: true,

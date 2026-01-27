@@ -2,13 +2,79 @@ use std::fs::File;
 use std::io;
 use std::path::Path;
 use std::sync::{
-    atomic::{AtomicUsize, Ordering},
+    atomic::{AtomicU64, AtomicUsize, Ordering},
     mpsc, Arc, Mutex,
 };
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::durability::GroupCommitConfig;
+use crate::durability::{GroupCommitConfig, GroupCommitMetrics};
+
+#[derive(Debug)]
+struct MetricsState {
+    syncfs_calls: AtomicU64,
+    syncfs_errors: AtomicU64,
+    syncfs_nanos: AtomicU64,
+    write_tokens: AtomicU64,
+    waiter_tokens: AtomicU64,
+    worker_wait_nanos: AtomicU64,
+    max_write_batch: AtomicU64,
+    max_total_batch: AtomicU64,
+}
+
+static METRICS: MetricsState = MetricsState {
+    syncfs_calls: AtomicU64::new(0),
+    syncfs_errors: AtomicU64::new(0),
+    syncfs_nanos: AtomicU64::new(0),
+    write_tokens: AtomicU64::new(0),
+    waiter_tokens: AtomicU64::new(0),
+    worker_wait_nanos: AtomicU64::new(0),
+    max_write_batch: AtomicU64::new(0),
+    max_total_batch: AtomicU64::new(0),
+};
+
+pub(crate) fn metrics_snapshot() -> GroupCommitMetrics {
+    GroupCommitMetrics {
+        syncfs_calls: METRICS.syncfs_calls.load(Ordering::Relaxed),
+        syncfs_errors: METRICS.syncfs_errors.load(Ordering::Relaxed),
+        write_tokens: METRICS.write_tokens.load(Ordering::Relaxed),
+        waiter_tokens: METRICS.waiter_tokens.load(Ordering::Relaxed),
+        syncfs_wall_ms: nanos_to_ms(METRICS.syncfs_nanos.load(Ordering::Relaxed)),
+        worker_wait_ms: nanos_to_ms(METRICS.worker_wait_nanos.load(Ordering::Relaxed)),
+        max_write_batch: METRICS.max_write_batch.load(Ordering::Relaxed),
+        max_total_batch: METRICS.max_total_batch.load(Ordering::Relaxed),
+    }
+}
+
+pub(crate) fn reset_metrics() {
+    METRICS.syncfs_calls.store(0, Ordering::Relaxed);
+    METRICS.syncfs_errors.store(0, Ordering::Relaxed);
+    METRICS.syncfs_nanos.store(0, Ordering::Relaxed);
+    METRICS.write_tokens.store(0, Ordering::Relaxed);
+    METRICS.waiter_tokens.store(0, Ordering::Relaxed);
+    METRICS.worker_wait_nanos.store(0, Ordering::Relaxed);
+    METRICS.max_write_batch.store(0, Ordering::Relaxed);
+    METRICS.max_total_batch.store(0, Ordering::Relaxed);
+}
+
+fn nanos_to_ms(nanos: u64) -> u64 {
+    nanos / 1_000_000
+}
+
+fn duration_to_nanos(d: Duration) -> u64 {
+    let nanos = d.as_nanos();
+    u64::try_from(nanos).unwrap_or(u64::MAX)
+}
+
+fn update_max(cell: &AtomicU64, value: u64) {
+    let mut cur = cell.load(Ordering::Relaxed);
+    while value > cur {
+        match cell.compare_exchange(cur, value, Ordering::Relaxed, Ordering::Relaxed) {
+            Ok(_) => return,
+            Err(v) => cur = v,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub(crate) struct WaitToken {
@@ -17,10 +83,15 @@ pub(crate) struct WaitToken {
 
 impl WaitToken {
     pub(crate) fn wait(self) -> io::Result<()> {
-        match self.rx.recv() {
+        let start = Instant::now();
+        let res = match self.rx.recv() {
             Ok(r) => r,
             Err(_) => Err(io::Error::other("group commit batcher shutdown")),
-        }
+        };
+        METRICS
+            .worker_wait_nanos
+            .fetch_add(duration_to_nanos(start.elapsed()), Ordering::Relaxed);
+        res
     }
 }
 
@@ -200,6 +271,17 @@ fn worker(root_dir: File, rx: mpsc::Receiver<Message>, cfg: GroupCommitConfig, s
             }
         }
 
+        let total_tokens = batch.len() as u64;
+        let write_tokens = write_count as u64;
+        METRICS
+            .write_tokens
+            .fetch_add(write_tokens, Ordering::Relaxed);
+        METRICS
+            .waiter_tokens
+            .fetch_add(total_tokens.saturating_sub(write_tokens), Ordering::Relaxed);
+        update_max(&METRICS.max_write_batch, write_tokens);
+        update_max(&METRICS.max_total_batch, total_tokens);
+
         let barrier_res = if write_count == 0 {
             Ok(())
         } else {
@@ -243,5 +325,15 @@ fn barrier_syncfs(root_dir: &File) -> io::Result<()> {
     if crate::durability::relaxed_durability_enabled() {
         return Ok(());
     }
-    rustix::fs::syncfs(root_dir).map_err(|errno| io::Error::from_raw_os_error(errno.raw_os_error()))
+    METRICS.syncfs_calls.fetch_add(1, Ordering::Relaxed);
+    let start = Instant::now();
+    let res = rustix::fs::syncfs(root_dir)
+        .map_err(|errno| io::Error::from_raw_os_error(errno.raw_os_error()));
+    METRICS
+        .syncfs_nanos
+        .fetch_add(duration_to_nanos(start.elapsed()), Ordering::Relaxed);
+    if res.is_err() {
+        METRICS.syncfs_errors.fetch_add(1, Ordering::Relaxed);
+    }
+    res
 }
