@@ -10,6 +10,7 @@ name = "omnisstream_bench"
 path = "src/main.rs"
 
 [features]
+compression = ["omnisstream/compression"]
 group-commit = ["omnisstream/group-commit"]
 
 [dependencies]

@@ -16,6 +16,12 @@ use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
 use omnisstream_backend_api::IngestBackend;
 
+#[cfg(feature = "compression")]
+use std::io::Write;
+
+#[cfg(feature = "compression")]
+use crate::compression::CompressionConfig;
+
 #[derive(Clone, Debug)]
 pub(crate) struct Repository {
     root: PathBuf,
@@ -71,6 +77,7 @@ struct PartResult {
     offset: u64,
     length: u64,
     stored_length: u64,
+    compression: i32,
     crc32c: Crc32c,
     blake3_256: Blake3Digest,
 }
@@ -125,6 +132,8 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
         .min(num_parts)
         .max(1);
 
+    let compression = crate::compression::compression_config();
+
     let (tx, rx) = std::sync::mpsc::channel::<Result<PartResult, IngestError>>();
     let stop = Arc::new(AtomicBool::new(false));
 
@@ -134,6 +143,7 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
         let stop = Arc::clone(&stop);
         let backend = backend.clone();
         let part_store = repo.part_store.clone();
+        let worker_compression = compression;
 
         let start = worker_idx * num_parts / workers;
         let end = (worker_idx + 1) * num_parts / workers;
@@ -153,8 +163,15 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
                     break;
                 };
 
-                let res =
-                    ingest_one_part(&backend, &part_store, part_index, part_number, offset, len);
+                let res = ingest_one_part(
+                    &backend,
+                    &part_store,
+                    part_index,
+                    part_number,
+                    offset,
+                    len,
+                    worker_compression,
+                );
                 if res.is_err() {
                     stop.store(true, Ordering::Relaxed);
                 }
@@ -216,7 +233,7 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
             offset: r.offset,
             length: r.length,
             stored_length: r.stored_length,
-            compression: pbv1::CompressionAlgorithm::None as i32,
+            compression: r.compression,
             hashes,
             relative_path: String::new(),
             tags: Default::default(),
@@ -263,24 +280,54 @@ fn ingest_one_part(
     part_number: u32,
     offset: u64,
     len: u64,
+    _compression: Option<crate::compression::CompressionConfig>,
 ) -> Result<PartResult, IngestError> {
     let mut buf = vec![0_u8; len as usize];
     backend.read_exact_at(offset, &mut buf)?;
 
-    let crc32c = crc32c_bytes(&buf);
-    let blake3_256 = blake3_256_bytes(&buf);
+    let mut stored = buf;
+    let mut compression_alg = pbv1::CompressionAlgorithm::None as i32;
 
-    part_store.put_bytes_with_digest(blake3_256, &buf)?;
+    #[cfg(feature = "compression")]
+    if let Some(cfg) = _compression {
+        let compressed = compress_zstd_seekable(&stored, cfg)?;
+        if compressed.len() < stored.len() {
+            stored = compressed;
+            compression_alg = pbv1::CompressionAlgorithm::ZstdSeekable as i32;
+        }
+    }
+
+    let crc32c = crc32c_bytes(&stored);
+    let blake3_256 = blake3_256_bytes(&stored);
+
+    part_store.put_bytes_with_digest(blake3_256, &stored)?;
 
     Ok(PartResult {
         part_index,
         part_number,
         offset,
         length: len,
-        stored_length: len,
+        stored_length: stored.len() as u64,
+        compression: compression_alg,
         crc32c,
         blake3_256,
     })
+}
+
+#[cfg(feature = "compression")]
+fn compress_zstd_seekable(bytes: &[u8], cfg: CompressionConfig) -> Result<Vec<u8>, IngestError> {
+    const FRAME_SIZE: u32 = 1024 * 1024;
+
+    let mut out = Vec::new();
+    let mut w = zstd_framed::ZstdWriter::builder(&mut out)
+        .with_compression_level(cfg.zstd_seekable_level)
+        .with_seek_table(FRAME_SIZE)
+        .build()
+        .map_err(std::io::Error::other)?;
+    w.write_all(bytes)?;
+    w.shutdown().map_err(std::io::Error::other)?;
+    drop(w);
+    Ok(out)
 }
 
 fn object_paths(root: &Path, object_id: &str, object_version: &str) -> (PathBuf, PathBuf) {
@@ -296,6 +343,9 @@ mod tests {
     use crate::ingest_backend::MemBackend;
 
     use super::*;
+
+    #[cfg(feature = "compression")]
+    static COMPRESSION_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
     #[test]
     fn ingest_is_deterministic_for_unchanged_file() {
@@ -341,5 +391,40 @@ mod tests {
             r_default.manifest.to_pb_bytes(),
             r_dummy.manifest.to_pb_bytes()
         );
+    }
+
+    #[cfg(feature = "compression")]
+    #[test]
+    fn ingest_with_compression_sets_stored_length_and_alg() {
+        let _guard = COMPRESSION_TEST_LOCK.lock().unwrap();
+
+        crate::compression::set_compression_config(Some(crate::compression::CompressionConfig {
+            zstd_seekable_level: 3,
+        }));
+
+        let dir = tempfile::tempdir().unwrap();
+        let repo = Repository::open(dir.path().join("repo")).unwrap();
+
+        let input_path = dir.path().join("input.bin");
+        std::fs::write(&input_path, vec![0_u8; 8 * 1024 * 1024]).unwrap();
+
+        let res = repo.ingest_file(&input_path, 8 * 1024 * 1024).unwrap();
+        let pb = res.manifest.clone().into_pb();
+
+        assert_eq!(pb.parts.len(), 1);
+        let p = &pb.parts[0];
+        assert_eq!(p.length, 8 * 1024 * 1024);
+        assert!(p.stored_length < p.length, "expected compressed part");
+        assert_eq!(
+            p.compression,
+            pbv1::CompressionAlgorithm::ZstdSeekable as i32
+        );
+
+        // Stored-bytes verify still passes.
+        let reader = crate::api::Reader::new(res.manifest.clone(), dir.path().join("repo"))
+            .with_part_store(PartStore::new(dir.path().join("repo/parts")).unwrap());
+        reader.verify().unwrap();
+
+        crate::compression::set_compression_config(None);
     }
 }

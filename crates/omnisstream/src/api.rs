@@ -59,6 +59,16 @@ pub fn reset_group_commit_metrics() {
     }
 }
 
+/// Compression configuration for stored payload bytes (benchmarking / experiments).
+#[cfg(feature = "compression")]
+pub use crate::compression::CompressionConfig;
+
+/// Enable/disable compression for newly ingested parts (benchmarking / experiments).
+#[cfg(feature = "compression")]
+pub fn set_compression_config(config: Option<CompressionConfig>) {
+    crate::compression::set_compression_config(config);
+}
+
 /// Supported manifest schema range for this build of OmnisStream core.
 pub const SUPPORTED_MANIFEST_SCHEMA: &str = "0.1.x";
 

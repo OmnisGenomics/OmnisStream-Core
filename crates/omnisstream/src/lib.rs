@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod compression;
 mod durability;
 mod fs_util;
 #[cfg(all(feature = "group-commit", target_os = "linux"))]

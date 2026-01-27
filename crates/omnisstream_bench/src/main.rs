@@ -50,6 +50,16 @@ struct Args {
     #[arg(long)]
     relaxed_durability: bool,
 
+    /// Enable zstd seekable compression for stored part bytes.
+    #[cfg(feature = "compression")]
+    #[arg(long)]
+    compression: bool,
+
+    /// Zstd compression level (seekable format).
+    #[cfg(feature = "compression")]
+    #[arg(long, default_value_t = 3)]
+    compression_level: i32,
+
     /// Enable prototype group commit batching (Linux only).
     #[cfg(feature = "group-commit")]
     #[arg(long)]
@@ -75,6 +85,8 @@ struct BenchConfig {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    compression: bool,
+    compression_level: i32,
     group_commit: bool,
     group_commit_max_ops: usize,
     group_commit_window_ms: u64,
@@ -82,6 +94,27 @@ struct BenchConfig {
 
 impl BenchConfig {
     fn from_args(args: Args) -> Self {
+        let compression = {
+            #[cfg(feature = "compression")]
+            {
+                args.compression
+            }
+            #[cfg(not(feature = "compression"))]
+            {
+                false
+            }
+        };
+        let compression_level = {
+            #[cfg(feature = "compression")]
+            {
+                args.compression_level
+            }
+            #[cfg(not(feature = "compression"))]
+            {
+                0
+            }
+        };
+
         let group_commit = {
             #[cfg(feature = "group-commit")]
             {
@@ -122,6 +155,8 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                compression,
+                compression_level,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -134,6 +169,8 @@ impl BenchConfig {
                 range_ops: 200,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                compression,
+                compression_level,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -146,6 +183,8 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                compression,
+                compression_level,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -199,6 +238,9 @@ struct BenchParamsJson {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    compression: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    compression_level: Option<i32>,
     group_commit: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     group_commit_max_ops: Option<usize>,
@@ -222,6 +264,12 @@ struct BytesScenarioJson {
     bytes_per_sec: f64,
     parts: u64,
     avg_part_wall_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    stored_bytes: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    stored_bytes_per_sec: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    compression_ratio: Option<f64>,
     cpu_seconds: Option<f64>,
     cpu_percent: Option<f64>,
     peak_rss_bytes: Option<u64>,
@@ -233,6 +281,8 @@ struct BytesScenarioJson {
 struct RangeScenarioJson {
     ok: bool,
     error: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    skipped: bool,
     wall_seconds: f64,
     ops: u64,
     ops_per_sec: f64,
@@ -490,6 +540,10 @@ fn qps(ops: u64, wall: Duration) -> f64 {
     }
 }
 
+fn is_false(v: &bool) -> bool {
+    !*v
+}
+
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let out_path = args.out.clone();
@@ -500,6 +554,23 @@ fn main() -> anyhow::Result<()> {
             "WARNING: --relaxed-durability disables fsync/directory fsync; benchmarking only (data loss on crash likely)."
         );
         omnisstream::api::set_relaxed_durability(true);
+    }
+
+    if cfg.compression {
+        eprintln!(
+            "INFO: compression enabled: zstd_seekable level={}",
+            cfg.compression_level
+        );
+
+        #[cfg(feature = "compression")]
+        {
+            if cfg.compression_level == 0 {
+                anyhow::bail!("--compression-level must be non-zero");
+            }
+            omnisstream::api::set_compression_config(Some(omnisstream::api::CompressionConfig {
+                zstd_seekable_level: cfg.compression_level,
+            }));
+        }
     }
 
     if cfg.group_commit {
@@ -541,6 +612,9 @@ fn main() -> anyhow::Result<()> {
                 bytes_per_sec: 0.0,
                 parts: 0,
                 avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -554,6 +628,9 @@ fn main() -> anyhow::Result<()> {
                 bytes_per_sec: 0.0,
                 parts: 0,
                 avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -562,6 +639,7 @@ fn main() -> anyhow::Result<()> {
             let range_reads = RangeScenarioJson {
                 ok: false,
                 error: Some(err),
+                skipped: false,
                 wall_seconds: wall,
                 ops: cfg.range_ops,
                 ops_per_sec: 0.0,
@@ -589,6 +667,8 @@ fn main() -> anyhow::Result<()> {
             range_ops: cfg.range_ops,
             seed: cfg.seed,
             relaxed_durability: cfg.relaxed_durability,
+            compression: cfg.compression,
+            compression_level: cfg.compression.then_some(cfg.compression_level),
             group_commit: cfg.group_commit,
             group_commit_max_ops: cfg.group_commit.then_some(cfg.group_commit_max_ops),
             group_commit_window_ms: cfg.group_commit.then_some(cfg.group_commit_window_ms),
@@ -637,6 +717,7 @@ fn run_bench(
 
     let (ingest, ingest_res) = match ingest_res {
         Ok(r) => {
+            let stored_bytes = sum_part_store_bytes(&repo_root.join("parts")).ok();
             let metrics = {
                 #[cfg(feature = "group-commit")]
                 {
@@ -657,6 +738,7 @@ fn run_bench(
                     cfg.part_size_bytes,
                     ingest_measured,
                     metrics,
+                    stored_bytes,
                 ),
                 Some(r),
             )
@@ -670,6 +752,9 @@ fn run_bench(
                 bytes_per_sec: throughput(cfg.file_size_bytes, ingest_measured.wall),
                 parts: 0,
                 avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
                 cpu_seconds: ingest_measured.cpu_seconds,
                 cpu_percent: ingest_measured.cpu_percent,
                 peak_rss_bytes: ingest_measured.peak_rss_bytes,
@@ -691,6 +776,9 @@ fn run_bench(
                 bytes_per_sec: 0.0,
                 parts: 0,
                 avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -699,6 +787,7 @@ fn run_bench(
             RangeScenarioJson {
                 ok: false,
                 error: Some(skipped),
+                skipped: false,
                 wall_seconds: 0.0,
                 ops: cfg.range_ops,
                 ops_per_sec: 0.0,
@@ -723,6 +812,9 @@ fn run_bench(
             bytes_per_sec: throughput(summary.bytes, verify_measured.wall),
             parts: summary.parts as u64,
             avg_part_wall_ms: avg_part_wall_ms(verify_measured.wall, summary.parts as u64),
+            stored_bytes: None,
+            stored_bytes_per_sec: None,
+            compression_ratio: None,
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
@@ -736,6 +828,9 @@ fn run_bench(
             bytes_per_sec: throughput(cfg.file_size_bytes, verify_measured.wall),
             parts: 0,
             avg_part_wall_ms: None,
+            stored_bytes: None,
+            stored_bytes_per_sec: None,
+            compression_ratio: None,
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
@@ -744,12 +839,33 @@ fn run_bench(
     };
 
     // Range reads
+    if cfg.compression {
+        return Ok((
+            ingest,
+            verify,
+            RangeScenarioJson {
+                ok: true,
+                error: Some("skipped due to compression".to_string()),
+                skipped: true,
+                wall_seconds: 0.0,
+                ops: cfg.range_ops,
+                ops_per_sec: 0.0,
+                bytes: cfg.range_ops.saturating_mul(cfg.range_len_bytes),
+                bytes_per_sec: 0.0,
+                cpu_seconds: None,
+                cpu_percent: None,
+                peak_rss_bytes: None,
+            },
+        ));
+    }
+
     let (range_measured, range_res) =
         measure(|| range_reads(&repo_root, &ingest_res.manifest, cfg));
     let range_reads = match range_res {
         Ok((ops, bytes)) => RangeScenarioJson {
             ok: true,
             error: None,
+            skipped: false,
             wall_seconds: range_measured.wall.as_secs_f64(),
             ops,
             ops_per_sec: qps(ops, range_measured.wall),
@@ -762,6 +878,7 @@ fn run_bench(
         Err(e) => RangeScenarioJson {
             ok: false,
             error: Some(e.to_string()),
+            skipped: false,
             wall_seconds: range_measured.wall.as_secs_f64(),
             ops: cfg.range_ops,
             ops_per_sec: qps(cfg.range_ops, range_measured.wall),
@@ -784,9 +901,18 @@ fn ingest_json(
     part_size_bytes: u64,
     measured: Measured,
     group_commit_metrics: Option<GroupCommitMetricsJson>,
+    stored_bytes: Option<u64>,
 ) -> BytesScenarioJson {
     let part_size_bytes = part_size_bytes.max(1);
     let parts = bytes.div_ceil(part_size_bytes);
+    let stored_bytes_per_sec = stored_bytes.map(|b| throughput(b, measured.wall));
+    let compression_ratio = stored_bytes.map(|b| {
+        if bytes == 0 {
+            0.0
+        } else {
+            b as f64 / bytes as f64
+        }
+    });
     BytesScenarioJson {
         ok: true,
         error: None,
@@ -795,6 +921,9 @@ fn ingest_json(
         bytes_per_sec: throughput(bytes, measured.wall),
         parts,
         avg_part_wall_ms: avg_part_wall_ms(measured.wall, parts),
+        stored_bytes,
+        stored_bytes_per_sec,
+        compression_ratio,
         cpu_seconds: measured.cpu_seconds,
         cpu_percent: measured.cpu_percent,
         peak_rss_bytes: measured.peak_rss_bytes,
@@ -807,6 +936,34 @@ fn avg_part_wall_ms(wall: Duration, parts: u64) -> Option<f64> {
         return None;
     }
     Some((wall.as_secs_f64() / parts as f64) * 1000.0)
+}
+
+fn sum_part_store_bytes(parts_root: &Path) -> io::Result<u64> {
+    fn walk(dir: &Path, total: &mut u64) -> io::Result<()> {
+        for ent in std::fs::read_dir(dir)? {
+            let ent = ent?;
+            let path = ent.path();
+            let ft = ent.file_type()?;
+            if ft.is_dir() {
+                if path
+                    .file_name()
+                    .is_some_and(|n| n == std::ffi::OsStr::new("_tmp"))
+                {
+                    continue;
+                }
+                walk(&path, total)?;
+            } else if ft.is_file() {
+                *total = total.saturating_add(ent.metadata()?.len());
+            }
+        }
+        Ok(())
+    }
+
+    let mut total = 0_u64;
+    if parts_root.is_dir() {
+        walk(parts_root, &mut total)?;
+    }
+    Ok(total)
 }
 
 fn verify_manifest(
@@ -864,6 +1021,8 @@ mod tests {
             range_ops: 1,
             seed: 1,
             relaxed_durability: false,
+            compression: false,
+            compression_level: 0,
             group_commit: false,
             group_commit_max_ops: 0,
             group_commit_window_ms: 0,
@@ -883,6 +1042,8 @@ mod tests {
                 range_ops: cfg.range_ops,
                 seed: cfg.seed,
                 relaxed_durability: cfg.relaxed_durability,
+                compression: false,
+                compression_level: None,
                 group_commit: false,
                 group_commit_max_ops: None,
                 group_commit_window_ms: None,
@@ -896,6 +1057,9 @@ mod tests {
                     bytes_per_sec: 0.0,
                     parts: 0,
                     avg_part_wall_ms: None,
+                    stored_bytes: None,
+                    stored_bytes_per_sec: None,
+                    compression_ratio: None,
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,
@@ -909,6 +1073,9 @@ mod tests {
                     bytes_per_sec: 0.0,
                     parts: 0,
                     avg_part_wall_ms: None,
+                    stored_bytes: None,
+                    stored_bytes_per_sec: None,
+                    compression_ratio: None,
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,
@@ -917,6 +1084,7 @@ mod tests {
                 range_reads: RangeScenarioJson {
                     ok: true,
                     error: None,
+                    skipped: false,
                     wall_seconds: 0.0,
                     ops: 0,
                     ops_per_sec: 0.0,

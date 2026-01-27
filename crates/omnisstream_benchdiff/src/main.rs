@@ -34,6 +34,12 @@ struct BenchParamsJson {
     relaxed_durability: bool,
 
     #[serde(default)]
+    compression: bool,
+
+    #[serde(default)]
+    compression_level: Option<i32>,
+
+    #[serde(default)]
     group_commit: bool,
 
     #[serde(default)]
@@ -124,6 +130,8 @@ fn main() -> anyhow::Result<()> {
         || base.params.range_ops != new.params.range_ops
         || base.params.seed != new.params.seed
         || base.params.relaxed_durability != new.params.relaxed_durability
+        || base.params.compression != new.params.compression
+        || base.params.compression_level != new.params.compression_level
         || base.params.group_commit != new.params.group_commit
         || base.params.group_commit_max_ops != new.params.group_commit_max_ops
         || base.params.group_commit_window_ms != new.params.group_commit_window_ms
