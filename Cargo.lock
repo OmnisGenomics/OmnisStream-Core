@@ -423,6 +423,7 @@ name = "omnisstream_bench"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "blake3",
  "clap",
  "libc",
  "omnisstream",

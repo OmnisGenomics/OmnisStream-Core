@@ -34,6 +34,12 @@ struct BenchParamsJson {
     relaxed_durability: bool,
 
     #[serde(default)]
+    bench_decompression: bool,
+
+    #[serde(default)]
+    input_file_blake3_256: Option<String>,
+
+    #[serde(default)]
     compression: bool,
 
     #[serde(default)]
@@ -130,6 +136,8 @@ fn main() -> anyhow::Result<()> {
         || base.params.range_ops != new.params.range_ops
         || base.params.seed != new.params.seed
         || base.params.relaxed_durability != new.params.relaxed_durability
+        || base.params.bench_decompression != new.params.bench_decompression
+        || base.params.input_file_blake3_256 != new.params.input_file_blake3_256
         || base.params.compression != new.params.compression
         || base.params.compression_level != new.params.compression_level
         || base.params.group_commit != new.params.group_commit

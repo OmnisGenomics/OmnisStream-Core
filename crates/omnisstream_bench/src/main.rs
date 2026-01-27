@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -21,6 +21,10 @@ struct Args {
     /// Output JSON path.
     #[arg(long, default_value = "bench.json")]
     out: PathBuf,
+
+    /// Use an existing file instead of generating deterministic bytes.
+    #[arg(long)]
+    input_file: Option<PathBuf>,
 
     /// Predefined size/runtime settings.
     #[arg(long, value_enum, default_value_t = Preset::Default)]
@@ -49,6 +53,10 @@ struct Args {
     /// Disable fsync/directory fsync for ingest (benchmarking only; breaks durability guarantees).
     #[arg(long)]
     relaxed_durability: bool,
+
+    /// Also benchmark reconstructing (decompressing) the full object.
+    #[arg(long)]
+    bench_decompression: bool,
 
     /// Enable zstd seekable compression for stored part bytes.
     #[cfg(feature = "compression")]
@@ -85,6 +93,8 @@ struct BenchConfig {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    input_file: Option<PathBuf>,
+    bench_decompression: bool,
     compression: bool,
     compression_level: i32,
     group_commit: bool,
@@ -155,6 +165,8 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                input_file: None,
+                bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
                 group_commit,
@@ -169,6 +181,8 @@ impl BenchConfig {
                 range_ops: 200,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                input_file: None,
+                bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
                 group_commit,
@@ -183,6 +197,8 @@ impl BenchConfig {
                 range_ops: 2000,
                 seed: 1,
                 relaxed_durability: args.relaxed_durability,
+                input_file: None,
+                bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
                 group_commit,
@@ -206,6 +222,9 @@ impl BenchConfig {
         if let Some(seed) = args.seed {
             cfg.seed = seed;
         }
+
+        cfg.input_file = args.input_file;
+        cfg.bench_decompression = args.bench_decompression;
 
         if cfg.file_size_bytes == 0 {
             cfg.file_size_bytes = 1;
@@ -238,6 +257,9 @@ struct BenchParamsJson {
     range_ops: u64,
     seed: u64,
     relaxed_durability: bool,
+    bench_decompression: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    input_file_blake3_256: Option<String>,
     compression: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     compression_level: Option<i32>,
@@ -252,6 +274,8 @@ struct BenchParamsJson {
 struct BenchResultsJson {
     ingest: BytesScenarioJson,
     verify: BytesScenarioJson,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    decompress: Option<BytesScenarioJson>,
     range_reads: RangeScenarioJson,
 }
 
@@ -547,7 +571,14 @@ fn is_false(v: &bool) -> bool {
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let out_path = args.out.clone();
-    let cfg = BenchConfig::from_args(args);
+    let mut cfg = BenchConfig::from_args(args);
+
+    let input_file_blake3_256 = if let Some(path) = &cfg.input_file {
+        cfg.file_size_bytes = std::fs::metadata(path)?.len();
+        Some(blake3_256_hex(path)?)
+    } else {
+        None
+    };
 
     if cfg.relaxed_durability {
         eprintln!(
@@ -599,7 +630,7 @@ fn main() -> anyhow::Result<()> {
     let git_head = git_head();
     let tool_version = env!("CARGO_PKG_VERSION").to_string();
 
-    let (ingest_result, verify_result, range_result) = match run_bench(&cfg) {
+    let (ingest_result, verify_result, decompress_result, range_result) = match run_bench(&cfg) {
         Ok(v) => v,
         Err(e) => {
             let err = e.to_string();
@@ -636,6 +667,22 @@ fn main() -> anyhow::Result<()> {
                 peak_rss_bytes: None,
                 group_commit_metrics: None,
             };
+            let decompress = cfg.bench_decompression.then(|| BytesScenarioJson {
+                ok: false,
+                error: Some(err.clone()),
+                wall_seconds: wall,
+                bytes: cfg.file_size_bytes,
+                bytes_per_sec: 0.0,
+                parts: 0,
+                avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
+                cpu_seconds: None,
+                cpu_percent: None,
+                peak_rss_bytes: None,
+                group_commit_metrics: None,
+            });
             let range_reads = RangeScenarioJson {
                 ok: false,
                 error: Some(err),
@@ -649,7 +696,7 @@ fn main() -> anyhow::Result<()> {
                 cpu_percent: None,
                 peak_rss_bytes: None,
             };
-            (ingest, verify, range_reads)
+            (ingest, verify, decompress, range_reads)
         }
     };
 
@@ -667,6 +714,8 @@ fn main() -> anyhow::Result<()> {
             range_ops: cfg.range_ops,
             seed: cfg.seed,
             relaxed_durability: cfg.relaxed_durability,
+            bench_decompression: cfg.bench_decompression,
+            input_file_blake3_256,
             compression: cfg.compression,
             compression_level: cfg.compression.then_some(cfg.compression_level),
             group_commit: cfg.group_commit,
@@ -676,6 +725,7 @@ fn main() -> anyhow::Result<()> {
         results: BenchResultsJson {
             ingest: ingest_result,
             verify: verify_result,
+            decompress: decompress_result,
             range_reads: range_result,
         },
     };
@@ -689,7 +739,11 @@ fn main() -> anyhow::Result<()> {
     std::fs::write(&out_path, serde_json::to_string_pretty(&bench)?)?;
     eprintln!("wrote {}", out_path.display());
 
-    if !bench.results.ingest.ok || !bench.results.verify.ok || !bench.results.range_reads.ok {
+    if !bench.results.ingest.ok
+        || !bench.results.verify.ok
+        || bench.results.decompress.as_ref().is_some_and(|s| !s.ok)
+        || !bench.results.range_reads.ok
+    {
         anyhow::bail!("one or more benchmark scenarios failed");
     }
     Ok(())
@@ -697,10 +751,21 @@ fn main() -> anyhow::Result<()> {
 
 fn run_bench(
     cfg: &BenchConfig,
-) -> anyhow::Result<(BytesScenarioJson, BytesScenarioJson, RangeScenarioJson)> {
+) -> anyhow::Result<(
+    BytesScenarioJson,
+    BytesScenarioJson,
+    Option<BytesScenarioJson>,
+    RangeScenarioJson,
+)> {
     let tmp = tempfile::tempdir()?;
-    let input_path = tmp.path().join("input.bin");
-    write_deterministic_file(&input_path, cfg.file_size_bytes)?;
+    let input_path = match &cfg.input_file {
+        Some(p) => p.clone(),
+        None => {
+            let input_path = tmp.path().join("input.bin");
+            write_deterministic_file(&input_path, cfg.file_size_bytes)?;
+            input_path
+        }
+    };
 
     let repo_root = tmp.path().join("repo");
 
@@ -715,7 +780,7 @@ fn run_bench(
             .map_err(|e| anyhow::anyhow!(e))
     });
 
-    let (ingest, ingest_res) = match ingest_res {
+    let (ingest, ingest_res, stored_bytes) = match ingest_res {
         Ok(r) => {
             let stored_bytes = sum_part_store_bytes(&repo_root.join("parts")).ok();
             let metrics = {
@@ -741,6 +806,7 @@ fn run_bench(
                     stored_bytes,
                 ),
                 Some(r),
+                stored_bytes,
             )
         }
         Err(e) => (
@@ -760,6 +826,7 @@ fn run_bench(
                 peak_rss_bytes: ingest_measured.peak_rss_bytes,
                 group_commit_metrics: None,
             },
+            None,
             None,
         ),
     };
@@ -784,6 +851,22 @@ fn run_bench(
                 peak_rss_bytes: None,
                 group_commit_metrics: None,
             },
+            cfg.bench_decompression.then(|| BytesScenarioJson {
+                ok: false,
+                error: Some(skipped.clone()),
+                wall_seconds: 0.0,
+                bytes: cfg.file_size_bytes,
+                bytes_per_sec: 0.0,
+                parts: 0,
+                avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
+                cpu_seconds: None,
+                cpu_percent: None,
+                peak_rss_bytes: None,
+                group_commit_metrics: None,
+            }),
             RangeScenarioJson {
                 ok: false,
                 error: Some(skipped),
@@ -838,26 +921,53 @@ fn run_bench(
         },
     };
 
-    // Range reads
-    if cfg.compression {
-        return Ok((
-            ingest,
-            verify,
-            RangeScenarioJson {
+    // Decompression/cat (optional)
+    let decompress = if cfg.bench_decompression {
+        let (cat_measured, cat_res) =
+            measure(|| cat_manifest(&repo_root, &ingest_res.manifest, cfg));
+        Some(match cat_res {
+            Ok(summary) => BytesScenarioJson {
                 ok: true,
-                error: Some("skipped due to compression".to_string()),
-                skipped: true,
-                wall_seconds: 0.0,
-                ops: cfg.range_ops,
-                ops_per_sec: 0.0,
-                bytes: cfg.range_ops.saturating_mul(cfg.range_len_bytes),
-                bytes_per_sec: 0.0,
-                cpu_seconds: None,
-                cpu_percent: None,
-                peak_rss_bytes: None,
+                error: None,
+                wall_seconds: cat_measured.wall.as_secs_f64(),
+                bytes: summary.bytes,
+                bytes_per_sec: throughput(summary.bytes, cat_measured.wall),
+                parts: summary.parts as u64,
+                avg_part_wall_ms: avg_part_wall_ms(cat_measured.wall, summary.parts as u64),
+                stored_bytes,
+                stored_bytes_per_sec: stored_bytes.map(|b| throughput(b, cat_measured.wall)),
+                compression_ratio: stored_bytes.map(|b| {
+                    if summary.bytes == 0 {
+                        0.0
+                    } else {
+                        b as f64 / summary.bytes as f64
+                    }
+                }),
+                cpu_seconds: cat_measured.cpu_seconds,
+                cpu_percent: cat_measured.cpu_percent,
+                peak_rss_bytes: cat_measured.peak_rss_bytes,
+                group_commit_metrics: None,
             },
-        ));
-    }
+            Err(e) => BytesScenarioJson {
+                ok: false,
+                error: Some(e.to_string()),
+                wall_seconds: cat_measured.wall.as_secs_f64(),
+                bytes: cfg.file_size_bytes,
+                bytes_per_sec: throughput(cfg.file_size_bytes, cat_measured.wall),
+                parts: 0,
+                avg_part_wall_ms: None,
+                stored_bytes: None,
+                stored_bytes_per_sec: None,
+                compression_ratio: None,
+                cpu_seconds: cat_measured.cpu_seconds,
+                cpu_percent: cat_measured.cpu_percent,
+                peak_rss_bytes: cat_measured.peak_rss_bytes,
+                group_commit_metrics: None,
+            },
+        })
+    } else {
+        None
+    };
 
     let (range_measured, range_res) =
         measure(|| range_reads(&repo_root, &ingest_res.manifest, cfg));
@@ -893,7 +1003,7 @@ fn run_bench(
         },
     };
 
-    Ok((ingest, verify, range_reads))
+    Ok((ingest, verify, decompress, range_reads))
 }
 
 fn ingest_json(
@@ -966,6 +1076,56 @@ fn sum_part_store_bytes(parts_root: &Path) -> io::Result<u64> {
     Ok(total)
 }
 
+#[derive(Clone, Copy, Debug)]
+struct BytesSummary {
+    parts: usize,
+    bytes: u64,
+}
+
+#[derive(Debug, Default)]
+struct CountingSink {
+    bytes: u64,
+}
+
+impl Write for CountingSink {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.bytes = self.bytes.saturating_add(buf.len() as u64);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+fn cat_manifest(
+    repo_root: &Path,
+    manifest: &Manifest,
+    cfg: &BenchConfig,
+) -> anyhow::Result<BytesSummary> {
+    let mut reader = Reader::new(manifest.clone(), repo_root);
+    if reader.manifest().needs_part_store() {
+        let store = PartStore::new(repo_root.join("parts"))?;
+        reader = reader.with_part_store(store);
+    }
+
+    let mut sink = CountingSink::default();
+    reader.cat(&mut sink)?;
+
+    if sink.bytes != cfg.file_size_bytes {
+        anyhow::bail!(
+            "unexpected cat length: got {} bytes, expected {} bytes",
+            sink.bytes,
+            cfg.file_size_bytes
+        );
+    }
+
+    Ok(BytesSummary {
+        parts: cfg.file_size_bytes.div_ceil(cfg.part_size_bytes.max(1)) as usize,
+        bytes: sink.bytes,
+    })
+}
+
 fn verify_manifest(
     repo_root: &Path,
     manifest: &Manifest,
@@ -1007,6 +1167,20 @@ fn range_reads(
     Ok((cfg.range_ops, cfg.range_ops.saturating_mul(len)))
 }
 
+fn blake3_256_hex(path: &Path) -> io::Result<String> {
+    let mut f = File::open(path)?;
+    let mut hasher = blake3::Hasher::new();
+    let mut buf = [0_u8; 256 * 1024];
+    loop {
+        let n = f.read(&mut buf)?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buf[..n]);
+    }
+    Ok(hasher.finalize().to_hex().to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1021,6 +1195,8 @@ mod tests {
             range_ops: 1,
             seed: 1,
             relaxed_durability: false,
+            input_file: None,
+            bench_decompression: false,
             compression: false,
             compression_level: 0,
             group_commit: false,
@@ -1042,6 +1218,8 @@ mod tests {
                 range_ops: cfg.range_ops,
                 seed: cfg.seed,
                 relaxed_durability: cfg.relaxed_durability,
+                bench_decompression: cfg.bench_decompression,
+                input_file_blake3_256: None,
                 compression: false,
                 compression_level: None,
                 group_commit: false,
@@ -1081,6 +1259,7 @@ mod tests {
                     peak_rss_bytes: None,
                     group_commit_metrics: None,
                 },
+                decompress: None,
                 range_reads: RangeScenarioJson {
                     ok: true,
                     error: None,

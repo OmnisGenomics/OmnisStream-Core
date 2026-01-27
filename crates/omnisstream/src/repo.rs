@@ -406,24 +406,41 @@ mod tests {
         let repo = Repository::open(dir.path().join("repo")).unwrap();
 
         let input_path = dir.path().join("input.bin");
-        std::fs::write(&input_path, vec![0_u8; 8 * 1024 * 1024]).unwrap();
+        let input_bytes = vec![0_u8; 8 * 1024 * 1024];
+        std::fs::write(&input_path, &input_bytes).unwrap();
 
-        let res = repo.ingest_file(&input_path, 8 * 1024 * 1024).unwrap();
+        let part_size = 4 * 1024 * 1024;
+        let res = repo.ingest_file(&input_path, part_size).unwrap();
         let pb = res.manifest.clone().into_pb();
 
-        assert_eq!(pb.parts.len(), 1);
-        let p = &pb.parts[0];
-        assert_eq!(p.length, 8 * 1024 * 1024);
-        assert!(p.stored_length < p.length, "expected compressed part");
-        assert_eq!(
-            p.compression,
-            pbv1::CompressionAlgorithm::ZstdSeekable as i32
-        );
+        assert_eq!(pb.parts.len(), 2);
+        for p in &pb.parts {
+            assert_eq!(p.length, part_size);
+            assert!(p.stored_length < p.length, "expected compressed part");
+            assert_eq!(
+                p.compression,
+                pbv1::CompressionAlgorithm::ZstdSeekable as i32
+            );
+        }
 
         // Stored-bytes verify still passes.
         let reader = crate::api::Reader::new(res.manifest.clone(), dir.path().join("repo"))
             .with_part_store(PartStore::new(dir.path().join("repo/parts")).unwrap());
         reader.verify().unwrap();
+
+        // And we can reconstruct the original bytes.
+        let mut out = Vec::new();
+        reader.cat(&mut out).unwrap();
+        assert_eq!(out, input_bytes);
+
+        // Ranged reads work through compressed parts.
+        let offset = part_size - 10;
+        let len = 20_u64;
+        let mut got = Vec::new();
+        reader.range(offset, len, &mut got).unwrap();
+        let start = offset as usize;
+        let end = (offset + len) as usize;
+        assert_eq!(got, input_bytes[start..end]);
 
         crate::compression::set_compression_config(None);
     }

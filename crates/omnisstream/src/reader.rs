@@ -7,6 +7,21 @@ use crate::manifest::{Manifest, ManifestValidationError};
 use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
 
+#[cfg(feature = "compression")]
+fn open_zstd_seekable_reader(
+    mut f: File,
+) -> io::Result<zstd_framed::ZstdReader<'static, std::io::BufReader<File>>> {
+    let table = zstd_framed::table::read_seek_table(&mut f)?;
+
+    let builder = zstd_framed::ZstdReader::builder(f);
+    let builder = if let Some(table) = table {
+        builder.with_seek_table(table)
+    } else {
+        builder
+    };
+    builder.build()
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct PartResolver {
     base_dir: PathBuf,
@@ -49,15 +64,33 @@ pub(crate) fn cat(
     manifest.validate_basic()?;
 
     for part in &manifest.pb().parts {
-        if part.compression != pbv1::CompressionAlgorithm::None as i32 {
-            return Err(ReaderError::UnsupportedCompression {
-                part_number: part.part_number,
-                compression: part.compression,
-            });
+        match part.compression {
+            c if c == pbv1::CompressionAlgorithm::None as i32 => {
+                let mut f = resolver.open_part(part)?;
+                copy_exact(&mut f, out, part.stored_length)?;
+            }
+            c if c == pbv1::CompressionAlgorithm::ZstdSeekable as i32 => {
+                #[cfg(feature = "compression")]
+                {
+                    let f = resolver.open_part(part)?;
+                    let mut reader = open_zstd_seekable_reader(f)?;
+                    copy_exact(&mut reader, out, part.length)?;
+                }
+                #[cfg(not(feature = "compression"))]
+                {
+                    return Err(ReaderError::UnsupportedCompression {
+                        part_number: part.part_number,
+                        compression: c,
+                    });
+                }
+            }
+            c => {
+                return Err(ReaderError::UnsupportedCompression {
+                    part_number: part.part_number,
+                    compression: c,
+                });
+            }
         }
-
-        let mut f = resolver.open_part(part)?;
-        copy_exact(&mut f, out, part.stored_length)?;
     }
     Ok(())
 }
@@ -135,19 +168,38 @@ pub(crate) fn range(
             locate_part(&manifest.pb().parts, cur).ok_or(ReaderError::RangeOutOfBounds)?;
         let part = &manifest.pb().parts[idx];
 
-        if part.compression != pbv1::CompressionAlgorithm::None as i32 {
-            return Err(ReaderError::UnsupportedCompression {
-                part_number: part.part_number,
-                compression: part.compression,
-            });
-        }
-
         let available = part.length.saturating_sub(within);
         let to_read = available.min(remaining);
 
-        let mut f = resolver.open_part(part)?;
-        f.seek(SeekFrom::Start(within))?;
-        copy_exact(&mut f, out, to_read)?;
+        match part.compression {
+            c if c == pbv1::CompressionAlgorithm::None as i32 => {
+                let mut f = resolver.open_part(part)?;
+                f.seek(SeekFrom::Start(within))?;
+                copy_exact(&mut f, out, to_read)?;
+            }
+            c if c == pbv1::CompressionAlgorithm::ZstdSeekable as i32 => {
+                #[cfg(feature = "compression")]
+                {
+                    let f = resolver.open_part(part)?;
+                    let mut reader = open_zstd_seekable_reader(f)?;
+                    reader.seek(SeekFrom::Start(within))?;
+                    copy_exact(&mut reader, out, to_read)?;
+                }
+                #[cfg(not(feature = "compression"))]
+                {
+                    return Err(ReaderError::UnsupportedCompression {
+                        part_number: part.part_number,
+                        compression: c,
+                    });
+                }
+            }
+            c => {
+                return Err(ReaderError::UnsupportedCompression {
+                    part_number: part.part_number,
+                    compression: c,
+                });
+            }
+        }
 
         remaining -= to_read;
         cur += to_read;
