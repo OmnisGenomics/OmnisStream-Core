@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod durability;
 mod fs_util;
 mod hashing;
 mod ingest_backend;

@@ -11,6 +11,16 @@ pub use crate::reader::{ReaderError, VerifySummary};
 pub use crate::repo::{IngestError, IngestResult};
 pub use crate::upload::UploadError;
 
+/// Benchmark-only toggle to skip durability barriers (`fsync`, directory `fsync`) so the ingest
+/// pipeline can be profiled as CPU/memory-bound.
+///
+/// This API is only available when `omnisstream` is built with the `bench-relaxed-durability`
+/// feature (intended for `omnisstream_bench`).
+#[cfg(feature = "bench-relaxed-durability")]
+pub fn set_relaxed_durability(enabled: bool) {
+    crate::durability::set_relaxed_durability(enabled);
+}
+
 /// Supported manifest schema range for this build of OmnisStream core.
 pub const SUPPORTED_MANIFEST_SCHEMA: &str = "0.1.x";
 

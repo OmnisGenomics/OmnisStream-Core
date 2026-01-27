@@ -13,8 +13,7 @@ path = "src/main.rs"
 anyhow.workspace = true
 clap.workspace = true
 libc.workspace = true
-omnisstream = { path = "../omnisstream" }
+omnisstream = { path = "../omnisstream", features = ["bench-relaxed-durability"] }
 serde.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true
-

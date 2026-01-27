@@ -29,6 +29,9 @@ struct BenchParamsJson {
     range_len_bytes: u64,
     range_ops: u64,
     seed: u64,
+
+    #[serde(default)]
+    relaxed_durability: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -111,6 +114,7 @@ fn main() -> anyhow::Result<()> {
         || base.params.range_len_bytes != new.params.range_len_bytes
         || base.params.range_ops != new.params.range_ops
         || base.params.seed != new.params.seed
+        || base.params.relaxed_durability != new.params.relaxed_durability
     {
         anyhow::bail!("bench params differ; refuse to diff different scenarios");
     }

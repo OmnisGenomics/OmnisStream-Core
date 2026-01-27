@@ -7,6 +7,7 @@ repository.workspace = true
 
 [features]
 backend-unstable = []
+bench-relaxed-durability = []
 
 [dependencies]
 anyhow.workspace = true

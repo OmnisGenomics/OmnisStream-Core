@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 
-use crate::fs_util::fsync_dir;
+use crate::fs_util::{fsync_dir, sync_file};
 use crate::hashing::{Blake3Digest, HashSummary};
 
 #[derive(Clone, Debug)]
@@ -49,7 +49,8 @@ impl PartStore {
 
         let mut tmp = tempfile::NamedTempFile::new_in(self.tmp_dir())?;
         tmp.as_file_mut().write_all(bytes)?;
-        tmp.as_file().sync_all()?;
+        tmp.as_file_mut().flush()?;
+        sync_file(tmp.as_file())?;
 
         self.rename_atomic(tmp.into_temp_path(), &final_path)
     }
@@ -57,7 +58,8 @@ impl PartStore {
     pub fn put_reader(&self, reader: &mut impl Read) -> io::Result<(Blake3Digest, HashSummary)> {
         let mut tmp = tempfile::NamedTempFile::new_in(self.tmp_dir())?;
         let summary = copy_and_hash(reader, tmp.as_file_mut())?;
-        tmp.as_file().sync_all()?;
+        tmp.as_file_mut().flush()?;
+        sync_file(tmp.as_file())?;
 
         let digest = summary.blake3_256;
         let final_path = self.path_for_digest(digest);

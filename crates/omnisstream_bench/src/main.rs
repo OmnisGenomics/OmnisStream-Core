@@ -12,6 +12,7 @@ use omnisstream::{Manifest, PartStore, Reader};
 enum Preset {
     Default,
     Ci,
+    Wsl,
 }
 
 #[derive(Debug, Parser)]
@@ -44,6 +45,10 @@ struct Args {
     /// RNG seed for range offsets (deterministic).
     #[arg(long)]
     seed: Option<u64>,
+
+    /// Disable fsync/directory fsync for ingest (benchmarking only; breaks durability guarantees).
+    #[arg(long)]
+    relaxed_durability: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -54,6 +59,7 @@ struct BenchConfig {
     range_len_bytes: u64,
     range_ops: u64,
     seed: u64,
+    relaxed_durability: bool,
 }
 
 impl BenchConfig {
@@ -66,6 +72,7 @@ impl BenchConfig {
                 range_len_bytes: 64 * 1024,
                 range_ops: 2000,
                 seed: 1,
+                relaxed_durability: args.relaxed_durability,
             },
             Preset::Ci => Self {
                 preset: args.preset,
@@ -74,6 +81,16 @@ impl BenchConfig {
                 range_len_bytes: 4 * 1024,
                 range_ops: 200,
                 seed: 1,
+                relaxed_durability: args.relaxed_durability,
+            },
+            Preset::Wsl => Self {
+                preset: args.preset,
+                file_size_bytes: 256 * 1024 * 1024,
+                part_size_bytes: 8 * 1024 * 1024,
+                range_len_bytes: 64 * 1024,
+                range_ops: 2000,
+                seed: 1,
+                relaxed_durability: args.relaxed_durability,
             },
         };
 
@@ -123,6 +140,7 @@ struct BenchParamsJson {
     range_len_bytes: u64,
     range_ops: u64,
     seed: u64,
+    relaxed_durability: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -140,6 +158,7 @@ struct BytesScenarioJson {
     bytes: u64,
     bytes_per_sec: f64,
     parts: u64,
+    avg_part_wall_ms: Option<f64>,
     cpu_seconds: Option<f64>,
     cpu_percent: Option<f64>,
     peak_rss_bytes: Option<u64>,
@@ -359,6 +378,13 @@ fn main() -> anyhow::Result<()> {
     let out_path = args.out.clone();
     let cfg = BenchConfig::from_args(args);
 
+    if cfg.relaxed_durability {
+        eprintln!(
+            "WARNING: --relaxed-durability disables fsync/directory fsync; benchmarking only (data loss on crash likely)."
+        );
+        omnisstream::api::set_relaxed_durability(true);
+    }
+
     let spec_pin = read_optional_trimmed("SPEC_PIN.txt");
     let git_head = git_head();
     let tool_version = env!("CARGO_PKG_VERSION").to_string();
@@ -375,6 +401,7 @@ fn main() -> anyhow::Result<()> {
                 bytes: cfg.file_size_bytes,
                 bytes_per_sec: 0.0,
                 parts: 0,
+                avg_part_wall_ms: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -386,6 +413,7 @@ fn main() -> anyhow::Result<()> {
                 bytes: cfg.file_size_bytes,
                 bytes_per_sec: 0.0,
                 parts: 0,
+                avg_part_wall_ms: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -419,6 +447,7 @@ fn main() -> anyhow::Result<()> {
             range_len_bytes: cfg.range_len_bytes,
             range_ops: cfg.range_ops,
             seed: cfg.seed,
+            relaxed_durability: cfg.relaxed_durability,
         },
         results: BenchResultsJson {
             ingest: ingest_result,
@@ -470,6 +499,7 @@ fn run_bench(
                 bytes: cfg.file_size_bytes,
                 bytes_per_sec: throughput(cfg.file_size_bytes, ingest_measured.wall),
                 parts: 0,
+                avg_part_wall_ms: None,
                 cpu_seconds: ingest_measured.cpu_seconds,
                 cpu_percent: ingest_measured.cpu_percent,
                 peak_rss_bytes: ingest_measured.peak_rss_bytes,
@@ -489,6 +519,7 @@ fn run_bench(
                 bytes: cfg.file_size_bytes,
                 bytes_per_sec: 0.0,
                 parts: 0,
+                avg_part_wall_ms: None,
                 cpu_seconds: None,
                 cpu_percent: None,
                 peak_rss_bytes: None,
@@ -519,6 +550,7 @@ fn run_bench(
             bytes: summary.bytes,
             bytes_per_sec: throughput(summary.bytes, verify_measured.wall),
             parts: summary.parts as u64,
+            avg_part_wall_ms: avg_part_wall_ms(verify_measured.wall, summary.parts as u64),
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
@@ -530,6 +562,7 @@ fn run_bench(
             bytes: cfg.file_size_bytes,
             bytes_per_sec: throughput(cfg.file_size_bytes, verify_measured.wall),
             parts: 0,
+            avg_part_wall_ms: None,
             cpu_seconds: verify_measured.cpu_seconds,
             cpu_percent: verify_measured.cpu_percent,
             peak_rss_bytes: verify_measured.peak_rss_bytes,
@@ -582,10 +615,18 @@ fn ingest_json(bytes: u64, part_size_bytes: u64, measured: Measured) -> BytesSce
         bytes,
         bytes_per_sec: throughput(bytes, measured.wall),
         parts,
+        avg_part_wall_ms: avg_part_wall_ms(measured.wall, parts),
         cpu_seconds: measured.cpu_seconds,
         cpu_percent: measured.cpu_percent,
         peak_rss_bytes: measured.peak_rss_bytes,
     }
+}
+
+fn avg_part_wall_ms(wall: Duration, parts: u64) -> Option<f64> {
+    if parts == 0 {
+        return None;
+    }
+    Some((wall.as_secs_f64() / parts as f64) * 1000.0)
 }
 
 fn verify_manifest(
@@ -642,6 +683,7 @@ mod tests {
             range_len_bytes: 1,
             range_ops: 1,
             seed: 1,
+            relaxed_durability: false,
         };
 
         let bench = BenchJson {
@@ -657,6 +699,7 @@ mod tests {
                 range_len_bytes: cfg.range_len_bytes,
                 range_ops: cfg.range_ops,
                 seed: cfg.seed,
+                relaxed_durability: cfg.relaxed_durability,
             },
             results: BenchResultsJson {
                 ingest: BytesScenarioJson {
@@ -666,6 +709,7 @@ mod tests {
                     bytes: 0,
                     bytes_per_sec: 0.0,
                     parts: 0,
+                    avg_part_wall_ms: None,
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,
@@ -677,6 +721,7 @@ mod tests {
                     bytes: 0,
                     bytes_per_sec: 0.0,
                     parts: 0,
+                    avg_part_wall_ms: None,
                     cpu_seconds: None,
                     cpu_percent: None,
                     peak_rss_bytes: None,

@@ -3,8 +3,18 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 pub fn fsync_dir(path: &Path) -> io::Result<()> {
+    if crate::durability::relaxed_durability_enabled() {
+        return Ok(());
+    }
     let dir = File::open(path)?;
     dir.sync_all()
+}
+
+pub(crate) fn sync_file(file: &File) -> io::Result<()> {
+    if crate::durability::relaxed_durability_enabled() {
+        return Ok(());
+    }
+    file.sync_all()
 }
 
 pub fn atomic_write_bytes(path: &Path, bytes: &[u8]) -> io::Result<()> {
@@ -21,7 +31,7 @@ pub fn atomic_write_bytes(path: &Path, bytes: &[u8]) -> io::Result<()> {
             .truncate(true)
             .open(&tmp_path)?;
         f.write_all(bytes)?;
-        f.sync_all()?;
+        sync_file(&f)?;
     }
 
     // Ensure the temp dir entry is durable before rename on platforms that require it.
