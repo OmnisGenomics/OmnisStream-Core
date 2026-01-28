@@ -9,6 +9,13 @@ pub struct Manifest {
     pb: pbv1::ObjectManifest,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PartSpan {
+    pub part_number: u32,
+    pub offset: u64,
+    pub length: u64,
+}
+
 impl Manifest {
     pub(crate) fn new(pb: pbv1::ObjectManifest) -> Self {
         Self { pb }
@@ -34,6 +41,26 @@ impl Manifest {
 
     pub fn validate_basic(&self) -> Result<(), ManifestValidationError> {
         validate_manifest_basic(&self.pb)
+    }
+
+    pub fn object_id(&self) -> &str {
+        &self.pb.object_id
+    }
+
+    pub fn object_length(&self) -> u64 {
+        self.pb.object_length
+    }
+
+    pub fn parts_len(&self) -> usize {
+        self.pb.parts.len()
+    }
+
+    pub fn part_spans(&self) -> impl Iterator<Item = PartSpan> + '_ {
+        self.pb.parts.iter().map(|p| PartSpan {
+            part_number: p.part_number,
+            offset: p.offset,
+            length: p.length,
+        })
     }
 
     pub fn needs_part_store(&self) -> bool {

@@ -475,6 +475,7 @@ dependencies = [
  "anyhow",
  "clap",
  "omnisstream",
+ "rayon",
  "tempfile",
  "tracing-subscriber",
 ]

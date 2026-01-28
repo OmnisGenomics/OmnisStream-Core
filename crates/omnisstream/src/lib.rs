@@ -18,4 +18,6 @@ mod upload;
 
 pub mod api;
 
-pub use api::{ingest_file, Manifest, PartStore, Reader, UploadSession, SUPPORTED_MANIFEST_SCHEMA};
+pub use api::{
+    ingest_file, Manifest, PartSpan, PartStore, Reader, UploadSession, SUPPORTED_MANIFEST_SCHEMA,
+};

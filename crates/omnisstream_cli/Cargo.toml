@@ -13,6 +13,7 @@ path = "src/main.rs"
 anyhow.workspace = true
 clap.workspace = true
 omnisstream = { path = "../omnisstream" }
+rayon.workspace = true
 tracing-subscriber.workspace = true
 
 [dev-dependencies]

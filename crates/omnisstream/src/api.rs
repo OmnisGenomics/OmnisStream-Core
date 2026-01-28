@@ -5,6 +5,7 @@ use std::path::Path;
 use omnisstream_backend_api::IngestBackend;
 
 pub use crate::hashing::{Blake3Digest, Crc32c, HashSummary};
+pub use crate::manifest::PartSpan;
 pub use crate::manifest::{Manifest, ManifestDecodeError, ManifestValidationError};
 pub use crate::part_store::PartStore;
 pub use crate::reader::{ReaderError, VerifySummary};

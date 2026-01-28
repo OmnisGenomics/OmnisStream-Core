@@ -1,9 +1,13 @@
 #![forbid(unsafe_code)]
 
+use std::fs::File;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use anyhow::Context as _;
 use clap::{Parser, Subcommand};
+use rayon::prelude::*;
 
 use omnisstream::{Manifest, PartStore, Reader};
 
@@ -25,6 +29,16 @@ enum Command {
 
     /// Reconstruct object bytes for an object id (resolves `repo/objects/<id>/latest`).
     CatObject { object_id: String },
+
+    /// Reconstruct object bytes for an object id into a file.
+    GetObject {
+        object_id: String,
+        out: PathBuf,
+
+        /// Worker threads for part-parallel reconstruction (default: logical cores).
+        #[arg(long)]
+        jobs: Option<usize>,
+    },
 
     /// Verify stored payload bytes against manifest hashes.
     Verify { manifest: PathBuf },
@@ -81,6 +95,17 @@ fn main() -> anyhow::Result<()> {
             let reader = reader_for_manifest(Some(repo_root), manifest, &manifest_path)?;
             let mut stdout = std::io::stdout().lock();
             reader.cat(&mut stdout)?;
+        }
+        Command::GetObject {
+            object_id,
+            out,
+            jobs,
+        } => {
+            let repo_root = repo_root.as_deref().unwrap_or_else(|| Path::new("."));
+            let manifest_path = resolve_object_manifest_path(repo_root, &object_id)?;
+            let manifest = load_manifest(&manifest_path)?;
+            let reader = reader_for_manifest(Some(repo_root), manifest, &manifest_path)?;
+            write_object_parallel(&reader, &out, jobs)?;
         }
         Command::Verify { manifest } => {
             let manifest_path = manifest;
@@ -142,6 +167,116 @@ fn main() -> anyhow::Result<()> {
 fn load_manifest(path: &Path) -> anyhow::Result<Manifest> {
     let bytes = std::fs::read(path)?;
     Ok(Manifest::from_pb_bytes(&bytes)?)
+}
+
+struct OffsetWriter {
+    file: Arc<File>,
+    pos: u64,
+}
+
+impl OffsetWriter {
+    fn new(file: Arc<File>, start: u64) -> Self {
+        Self { file, pos: start }
+    }
+}
+
+#[cfg(unix)]
+impl Write for OffsetWriter {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        use std::os::unix::fs::FileExt as _;
+
+        self.file.write_all_at(buf, self.pos)?;
+        self.pos = self.pos.saturating_add(buf.len() as u64);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+#[cfg(windows)]
+impl Write for OffsetWriter {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        use std::os::windows::fs::FileExt as _;
+
+        let mut total = 0_usize;
+        while total < buf.len() {
+            let n = self.file.seek_write(&buf[total..], self.pos)?;
+            if n == 0 {
+                return Err(io::Error::new(
+                    io::ErrorKind::WriteZero,
+                    "failed to write buffered data",
+                ));
+            }
+            self.pos = self.pos.saturating_add(n as u64);
+            total = total.saturating_add(n);
+        }
+        Ok(total)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+#[cfg(not(any(unix, windows)))]
+impl Write for OffsetWriter {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "offset writes are not supported on this platform",
+        ))
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+fn write_object_parallel(
+    reader: &Reader,
+    out_path: &Path,
+    jobs: Option<usize>,
+) -> anyhow::Result<()> {
+    let manifest = reader.manifest();
+    manifest.validate_basic()?;
+
+    let parts: Vec<_> = manifest.part_spans().collect();
+    if parts.is_empty() {
+        anyhow::bail!("manifest has no parts");
+    }
+
+    let obj_len = manifest.object_length();
+    if let Some(parent) = out_path.parent().filter(|p| !p.as_os_str().is_empty()) {
+        std::fs::create_dir_all(parent)
+            .with_context(|| format!("creating {}", parent.display()))?;
+    }
+
+    let out = File::create(out_path).with_context(|| format!("creating {}", out_path.display()))?;
+    out.set_len(obj_len)
+        .with_context(|| format!("sizing {}", out_path.display()))?;
+    let out = Arc::new(out);
+
+    let default_jobs = std::thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1);
+    let jobs = jobs.unwrap_or(default_jobs).max(1).min(parts.len().max(1));
+
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(jobs)
+        .build()
+        .context("building worker pool")?;
+
+    pool.install(|| {
+        parts.par_iter().try_for_each(|p| -> anyhow::Result<()> {
+            let mut w = OffsetWriter::new(Arc::clone(&out), p.offset);
+            reader.range(p.offset, p.length, &mut w)?;
+            Ok(())
+        })
+    })?;
+
+    Ok(())
 }
 
 fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Result<PathBuf> {
@@ -294,5 +429,26 @@ mod tests {
         let err = resolve_object_manifest_path(&repo_root, "/etc/passwd").unwrap_err();
         let msg = err.to_string();
         assert!(msg.contains("relative path"), "{msg}");
+    }
+
+    #[test]
+    fn get_object_writes_expected_bytes() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        std::fs::create_dir_all(&repo_root).unwrap();
+
+        let input = dir.path().join("input.bin");
+        let input_bytes = vec![0_u8, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        std::fs::write(&input, &input_bytes).unwrap();
+
+        let res = omnisstream::ingest_file(&repo_root, &input, 3).unwrap();
+        let manifest = load_manifest(&res.manifest_path).unwrap();
+        let reader = reader_for_manifest(Some(&repo_root), manifest, &res.manifest_path).unwrap();
+
+        let out = dir.path().join("out.bin");
+        write_object_parallel(&reader, &out, Some(2)).unwrap();
+
+        let got = std::fs::read(&out).unwrap();
+        assert_eq!(got, input_bytes);
     }
 }
