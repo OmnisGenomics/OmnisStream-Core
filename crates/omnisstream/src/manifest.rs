@@ -2,6 +2,7 @@ use std::path::Path;
 
 use prost::Message as _;
 
+use crate::hashing::Blake3Digest;
 use crate::pb::omnisstream::v1 as pbv1;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -61,6 +62,47 @@ impl Manifest {
             offset: p.offset,
             length: p.length,
         })
+    }
+
+    /// Returns the set of content-addressed part digests referenced by this manifest.
+    ///
+    /// Only parts stored in a `PartStore` are returned (i.e. parts with an empty
+    /// `relative_path`). Digests are returned as lowercase hex strings, matching
+    /// the on-disk `PartStore` path naming convention.
+    pub fn part_store_digests_hex(&self) -> Result<Vec<String>, ManifestValidationError> {
+        self.validate_basic()?;
+
+        let mut out = Vec::with_capacity(self.pb.parts.len());
+        for (index, part) in self.pb.parts.iter().enumerate() {
+            if !part.relative_path.is_empty() {
+                continue;
+            }
+
+            let Some(hash) = part
+                .hashes
+                .iter()
+                .find(|h| h.alg == pbv1::HashAlgorithm::Blake3256 as i32)
+            else {
+                return Err(ManifestValidationError::MissingRequiredHash {
+                    index,
+                    alg: "blake3-256",
+                });
+            };
+            if hash.digest.len() != 32 {
+                return Err(ManifestValidationError::InvalidDigestLength {
+                    index,
+                    alg: "blake3-256",
+                    expected: 32,
+                    actual: hash.digest.len(),
+                });
+            }
+
+            // Round-trip through the digest type to guarantee stable formatting.
+            let mut bytes = [0_u8; 32];
+            bytes.copy_from_slice(&hash.digest);
+            out.push(Blake3Digest::from_bytes(bytes).to_hex());
+        }
+        Ok(out)
     }
 
     pub fn needs_part_store(&self) -> bool {

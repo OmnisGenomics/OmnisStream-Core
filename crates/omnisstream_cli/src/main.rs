@@ -66,6 +66,19 @@ enum Command {
     /// Print a stable, human-readable manifest summary for an object id.
     InspectObject { object_id: String },
 
+    /// Garbage-collect unreferenced parts (mark-and-sweep).
+    ///
+    /// Defaults to a dry run; pass `--force` to delete.
+    Gc {
+        /// Actually delete orphaned parts.
+        #[arg(long)]
+        force: bool,
+
+        /// Print orphan part ids (one per line).
+        #[arg(long)]
+        print_ids: bool,
+    },
+
     /// Print build + spec metadata.
     Version,
 }
@@ -155,6 +168,22 @@ fn main() -> anyhow::Result<()> {
             let manifest_path = resolve_object_manifest_path(repo_root, &object_id)?;
             let manifest = load_manifest(&manifest_path)?;
             print!("{}", manifest.inspect());
+        }
+        Command::Gc { force, print_ids } => {
+            let repo_root = repo_root.as_deref().unwrap_or_else(|| Path::new("."));
+            let stats = run_gc(repo_root, force, print_ids)?;
+            eprintln!(
+                "gc: referenced_parts={} total_parts={} orphan_parts={} orphan_bytes={} deleted_parts={} deleted_bytes={}",
+                stats.referenced_parts,
+                stats.total_parts,
+                stats.orphan_parts,
+                stats.orphan_bytes,
+                stats.deleted_parts,
+                stats.deleted_bytes
+            );
+            if !force {
+                eprintln!("gc: dry-run (pass --force to delete)");
+            }
         }
         Command::Version => {
             print_version();
@@ -364,6 +393,166 @@ fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Re
     Ok(manifest_path)
 }
 
+#[derive(Debug, Clone)]
+struct PartFile {
+    id: String,
+    path: PathBuf,
+    bytes: u64,
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+struct GcStats {
+    total_parts: u64,
+    referenced_parts: u64,
+    orphan_parts: u64,
+    orphan_bytes: u64,
+    deleted_parts: u64,
+    deleted_bytes: u64,
+}
+
+fn find_manifest_paths(objects_root: &Path) -> io::Result<Vec<PathBuf>> {
+    let mut out = Vec::new();
+    if !objects_root.is_dir() {
+        return Ok(out);
+    }
+
+    let mut stack = vec![objects_root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for ent in std::fs::read_dir(&dir)? {
+            let ent = ent?;
+            let ft = ent.file_type()?;
+            if ft.is_dir() {
+                stack.push(ent.path());
+                continue;
+            }
+            if ft.is_file() && ent.file_name() == "manifest.pb" {
+                out.push(ent.path());
+            }
+        }
+    }
+    Ok(out)
+}
+
+fn collect_referenced_part_ids(
+    repo_root: &Path,
+) -> anyhow::Result<std::collections::HashSet<String>> {
+    let objects_root = repo_root.join("objects");
+    let manifests = find_manifest_paths(&objects_root)
+        .with_context(|| format!("scanning {}", objects_root.display()))?;
+
+    let sets: anyhow::Result<Vec<Vec<String>>> = manifests
+        .par_iter()
+        .map(|p| -> anyhow::Result<Vec<String>> {
+            let bytes = std::fs::read(p).with_context(|| format!("reading {}", p.display()))?;
+            let manifest = Manifest::from_pb_bytes(&bytes)
+                .with_context(|| format!("parsing {}", p.display()))?;
+            Ok(manifest.part_store_digests_hex()?)
+        })
+        .collect();
+
+    let mut out = std::collections::HashSet::new();
+    for ids in sets? {
+        out.extend(ids);
+    }
+    Ok(out)
+}
+
+fn list_part_files(parts_root: &Path) -> io::Result<Vec<PartFile>> {
+    let mut out = Vec::new();
+    if !parts_root.is_dir() {
+        return Ok(out);
+    }
+
+    let mut stack = vec![parts_root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for ent in std::fs::read_dir(&dir)? {
+            let ent = ent?;
+            let ft = ent.file_type()?;
+            let path = ent.path();
+            if ft.is_dir() {
+                if ent.file_name() == "_tmp" {
+                    continue;
+                }
+                stack.push(path);
+                continue;
+            }
+            if !ft.is_file() {
+                continue;
+            }
+
+            let id = ent.file_name().to_string_lossy().to_string();
+            // PartStore ids are lowercase hex blake3 digests (64 chars).
+            if id.len() != 64 || !id.is_ascii() || !id.bytes().all(|b| b.is_ascii_hexdigit()) {
+                continue;
+            }
+
+            let bytes = ent.metadata()?.len();
+            out.push(PartFile { id, path, bytes });
+        }
+    }
+
+    Ok(out)
+}
+
+fn run_gc(repo_root: &Path, force: bool, print_ids: bool) -> anyhow::Result<GcStats> {
+    let referenced = collect_referenced_part_ids(repo_root)?;
+    let parts_root = repo_root.join("parts");
+    let parts = list_part_files(&parts_root)
+        .with_context(|| format!("scanning {}", parts_root.display()))?;
+
+    let total_parts = parts.len() as u64;
+    let referenced_parts = referenced.len() as u64;
+
+    let orphans: Vec<_> = parts
+        .into_iter()
+        .filter(|p| !referenced.contains(&p.id))
+        .collect();
+    let orphan_parts = orphans.len() as u64;
+    let orphan_bytes = orphans.iter().map(|p| p.bytes).sum();
+
+    if print_ids {
+        for p in &orphans {
+            println!("{}", p.id);
+        }
+    }
+
+    let mut deleted_parts = 0_u64;
+    let mut deleted_bytes = 0_u64;
+
+    if force {
+        orphans.par_iter().try_for_each(|p| -> io::Result<()> {
+            match std::fs::remove_file(&p.path) {
+                Ok(()) => Ok(()),
+                Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),
+                Err(e) => Err(e),
+            }
+        })?;
+
+        deleted_parts = orphan_parts;
+        deleted_bytes = orphan_bytes;
+
+        // Best-effort cleanup: remove empty fanout directories.
+        let mut dirs: Vec<_> = orphans
+            .iter()
+            .filter_map(|p| p.path.parent().map(|d| d.to_path_buf()))
+            .collect();
+        dirs.sort();
+        dirs.dedup();
+        for dir in dirs {
+            let _ = std::fs::remove_dir(&dir);
+        }
+    }
+
+    Ok(GcStats {
+        total_parts,
+        referenced_parts,
+        orphan_parts,
+        orphan_bytes,
+        deleted_parts,
+        deleted_bytes,
+    })
+}
+
 fn reader_for_manifest(
     repo_root: Option<&Path>,
     manifest: Manifest,
@@ -450,5 +639,71 @@ mod tests {
 
         let got = std::fs::read(&out).unwrap();
         assert_eq!(got, input_bytes);
+    }
+
+    #[test]
+    fn gc_deletes_orphan_parts() {
+        fn part_path(repo_root: &Path, id: &str) -> PathBuf {
+            assert!(id.len() >= 4);
+            repo_root
+                .join("parts")
+                .join(&id[0..2])
+                .join(&id[2..4])
+                .join(id)
+        }
+
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        std::fs::create_dir_all(&repo_root).unwrap();
+
+        let input1 = dir.path().join("a.bin");
+        let input2 = dir.path().join("b.bin");
+        std::fs::write(&input1, b"aaaaa-11111-zzzzz").unwrap();
+        std::fs::write(&input2, b"bbbbb-22222-yyyyy").unwrap();
+
+        let res1 = omnisstream::ingest_file(&repo_root, &input1, 5).unwrap();
+        let res2 = omnisstream::ingest_file(&repo_root, &input2, 5).unwrap();
+
+        let m1 = load_manifest(&res1.manifest_path).unwrap();
+        let m2 = load_manifest(&res2.manifest_path).unwrap();
+        let d1 = m1.part_store_digests_hex().unwrap();
+        let d2 = m2.part_store_digests_hex().unwrap();
+
+        // Simulate deleting object a.bin (leaving its parts orphaned).
+        std::fs::remove_dir_all(repo_root.join("objects").join(&res1.object_id)).unwrap();
+
+        let dry = run_gc(&repo_root, false, false).unwrap();
+        assert!(dry.orphan_parts > 0);
+        assert_eq!(dry.deleted_parts, 0);
+
+        let stats = run_gc(&repo_root, true, false).unwrap();
+        assert_eq!(stats.deleted_parts, dry.orphan_parts);
+
+        // Parts for b.bin must still be present.
+        for id in &d2 {
+            let path = part_path(&repo_root, id);
+            assert!(
+                path.is_file(),
+                "expected part to remain: {}",
+                path.display()
+            );
+        }
+
+        // Any part unique to a.bin should be gone.
+        let referenced: std::collections::HashSet<_> = d2.into_iter().collect();
+        for id in d1 {
+            if referenced.contains(&id) {
+                continue;
+            }
+            let path = part_path(&repo_root, &id);
+            assert!(!path.exists(), "expected part deleted: {}", path.display());
+        }
+
+        // And we can still reconstruct b.bin.
+        let manifest = load_manifest(&res2.manifest_path).unwrap();
+        let reader = reader_for_manifest(Some(&repo_root), manifest, &res2.manifest_path).unwrap();
+        let mut out = Vec::new();
+        reader.cat(&mut out).unwrap();
+        assert_eq!(out, b"bbbbb-22222-yyyyy");
     }
 }
