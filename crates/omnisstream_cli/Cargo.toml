@@ -15,3 +15,5 @@ clap.workspace = true
 omnisstream = { path = "../omnisstream" }
 tracing-subscriber.workspace = true
 
+[dev-dependencies]
+tempfile.workspace = true
