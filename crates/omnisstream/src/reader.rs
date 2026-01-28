@@ -2,6 +2,8 @@ use std::fs::File;
 use std::io::{self, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
+use rayon::prelude::*;
+
 use crate::hashing::{hash_reader, Blake3Digest, Crc32c, HashSummary};
 use crate::manifest::{Manifest, ManifestValidationError};
 use crate::part_store::PartStore;
@@ -101,36 +103,42 @@ pub(crate) fn verify(
 ) -> Result<VerifySummary, ReaderError> {
     manifest.validate_basic()?;
 
-    let mut total_bytes = 0_u64;
-    for part in &manifest.pb().parts {
-        let mut f = resolver.open_part(part)?;
-        let summary = hash_reader_exact(&mut f, part.stored_length)?;
+    let parts = &manifest.pb().parts;
+    let total_bytes = parts
+        .par_iter()
+        .try_fold(
+            || 0_u64,
+            |acc, part| {
+                let mut f = resolver.open_part(part)?;
+                let summary = hash_reader_exact(&mut f, part.stored_length)?;
 
-        let expected_crc32c = crc32c_digest_from_part(part)?;
-        let expected_blake3 = blake3_digest_from_part(part)?;
+                let expected_crc32c = crc32c_digest_from_part(part)?;
+                let expected_blake3 = blake3_digest_from_part(part)?;
 
-        if summary.crc32c.to_be_bytes() != expected_crc32c.to_be_bytes() {
-            return Err(ReaderError::HashMismatch {
-                part_number: part.part_number,
-                alg: "crc32c",
-                expected_hex: expected_crc32c.to_be_hex(),
-                actual_hex: summary.crc32c.to_be_hex(),
-            });
-        }
-        if summary.blake3_256.as_bytes() != expected_blake3.as_bytes() {
-            return Err(ReaderError::HashMismatch {
-                part_number: part.part_number,
-                alg: "blake3-256",
-                expected_hex: expected_blake3.to_hex(),
-                actual_hex: summary.blake3_256.to_hex(),
-            });
-        }
+                if summary.crc32c.to_be_bytes() != expected_crc32c.to_be_bytes() {
+                    return Err(ReaderError::HashMismatch {
+                        part_number: part.part_number,
+                        alg: "crc32c",
+                        expected_hex: expected_crc32c.to_be_hex(),
+                        actual_hex: summary.crc32c.to_be_hex(),
+                    });
+                }
+                if summary.blake3_256.as_bytes() != expected_blake3.as_bytes() {
+                    return Err(ReaderError::HashMismatch {
+                        part_number: part.part_number,
+                        alg: "blake3-256",
+                        expected_hex: expected_blake3.to_hex(),
+                        actual_hex: summary.blake3_256.to_hex(),
+                    });
+                }
 
-        total_bytes = total_bytes.saturating_add(part.stored_length);
-    }
+                Ok(acc.saturating_add(part.stored_length))
+            },
+        )
+        .try_reduce(|| 0_u64, |a, b| Ok(a.saturating_add(b)))?;
 
     Ok(VerifySummary {
-        parts: manifest.pb().parts.len(),
+        parts: parts.len(),
         bytes: total_bytes,
     })
 }

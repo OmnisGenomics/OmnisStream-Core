@@ -17,6 +17,7 @@ blake3.workspace = true
 bytes.workspace = true
 crc32c.workspace = true
 hex.workspace = true
+rayon.workspace = true
 rustix = { version = "1.1.2", optional = true }
 zstd-framed = { version = "0.1.1", optional = true }
 omnisstream_backend_api = { path = "../omnisstream_backend_api" }
