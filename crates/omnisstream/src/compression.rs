@@ -7,6 +7,11 @@ use std::sync::Mutex;
 #[derive(Clone, Copy, Debug)]
 pub struct CompressionConfig {
     pub zstd_seekable_level: i32,
+    /// Max uncompressed frame size for zstd seekable streams.
+    ///
+    /// Smaller frames generally improve random range-read performance (less
+    /// decompression waste per seek) at the cost of compression ratio.
+    pub zstd_seekable_max_frame_size: u32,
 }
 
 #[cfg(feature = "compression")]

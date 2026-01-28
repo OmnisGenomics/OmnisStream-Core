@@ -10,24 +10,89 @@ use crate::part_store::PartStore;
 use crate::pb::omnisstream::v1 as pbv1;
 
 #[cfg(feature = "compression")]
-fn open_zstd_seekable_reader(
-    mut f: File,
-) -> io::Result<zstd_framed::ZstdReader<'static, std::io::BufReader<File>>> {
-    let table = zstd_framed::table::read_seek_table(&mut f)?;
+use std::collections::{HashMap, VecDeque};
 
-    let builder = zstd_framed::ZstdReader::builder(f);
-    let builder = if let Some(table) = table {
-        builder.with_seek_table(table)
-    } else {
-        builder
-    };
-    builder.build()
+#[cfg(feature = "compression")]
+use std::sync::{Arc, Mutex};
+
+#[cfg(feature = "compression")]
+type ZstdSeekableReader = zstd_framed::ZstdReader<'static, std::io::BufReader<File>>;
+
+#[cfg(feature = "compression")]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+enum ZstdDecoderCacheKey {
+    Digest(Blake3Digest),
+    RelativePath(String),
+}
+
+#[cfg(feature = "compression")]
+struct ZstdDecoderCache {
+    capacity: usize,
+    lru: VecDeque<ZstdDecoderCacheKey>,
+    map: HashMap<ZstdDecoderCacheKey, Arc<Mutex<ZstdSeekableReader>>>,
+}
+
+#[cfg(feature = "compression")]
+impl std::fmt::Debug for ZstdDecoderCache {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ZstdDecoderCache")
+            .field("capacity", &self.capacity)
+            .field("entries", &self.map.len())
+            .finish()
+    }
+}
+
+#[cfg(feature = "compression")]
+impl ZstdDecoderCache {
+    fn new(capacity: usize) -> Self {
+        Self {
+            capacity: capacity.max(1),
+            lru: VecDeque::new(),
+            map: HashMap::new(),
+        }
+    }
+
+    fn touch(&mut self, key: &ZstdDecoderCacheKey) {
+        if let Some(idx) = self.lru.iter().position(|k| k == key) {
+            let _ = self.lru.remove(idx);
+        }
+        self.lru.push_back(key.clone());
+    }
+
+    fn get(&mut self, key: &ZstdDecoderCacheKey) -> Option<Arc<Mutex<ZstdSeekableReader>>> {
+        let v = match self.map.get(key) {
+            Some(v) => Arc::clone(v),
+            None => return None,
+        };
+        self.touch(key);
+        Some(v)
+    }
+
+    fn insert(
+        &mut self,
+        key: ZstdDecoderCacheKey,
+        reader: Arc<Mutex<ZstdSeekableReader>>,
+    ) -> Arc<Mutex<ZstdSeekableReader>> {
+        self.map.insert(key.clone(), Arc::clone(&reader));
+        self.touch(&key);
+
+        while self.map.len() > self.capacity {
+            let Some(old) = self.lru.pop_front() else {
+                break;
+            };
+            let _ = self.map.remove(&old);
+        }
+
+        reader
+    }
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct PartResolver {
     base_dir: PathBuf,
     part_store: Option<PartStore>,
+    #[cfg(feature = "compression")]
+    zstd_decoder_cache: Arc<Mutex<ZstdDecoderCache>>,
 }
 
 impl PartResolver {
@@ -35,6 +100,8 @@ impl PartResolver {
         Self {
             base_dir: base_dir.as_ref().to_path_buf(),
             part_store: None,
+            #[cfg(feature = "compression")]
+            zstd_decoder_cache: Arc::new(Mutex::new(ZstdDecoderCache::new(128))),
         }
     }
 
@@ -56,6 +123,58 @@ impl PartResolver {
         let blake3 = blake3_digest_from_part(part)?;
         Ok(part_store.open(blake3)?)
     }
+
+    #[cfg(feature = "compression")]
+    fn open_zstd_seekable_decoder(
+        &self,
+        part: &pbv1::PartMeta,
+    ) -> Result<Arc<Mutex<ZstdSeekableReader>>, ReaderError> {
+        let (key, mut f) = if !part.relative_path.is_empty() {
+            let path = self.base_dir.join(&part.relative_path);
+            (
+                ZstdDecoderCacheKey::RelativePath(part.relative_path.clone()),
+                File::open(path)?,
+            )
+        } else {
+            let digest = blake3_digest_from_part(part)?;
+            let Some(part_store) = &self.part_store else {
+                return Err(ReaderError::NoPartStoreForDigest);
+            };
+            (
+                ZstdDecoderCacheKey::Digest(digest),
+                part_store.open(digest)?,
+            )
+        };
+
+        {
+            let mut cache = match self.zstd_decoder_cache.lock() {
+                Ok(g) => g,
+                Err(e) => e.into_inner(),
+            };
+            if let Some(hit) = cache.get(&key) {
+                return Ok(hit);
+            }
+        }
+
+        let table = zstd_framed::table::read_seek_table(&mut f)?;
+        let builder = zstd_framed::ZstdReader::builder(f);
+        let builder = if let Some(table) = table {
+            builder.with_seek_table(table)
+        } else {
+            builder
+        };
+        let reader = builder.build()?;
+        let reader = Arc::new(Mutex::new(reader));
+
+        let mut cache = match self.zstd_decoder_cache.lock() {
+            Ok(g) => g,
+            Err(e) => e.into_inner(),
+        };
+        if let Some(existing) = cache.get(&key) {
+            return Ok(existing);
+        }
+        Ok(cache.insert(key, reader))
+    }
 }
 
 pub(crate) fn cat(
@@ -74,9 +193,13 @@ pub(crate) fn cat(
             c if c == pbv1::CompressionAlgorithm::ZstdSeekable as i32 => {
                 #[cfg(feature = "compression")]
                 {
-                    let f = resolver.open_part(part)?;
-                    let mut reader = open_zstd_seekable_reader(f)?;
-                    copy_exact(&mut reader, out, part.length)?;
+                    let decoder = resolver.open_zstd_seekable_decoder(part)?;
+                    let mut decoder = match decoder.lock() {
+                        Ok(g) => g,
+                        Err(e) => e.into_inner(),
+                    };
+                    decoder.seek(SeekFrom::Start(0))?;
+                    copy_exact(&mut *decoder, out, part.length)?;
                 }
                 #[cfg(not(feature = "compression"))]
                 {
@@ -188,10 +311,13 @@ pub(crate) fn range(
             c if c == pbv1::CompressionAlgorithm::ZstdSeekable as i32 => {
                 #[cfg(feature = "compression")]
                 {
-                    let f = resolver.open_part(part)?;
-                    let mut reader = open_zstd_seekable_reader(f)?;
-                    reader.seek(SeekFrom::Start(within))?;
-                    copy_exact(&mut reader, out, to_read)?;
+                    let decoder = resolver.open_zstd_seekable_decoder(part)?;
+                    let mut decoder = match decoder.lock() {
+                        Ok(g) => g,
+                        Err(e) => e.into_inner(),
+                    };
+                    decoder.seek(SeekFrom::Start(within))?;
+                    copy_exact(&mut *decoder, out, to_read)?;
                 }
                 #[cfg(not(feature = "compression"))]
                 {

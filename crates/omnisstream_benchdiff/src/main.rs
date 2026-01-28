@@ -46,6 +46,9 @@ struct BenchParamsJson {
     compression_level: Option<i32>,
 
     #[serde(default)]
+    compression_frame_size_bytes: Option<u32>,
+
+    #[serde(default)]
     group_commit: bool,
 
     #[serde(default)]
@@ -140,6 +143,7 @@ fn main() -> anyhow::Result<()> {
         || base.params.input_file_blake3_256 != new.params.input_file_blake3_256
         || base.params.compression != new.params.compression
         || base.params.compression_level != new.params.compression_level
+        || base.params.compression_frame_size_bytes != new.params.compression_frame_size_bytes
         || base.params.group_commit != new.params.group_commit
         || base.params.group_commit_max_ops != new.params.group_commit_max_ops
         || base.params.group_commit_window_ms != new.params.group_commit_window_ms

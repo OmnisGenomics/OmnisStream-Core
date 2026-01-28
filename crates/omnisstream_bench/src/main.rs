@@ -68,6 +68,14 @@ struct Args {
     #[arg(long, default_value_t = 3)]
     compression_level: i32,
 
+    /// Max uncompressed frame size for zstd seekable streams (KiB).
+    ///
+    /// Smaller values generally improve random range-read performance but can
+    /// reduce compression ratio.
+    #[cfg(feature = "compression")]
+    #[arg(long, default_value_t = 1024)]
+    compression_frame_size_kib: u64,
+
     /// Enable prototype group commit batching (Linux only).
     #[cfg(feature = "group-commit")]
     #[arg(long)]
@@ -97,6 +105,7 @@ struct BenchConfig {
     bench_decompression: bool,
     compression: bool,
     compression_level: i32,
+    compression_frame_size_bytes: u32,
     group_commit: bool,
     group_commit_max_ops: usize,
     group_commit_window_ms: u64,
@@ -118,6 +127,18 @@ impl BenchConfig {
             #[cfg(feature = "compression")]
             {
                 args.compression_level
+            }
+            #[cfg(not(feature = "compression"))]
+            {
+                0
+            }
+        };
+        let compression_frame_size_bytes = {
+            #[cfg(feature = "compression")]
+            {
+                args.compression_frame_size_kib
+                    .saturating_mul(1024)
+                    .min(u32::MAX as u64) as u32
             }
             #[cfg(not(feature = "compression"))]
             {
@@ -169,6 +190,7 @@ impl BenchConfig {
                 bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
+                compression_frame_size_bytes,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -185,6 +207,7 @@ impl BenchConfig {
                 bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
+                compression_frame_size_bytes,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -201,6 +224,7 @@ impl BenchConfig {
                 bench_decompression: args.bench_decompression,
                 compression,
                 compression_level,
+                compression_frame_size_bytes,
                 group_commit,
                 group_commit_max_ops,
                 group_commit_window_ms,
@@ -263,6 +287,8 @@ struct BenchParamsJson {
     compression: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     compression_level: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    compression_frame_size_bytes: Option<u32>,
     group_commit: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     group_commit_max_ops: Option<usize>,
@@ -589,17 +615,31 @@ fn main() -> anyhow::Result<()> {
 
     if cfg.compression {
         eprintln!(
-            "INFO: compression enabled: zstd_seekable level={}",
-            cfg.compression_level
+            "INFO: compression enabled: zstd_seekable level={}, max_frame_size={} KiB",
+            cfg.compression_level,
+            cfg.compression_frame_size_bytes / 1024
         );
 
         #[cfg(feature = "compression")]
         {
+            const MIN_FRAME_SIZE: u32 = 64 * 1024;
+            const MAX_FRAME_SIZE: u32 = 16 * 1024 * 1024;
+
             if cfg.compression_level == 0 {
                 anyhow::bail!("--compression-level must be non-zero");
             }
+            if cfg.compression_frame_size_bytes < MIN_FRAME_SIZE
+                || cfg.compression_frame_size_bytes > MAX_FRAME_SIZE
+            {
+                anyhow::bail!(
+                    "--compression-frame-size-kib must be in [{}..={}]",
+                    MIN_FRAME_SIZE / 1024,
+                    MAX_FRAME_SIZE / 1024
+                );
+            }
             omnisstream::api::set_compression_config(Some(omnisstream::api::CompressionConfig {
                 zstd_seekable_level: cfg.compression_level,
+                zstd_seekable_max_frame_size: cfg.compression_frame_size_bytes,
             }));
         }
     }
@@ -718,6 +758,9 @@ fn main() -> anyhow::Result<()> {
             input_file_blake3_256,
             compression: cfg.compression,
             compression_level: cfg.compression.then_some(cfg.compression_level),
+            compression_frame_size_bytes: cfg
+                .compression
+                .then_some(cfg.compression_frame_size_bytes),
             group_commit: cfg.group_commit,
             group_commit_max_ops: cfg.group_commit.then_some(cfg.group_commit_max_ops),
             group_commit_window_ms: cfg.group_commit.then_some(cfg.group_commit_window_ms),
@@ -1199,6 +1242,7 @@ mod tests {
             bench_decompression: false,
             compression: false,
             compression_level: 0,
+            compression_frame_size_bytes: 0,
             group_commit: false,
             group_commit_max_ops: 0,
             group_commit_window_ms: 0,
@@ -1222,6 +1266,7 @@ mod tests {
                 input_file_blake3_256: None,
                 compression: false,
                 compression_level: None,
+                compression_frame_size_bytes: None,
                 group_commit: false,
                 group_commit_max_ops: None,
                 group_commit_window_ms: None,

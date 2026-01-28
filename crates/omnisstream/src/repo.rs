@@ -290,8 +290,7 @@ fn ingest_one_part(
 
     #[cfg(feature = "compression")]
     if let Some(cfg) = _compression {
-        let compressed = compress_zstd_seekable(&stored, cfg)?;
-        if compressed.len() < stored.len() {
+        if let Some(compressed) = compress_zstd_seekable(&stored, cfg)? {
             stored = compressed;
             compression_alg = pbv1::CompressionAlgorithm::ZstdSeekable as i32;
         }
@@ -315,19 +314,134 @@ fn ingest_one_part(
 }
 
 #[cfg(feature = "compression")]
-fn compress_zstd_seekable(bytes: &[u8], cfg: CompressionConfig) -> Result<Vec<u8>, IngestError> {
-    const FRAME_SIZE: u32 = 1024 * 1024;
+fn compress_zstd_seekable(
+    bytes: &[u8],
+    cfg: CompressionConfig,
+) -> Result<Option<Vec<u8>>, IngestError> {
+    const MIN_COMPRESSION_RATIO_NUM: usize = 95;
+    const MIN_COMPRESSION_RATIO_DEN: usize = 100;
+    const SAMPLE_BYTES: usize = 64 * 1024;
 
-    let mut out = Vec::new();
+    #[derive(Debug)]
+    struct LimitExceeded;
+
+    impl std::fmt::Display for LimitExceeded {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "compression exceeded size limit")
+        }
+    }
+
+    impl std::error::Error for LimitExceeded {}
+
+    #[derive(Debug, Default)]
+    struct LimitedVecWriter {
+        buf: Vec<u8>,
+        limit: usize,
+    }
+
+    impl LimitedVecWriter {
+        fn with_limit(limit: usize) -> Self {
+            Self {
+                buf: Vec::new(),
+                limit,
+            }
+        }
+
+        fn into_inner(self) -> Vec<u8> {
+            self.buf
+        }
+    }
+
+    impl Write for LimitedVecWriter {
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            if self.buf.len().saturating_add(buf.len()) > self.limit {
+                return Err(std::io::Error::other(LimitExceeded));
+            }
+            self.buf.extend_from_slice(buf);
+            Ok(buf.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    fn is_limit_exceeded(e: &std::io::Error) -> bool {
+        e.get_ref().is_some_and(|inner| inner.is::<LimitExceeded>())
+    }
+
+    if bytes.is_empty() {
+        return Ok(None);
+    }
+
+    // Skip compression unless we get a meaningful size win. This avoids spending
+    // CPU on near-incompressible inputs and helps limit range-read regressions
+    // where the on-disk bytes are bigger but accessed in smaller chunks.
+    let limit = bytes.len().saturating_mul(MIN_COMPRESSION_RATIO_NUM) / MIN_COMPRESSION_RATIO_DEN;
+    if limit == 0 {
+        return Ok(None);
+    }
+
+    // Fast reject: if a representative sample isn't compressing well, skip
+    // the full compression attempt (saves substantial CPU on incompressible
+    // payloads).
+    if bytes.len() > SAMPLE_BYTES {
+        let sample_len = SAMPLE_BYTES.min(bytes.len());
+        let sample_limit =
+            sample_len.saturating_mul(MIN_COMPRESSION_RATIO_NUM) / MIN_COMPRESSION_RATIO_DEN;
+        if sample_limit == 0 {
+            return Ok(None);
+        }
+
+        let mut sample_out = LimitedVecWriter::with_limit(sample_limit);
+        let mut w = zstd_framed::ZstdWriter::builder(&mut sample_out)
+            // Use a fast compression setting for the probe: we're only
+            // attempting to detect obviously incompressible inputs.
+            .with_compression_level(1)
+            .with_seek_table(cfg.zstd_seekable_max_frame_size)
+            .build()?;
+        if let Err(e) = w.write_all(&bytes[..sample_len]) {
+            if is_limit_exceeded(&e) {
+                return Ok(None);
+            }
+            return Err(IngestError::Io(e));
+        }
+        if let Err(e) = w.shutdown() {
+            if is_limit_exceeded(&e) {
+                return Ok(None);
+            }
+            return Err(IngestError::Io(e));
+        }
+        drop(w);
+        drop(sample_out);
+    }
+
+    let mut out = LimitedVecWriter::with_limit(limit);
     let mut w = zstd_framed::ZstdWriter::builder(&mut out)
         .with_compression_level(cfg.zstd_seekable_level)
-        .with_seek_table(FRAME_SIZE)
-        .build()
-        .map_err(std::io::Error::other)?;
-    w.write_all(bytes)?;
-    w.shutdown().map_err(std::io::Error::other)?;
+        .with_seek_table(cfg.zstd_seekable_max_frame_size)
+        .build()?;
+
+    if let Err(e) = w.write_all(bytes) {
+        if is_limit_exceeded(&e) {
+            return Ok(None);
+        }
+        return Err(IngestError::Io(e));
+    }
+    if let Err(e) = w.shutdown() {
+        if is_limit_exceeded(&e) {
+            return Ok(None);
+        }
+        return Err(IngestError::Io(e));
+    }
     drop(w);
-    Ok(out)
+
+    let out = out.into_inner();
+    if out.len() < bytes.len() {
+        Ok(Some(out))
+    } else {
+        Ok(None)
+    }
 }
 
 fn object_paths(root: &Path, object_id: &str, object_version: &str) -> (PathBuf, PathBuf) {
@@ -400,6 +514,7 @@ mod tests {
 
         crate::compression::set_compression_config(Some(crate::compression::CompressionConfig {
             zstd_seekable_level: 3,
+            zstd_seekable_max_frame_size: 256 * 1024,
         }));
 
         let dir = tempfile::tempdir().unwrap();
