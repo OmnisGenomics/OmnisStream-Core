@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{collections::HashSet, path::Path};
 
 use prost::Message as _;
 
@@ -149,6 +149,9 @@ pub enum ManifestValidationError {
     #[error("part_number must be > 0 (part index {index})")]
     InvalidPartNumber { index: usize },
 
+    #[error("duplicate part_number {part_number} (part index {index})")]
+    DuplicatePartNumber { index: usize, part_number: u32 },
+
     #[error("part length must be > 0 (part index {index})")]
     InvalidPartLength { index: usize },
 
@@ -158,7 +161,7 @@ pub enum ManifestValidationError {
     #[error("compression must not be unspecified (part index {index})")]
     CompressionUnspecified { index: usize },
 
-    #[error("relative_path must be relative and must not contain '..' (part index {index}): {relative_path:?}")]
+    #[error("relative_path must be relative and must not contain '.' or '..' path segments (part index {index}): {relative_path:?}")]
     InvalidRelativePath { index: usize, relative_path: String },
 
     #[error("tag/extension key is invalid ({location}): {key:?}")]
@@ -208,8 +211,15 @@ pub fn validate_manifest_basic(pb: &pbv1::ObjectManifest) -> Result<(), Manifest
     validate_keys("object tags", pb.tags.keys())?;
     validate_keys("object extensions", pb.extensions.keys())?;
 
+    let mut seen_part_numbers = HashSet::with_capacity(pb.parts.len());
     for (index, part) in pb.parts.iter().enumerate() {
         validate_part_basic(index, part)?;
+        if !seen_part_numbers.insert(part.part_number) {
+            return Err(ManifestValidationError::DuplicatePartNumber {
+                index,
+                part_number: part.part_number,
+            });
+        }
     }
 
     validate_parts_order_and_coverage(pb)?;
@@ -265,7 +275,11 @@ fn validate_relative_path(
                 invalid = true;
                 break;
             }
-            Component::CurDir | Component::Normal(_) => {}
+            Component::CurDir => {
+                invalid = true;
+                break;
+            }
+            Component::Normal(_) => {}
         }
     }
 
@@ -495,6 +509,33 @@ mod tests {
             ManifestValidationError::PartsNotStrictlyIncreasingOffset { .. }
                 | ManifestValidationError::PartsMustStartAtZero { .. }
                 | ManifestValidationError::PartsNotContiguous { .. }
+        ));
+    }
+
+    #[test]
+    fn validate_rejects_duplicate_part_number() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.parts[1].part_number = pb.parts[0].part_number;
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::DuplicatePartNumber {
+                index: 1,
+                part_number: 1,
+            }
+        ));
+    }
+
+    #[test]
+    fn validate_rejects_curdir_relative_path_segment() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.parts[0].relative_path = "./parts/part-0001.bin".to_string();
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::InvalidRelativePath { index: 0, .. }
         ));
     }
 
