@@ -62,6 +62,8 @@ struct BenchParamsJson {
 struct BenchResultsJson {
     ingest: BytesScenarioJson,
     verify: BytesScenarioJson,
+    #[serde(default)]
+    decompress: Option<BytesScenarioJson>,
     range_reads: RangeScenarioJson,
 }
 
@@ -151,29 +153,7 @@ fn main() -> anyhow::Result<()> {
         anyhow::bail!("bench params differ; refuse to diff different scenarios");
     }
 
-    if !base.results.ingest.ok || !base.results.verify.ok || !base.results.range_reads.ok {
-        anyhow::bail!("base bench contains failed scenario(s)");
-    }
-    if !new.results.ingest.ok || !new.results.verify.ok || !new.results.range_reads.ok {
-        anyhow::bail!("new bench contains failed scenario(s)");
-    }
-
-    let mut rows = Vec::new();
-    rows.extend(bytes_rows(
-        "ingest",
-        base.results.ingest,
-        new.results.ingest,
-    ));
-    rows.extend(bytes_rows(
-        "verify",
-        base.results.verify,
-        new.results.verify,
-    ));
-    rows.extend(range_rows(
-        "range_reads",
-        base.results.range_reads,
-        new.results.range_reads,
-    ));
+    let rows = diff_rows(base.results, new.results, base.params.bench_decompression)?;
 
     print_table(&rows);
 
@@ -198,6 +178,48 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn diff_rows(
+    base: BenchResultsJson,
+    new: BenchResultsJson,
+    bench_decompression: bool,
+) -> anyhow::Result<Vec<MetricRow>> {
+    if !base.results_ok() {
+        anyhow::bail!("base bench contains failed scenario(s)");
+    }
+    if !new.results_ok() {
+        anyhow::bail!("new bench contains failed scenario(s)");
+    }
+
+    let mut rows = Vec::new();
+    rows.extend(bytes_rows("ingest", base.ingest, new.ingest));
+    rows.extend(bytes_rows("verify", base.verify, new.verify));
+
+    match (base.decompress, new.decompress) {
+        (Some(base_decompress), Some(new_decompress)) => {
+            rows.extend(bytes_rows("decompress", base_decompress, new_decompress));
+        }
+        (None, None) if bench_decompression => {
+            anyhow::bail!("bench_decompression is true but decompress result is missing");
+        }
+        (None, None) => {}
+        _ => {
+            anyhow::bail!("decompress result presence differs; refuse to diff different scenarios");
+        }
+    }
+
+    rows.extend(range_rows("range_reads", base.range_reads, new.range_reads));
+    Ok(rows)
+}
+
+impl BenchResultsJson {
+    fn results_ok(&self) -> bool {
+        self.ingest.ok
+            && self.verify.ok
+            && self.range_reads.ok
+            && self.decompress.as_ref().is_none_or(|scenario| scenario.ok)
+    }
 }
 
 fn bytes_rows(
@@ -311,6 +333,12 @@ fn concat_key(prefix: &'static str, metric: &'static str) -> &'static str {
         ("verify", "cpu_percent") => "verify.cpu_percent",
         ("verify", "peak_rss_bytes") => "verify.peak_rss_bytes",
 
+        ("decompress", "bytes_per_sec") => "decompress.bytes_per_sec",
+        ("decompress", "wall_seconds") => "decompress.wall_seconds",
+        ("decompress", "cpu_seconds") => "decompress.cpu_seconds",
+        ("decompress", "cpu_percent") => "decompress.cpu_percent",
+        ("decompress", "peak_rss_bytes") => "decompress.peak_rss_bytes",
+
         ("range_reads", "ops_per_sec") => "range_reads.ops_per_sec",
         ("range_reads", "bytes_per_sec") => "range_reads.bytes_per_sec",
         ("range_reads", "wall_seconds") => "range_reads.wall_seconds",
@@ -335,5 +363,84 @@ fn print_table(rows: &[MetricRow]) {
             "{:<28} {:>14.4} {:>14.4} {:>10}",
             r.key, r.base, r.new, delta
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn bytes(ok: bool, bytes_per_sec: f64, wall_seconds: f64) -> BytesScenarioJson {
+        BytesScenarioJson {
+            ok,
+            wall_seconds,
+            bytes_per_sec,
+            cpu_seconds: None,
+            cpu_percent: None,
+            peak_rss_bytes: None,
+        }
+    }
+
+    fn range(
+        ok: bool,
+        ops_per_sec: f64,
+        bytes_per_sec: f64,
+        wall_seconds: f64,
+    ) -> RangeScenarioJson {
+        RangeScenarioJson {
+            ok,
+            wall_seconds,
+            ops_per_sec,
+            bytes_per_sec,
+            cpu_seconds: None,
+            cpu_percent: None,
+            peak_rss_bytes: None,
+        }
+    }
+
+    fn results(decompress: Option<BytesScenarioJson>) -> BenchResultsJson {
+        BenchResultsJson {
+            ingest: bytes(true, 100.0, 1.0),
+            verify: bytes(true, 200.0, 0.5),
+            decompress,
+            range_reads: range(true, 10.0, 300.0, 0.25),
+        }
+    }
+
+    #[test]
+    fn diff_rows_include_decompress_when_present() {
+        let rows = diff_rows(
+            results(Some(bytes(true, 100.0, 1.0))),
+            results(Some(bytes(true, 80.0, 1.25))),
+            true,
+        )
+        .unwrap();
+        let keys = rows.iter().map(|row| row.key).collect::<Vec<_>>();
+
+        assert!(keys.contains(&"decompress.bytes_per_sec"), "{keys:?}");
+        assert!(keys.contains(&"decompress.wall_seconds"), "{keys:?}");
+        assert_eq!(
+            rows.iter()
+                .find(|row| row.key == "decompress.bytes_per_sec")
+                .and_then(|row| row.delta_pct()),
+            Some(-20.0)
+        );
+    }
+
+    #[test]
+    fn diff_rows_reject_missing_decompress_when_enabled() {
+        let err = diff_rows(results(None), results(None), true).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("bench_decompression is true"), "{msg}");
+    }
+
+    #[test]
+    fn diff_rows_reject_decompress_presence_mismatch() {
+        let err =
+            diff_rows(results(Some(bytes(true, 100.0, 1.0))), results(None), true).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("decompress result presence differs"), "{msg}");
     }
 }
