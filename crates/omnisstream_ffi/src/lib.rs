@@ -419,6 +419,11 @@ fn reset_owned_bytes(out: *mut OsOwnedBytes) {
 }
 
 fn write_owned_bytes(out: *mut OsOwnedBytes, mut bytes: Vec<u8>) {
+    if bytes.is_empty() {
+        reset_owned_bytes(out);
+        return;
+    }
+
     bytes.shrink_to_fit();
     let boxed: Box<[u8]> = bytes.into_boxed_slice();
     let len = boxed.len();
@@ -445,6 +450,23 @@ mod tests {
             ptr: bytes.as_ptr(),
             len: bytes.len(),
         }
+    }
+
+    fn last_error_string() -> String {
+        unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned()
+    }
+
+    fn temp_test_dir(name: &str) -> std::path::PathBuf {
+        let path = std::env::temp_dir().join(format!(
+            "omnisstream_ffi_test_{}_{}",
+            std::process::id(),
+            name
+        ));
+        let _ = std::fs::remove_dir_all(&path);
+        std::fs::create_dir_all(&path).unwrap();
+        path
     }
 
     #[test]
@@ -511,5 +533,35 @@ mod tests {
             .to_string_lossy()
             .into_owned();
         assert!(err.contains("manifest is null"), "{err}");
+    }
+
+    #[test]
+    fn partstore_get_empty_part_returns_null_owned_bytes() {
+        let dir = temp_test_dir("empty_part");
+        let root = dir.to_str().unwrap();
+        let mut store = ptr::null_mut();
+
+        let rc = unsafe { os_partstore_open(span_from_bytes(root.as_bytes()), &mut store) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!store.is_null());
+
+        let mut digest = OsDigest { bytes: [0; 32] };
+        let rc = unsafe { os_partstore_put(store, empty_span(), &mut digest) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+
+        let mut out_bytes = OsOwnedBytes {
+            ptr: std::ptr::NonNull::<c_uchar>::dangling().as_ptr(),
+            len: 99,
+        };
+        let rc = unsafe { os_partstore_get(store, &digest, &mut out_bytes) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, 0);
+
+        unsafe {
+            os_owned_bytes_free(&mut out_bytes);
+            os_partstore_close(store);
+        }
+        std::fs::remove_dir_all(dir).unwrap();
     }
 }
