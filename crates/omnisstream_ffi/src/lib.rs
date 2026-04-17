@@ -143,6 +143,7 @@ pub extern "C" fn os_clear_last_error() {
 /// - `root_utf8.ptr` must be valid for `root_utf8.len` bytes for the duration of the call.
 /// - `out_store` must be non-null and writable.
 /// - On success, `*out_store` must be released with `os_partstore_close` exactly once.
+/// - On failure, `*out_store` is set to null.
 pub unsafe extern "C" fn os_partstore_open(
     root_utf8: OsSpan,
     out_store: *mut *mut OsPartStore,
@@ -152,6 +153,7 @@ pub unsafe extern "C" fn os_partstore_open(
             set_last_error("out_store is null");
             return Err(OS_INVALID_ARGUMENT);
         }
+        unsafe { *out_store = ptr::null_mut() };
 
         let root = span_to_utf8_string(root_utf8)?;
         if root.trim().is_empty() {
@@ -282,6 +284,7 @@ pub unsafe extern "C" fn os_owned_bytes_free(b: *mut OsOwnedBytes) {
 /// - `pb_bytes.ptr` must be valid for `pb_bytes.len` bytes for the duration of the call.
 /// - `out_manifest` must be non-null and writable.
 /// - On success, `*out_manifest` must be released with `os_manifest_free` exactly once.
+/// - On failure, `*out_manifest` is set to null.
 pub unsafe extern "C" fn os_manifest_load_pb(
     pb_bytes: OsSpan,
     out_manifest: *mut *mut OsManifest,
@@ -291,6 +294,8 @@ pub unsafe extern "C" fn os_manifest_load_pb(
             set_last_error("out_manifest is null");
             return Err(OS_INVALID_ARGUMENT);
         }
+        unsafe { *out_manifest = ptr::null_mut() };
+
         let bytes = span_as_slice(pb_bytes)?;
         let manifest = Manifest::from_pb_bytes(bytes).map_err(|e| {
             set_last_error(e.to_string());
@@ -408,5 +413,53 @@ fn write_owned_bytes(out: *mut OsOwnedBytes, mut bytes: Vec<u8>) {
     unsafe {
         (*out).ptr = ptr as *mut c_uchar;
         (*out).len = len;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn empty_span() -> OsSpan {
+        OsSpan {
+            ptr: ptr::null(),
+            len: 0,
+        }
+    }
+
+    fn span_from_bytes(bytes: &[u8]) -> OsSpan {
+        OsSpan {
+            ptr: bytes.as_ptr(),
+            len: bytes.len(),
+        }
+    }
+
+    #[test]
+    fn partstore_open_nulls_output_on_failure() {
+        let mut out_store = std::ptr::NonNull::<OsPartStore>::dangling().as_ptr();
+
+        let rc = unsafe { os_partstore_open(empty_span(), &mut out_store) };
+
+        assert_eq!(rc, OS_INVALID_ARGUMENT);
+        assert!(out_store.is_null());
+        let err = unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned();
+        assert!(err.contains("root path is empty"), "{err}");
+    }
+
+    #[test]
+    fn manifest_load_pb_nulls_output_on_decode_failure() {
+        let mut out_manifest = std::ptr::NonNull::<OsManifest>::dangling().as_ptr();
+        let invalid_pb = [0xff];
+
+        let rc = unsafe { os_manifest_load_pb(span_from_bytes(&invalid_pb), &mut out_manifest) };
+
+        assert_eq!(rc, OS_CORRUPT_DATA);
+        assert!(out_manifest.is_null());
+        let err = unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned();
+        assert!(err.contains("failed to decode"), "{err}");
     }
 }

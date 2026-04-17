@@ -139,6 +139,13 @@ pub enum ManifestValidationError {
     #[error("parts must be contiguous in v0.1.x (found gap/overlap: prev_end={prev_end}, next_offset={next_offset})")]
     PartsNotContiguous { prev_end: u64, next_offset: u64 },
 
+    #[error("part end offset overflows u64 (part index {index}): offset={offset} length={length}")]
+    PartEndOffsetOverflow {
+        index: usize,
+        offset: u64,
+        length: u64,
+    },
+
     #[error("part_number must be > 0 (part index {index})")]
     InvalidPartNumber { index: usize },
 
@@ -283,7 +290,7 @@ fn validate_parts_order_and_coverage(
         });
     }
 
-    for window in pb.parts.windows(2) {
+    for (index, window) in pb.parts.windows(2).enumerate() {
         let a = &window[0];
         let b = &window[1];
 
@@ -294,7 +301,7 @@ fn validate_parts_order_and_coverage(
             });
         }
 
-        let prev_end = a.offset.saturating_add(a.length);
+        let prev_end = part_end_offset(index, a)?;
         if prev_end != b.offset {
             return Err(ManifestValidationError::PartsNotContiguous {
                 prev_end,
@@ -304,7 +311,7 @@ fn validate_parts_order_and_coverage(
     }
 
     let last = pb.parts.last().expect("non-empty");
-    let expected_object_length = last.offset.saturating_add(last.length);
+    let expected_object_length = part_end_offset(pb.parts.len() - 1, last)?;
     if pb.object_length != expected_object_length {
         return Err(ManifestValidationError::ObjectLengthMismatch {
             expected: expected_object_length,
@@ -313,6 +320,16 @@ fn validate_parts_order_and_coverage(
     }
 
     Ok(())
+}
+
+fn part_end_offset(index: usize, part: &pbv1::PartMeta) -> Result<u64, ManifestValidationError> {
+    part.offset
+        .checked_add(part.length)
+        .ok_or(ManifestValidationError::PartEndOffsetOverflow {
+            index,
+            offset: part.offset,
+            length: part.length,
+        })
 }
 
 fn validate_hashes(
@@ -490,6 +507,58 @@ mod tests {
         assert!(matches!(
             err,
             ManifestValidationError::ObjectLengthMismatch { .. }
+        ));
+    }
+
+    #[test]
+    fn validate_rejects_adjacent_part_end_overflow() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+
+        pb.parts[0].offset = 0;
+        pb.parts[0].length = 1;
+        pb.parts[0].stored_length = 1;
+        pb.parts[1].offset = 1;
+        pb.parts[1].length = u64::MAX;
+        pb.parts[1].stored_length = u64::MAX;
+        pb.parts[2].offset = 2;
+        pb.parts[2].length = 1;
+        pb.parts[2].stored_length = 1;
+        pb.object_length = 3;
+
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::PartEndOffsetOverflow {
+                index: 1,
+                offset: 1,
+                length: u64::MAX,
+            }
+        ));
+    }
+
+    #[test]
+    fn validate_rejects_final_part_end_overflow() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.parts.truncate(2);
+
+        pb.parts[0].offset = 0;
+        pb.parts[0].length = u64::MAX;
+        pb.parts[0].stored_length = u64::MAX;
+        pb.parts[1].offset = u64::MAX;
+        pb.parts[1].length = 1;
+        pb.parts[1].stored_length = 1;
+        pb.object_length = u64::MAX;
+
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::PartEndOffsetOverflow {
+                index: 1,
+                offset: u64::MAX,
+                length: 1,
+            }
         ));
     }
 }
