@@ -194,8 +194,9 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn load_manifest(path: &Path) -> anyhow::Result<Manifest> {
-    let bytes = std::fs::read(path)?;
-    Ok(Manifest::from_pb_bytes(&bytes)?)
+    let bytes =
+        std::fs::read(path).with_context(|| format!("reading manifest {}", path.display()))?;
+    Manifest::from_pb_bytes(&bytes).with_context(|| format!("decoding manifest {}", path.display()))
 }
 
 struct OffsetWriter {
@@ -618,6 +619,31 @@ mod tests {
         let err = resolve_object_manifest_path(&repo_root, "/etc/passwd").unwrap_err();
         let msg = err.to_string();
         assert!(msg.contains("relative path"), "{msg}");
+    }
+
+    #[test]
+    fn load_manifest_missing_file_error_includes_path() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("missing.pb");
+
+        let err = load_manifest(&path).unwrap_err();
+        let msg = format!("{err:#}");
+
+        assert!(msg.contains("reading manifest"), "{msg}");
+        assert!(msg.contains(&path.display().to_string()), "{msg}");
+    }
+
+    #[test]
+    fn load_manifest_decode_error_includes_path() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("bad.pb");
+        std::fs::write(&path, [0x0a_u8, 0xff]).unwrap();
+
+        let err = load_manifest(&path).unwrap_err();
+        let msg = format!("{err:#}");
+
+        assert!(msg.contains("decoding manifest"), "{msg}");
+        assert!(msg.contains(&path.display().to_string()), "{msg}");
     }
 
     #[test]
