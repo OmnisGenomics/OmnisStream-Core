@@ -373,10 +373,7 @@ fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Re
         );
     }
 
-    if Path::new(&object_version)
-        .components()
-        .any(|c| !matches!(c, Component::Normal(_)))
-    {
+    if !is_single_normal_path_component(&object_version) {
         anyhow::bail!("invalid object version: {object_version:?}");
     }
 
@@ -392,6 +389,13 @@ fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Re
     }
 
     Ok(manifest_path)
+}
+
+fn is_single_normal_path_component(value: &str) -> bool {
+    use std::path::Component;
+
+    let mut components = Path::new(value).components();
+    matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none()
 }
 
 #[derive(Debug, Clone)]
@@ -623,6 +627,20 @@ mod tests {
         let err = resolve_object_manifest_path(&repo_root, "/etc/passwd").unwrap_err();
         let msg = err.to_string();
         assert!(msg.contains("relative path"), "{msg}");
+    }
+
+    #[test]
+    fn resolve_object_manifest_path_rejects_nested_latest_version() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        let object_dir = repo_root.join("objects").join("sample");
+        std::fs::create_dir_all(&object_dir).unwrap();
+        std::fs::write(object_dir.join("latest"), "v1/nested").unwrap();
+
+        let err = resolve_object_manifest_path(&repo_root, "sample").unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("invalid object version"), "{msg}");
     }
 
     #[test]
