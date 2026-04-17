@@ -1,14 +1,14 @@
 {
-  "title": "Normalize README Markdown headings and command blocks",
+  "title": "Smoke-test CLI version metadata in CI",
   "priority": "low",
-  "why": "The README commands are functional, but the quick-start and CLI sections have Markdown structure issues: a plain-text heading, a `#CLI` heading without a space, and shell comments mixed with inline code snippets. Cleaning this up would improve rendering without changing behavior.",
+  "why": "The README release quick-start documents `./omnisstream version`, and the CLI embeds `SPEC_PIN.txt` in that output. CI already checks the submodule pin and runs vector verify/inspect commands, but it does not exercise the documented version command.",
   "suggested_scope": [
-    "Convert the quick-start, CLI, examples, and dev-check snippets to proper Markdown headings and fenced `sh` blocks.",
-    "Preserve existing commands exactly unless a command is verified to need correction.",
-    "Avoid changing CLI behavior in the same patch."
+    "Add a `spec-contract` CI step that runs `cargo run -p omnisstream_cli -- version`.",
+    "Assert the output contains `spec_pin $(cat SPEC_PIN.txt)`.",
+    "Keep this separate from vector inspection/verification behavior."
   ],
   "validation": [
-    "cargo run -p omnisstream_cli -- --help",
+    "cargo run -p omnisstream_cli -- version",
     "cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
     "cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb"
   ]
