@@ -108,6 +108,10 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
     part_size: u64,
     backend: B,
 ) -> Result<IngestResult, IngestError> {
+    if part_size == 0 {
+        return Err(IngestError::InvalidPartSize);
+    }
+
     let object_id = path
         .file_name()
         .map(|s| s.to_string_lossy().into_owned())
@@ -516,6 +520,27 @@ mod tests {
             r_default.manifest.to_pb_bytes(),
             r_dummy.manifest.to_pb_bytes()
         );
+    }
+
+    #[test]
+    fn ingest_with_backend_rejects_zero_part_size() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo = Repository::open(dir.path().join("repo")).unwrap();
+
+        let input_path = dir.path().join("input.bin");
+        let bytes = b"hello world".to_vec();
+        std::fs::write(&input_path, &bytes).unwrap();
+
+        let err = ingest_file_with_backend(
+            &repo,
+            &input_path,
+            bytes.len() as u64,
+            0,
+            MemBackend::new(bytes),
+        )
+        .unwrap_err();
+
+        assert!(matches!(err, IngestError::InvalidPartSize));
     }
 
     #[cfg(feature = "compression")]
