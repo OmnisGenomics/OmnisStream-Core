@@ -1,15 +1,15 @@
 {
-  "title": "Clean default-feature warnings in README vector smoke commands",
-  "priority": "medium",
-  "why": "The README-style `cargo run -p omnisstream_cli -- verify/inspect ...` commands pass, but default-feature builds emit existing warnings from `crates/omnisstream/src/repo.rs` and `crates/omnisstream/src/compression.rs`. The all-feature clippy path is clean, so this is best handled as a focused follow-up.",
+  "title": "Normalize README Markdown headings and command blocks",
+  "priority": "low",
+  "why": "The README commands are functional, but the quick-start and CLI sections have Markdown structure issues: a plain-text heading, a `#CLI` heading without a space, and shell comments mixed with inline code snippets. Cleaning this up would improve rendering without changing behavior.",
   "suggested_scope": [
-    "Adjust `ingest_one_part` so `stored` and `compression_alg` are only mutable when the `compression` feature is enabled, or split the feature-gated paths cleanly.",
-    "Gate or reshape `CompressionConfig`/`set_compression_config` so default-feature builds do not report dead code warnings."
+    "Convert the quick-start, CLI, examples, and dev-check snippets to proper Markdown headings and fenced `sh` blocks.",
+    "Preserve existing commands exactly unless a command is verified to need correction.",
+    "Avoid changing CLI behavior in the same patch."
   ],
   "validation": [
-    "cargo clippy --all-targets -- -D warnings",
-    "cargo clippy --all-targets --all-features -- -D warnings",
-    "cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
-    "cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb"
+    "cargo run -p omnisstream_cli -- --help",
+    "cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
+    "cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb"
   ]
 }

@@ -1,21 +1,23 @@
 # Next Priority Task
 
-Clean default-feature warnings in README vector smoke commands.
+Normalize README Markdown headings and command blocks.
 
-The README-style CLI smoke commands pass, but `cargo run -p omnisstream_cli -- verify/inspect ...`
-currently emits existing default-feature warnings from:
+The README commands are functional, but the document has several Markdown structure issues that
+make the quick-start harder to scan and may render inconsistently:
 
-- `crates/omnisstream/src/repo.rs`: `stored` and `compression_alg` are only mutated when the
-  `compression` feature is enabled.
-- `crates/omnisstream/src/compression.rs`: `CompressionConfig` fields and
-  `set_compression_config` are unused when building without the `compression` feature.
+- `Quick start with release artifacts` is plain text rather than a heading.
+- `#CLI (development)` is missing the heading space.
+- Shell comments and commands are mixed as prose and one-line inline code snippets.
 
-The all-feature clippy path is clean, so keep this as a focused follow-up instead of mixing it
-with unrelated CLI GC behavior.
+Suggested scope:
+
+- Convert the quick-start, CLI, examples, and dev-check snippets to proper Markdown headings and
+  fenced `sh` blocks.
+- Preserve the existing commands exactly unless a command is verified to need correction.
+- Avoid changing CLI behavior in the same patch.
 
 Suggested validation:
 
-- `cargo clippy --all-targets -- -D warnings`
-- `cargo clippy --all-targets --all-features -- -D warnings`
+- `cargo run -p omnisstream_cli -- --help`
+- `cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
 - `cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb`

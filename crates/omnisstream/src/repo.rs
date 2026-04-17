@@ -132,6 +132,7 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
         .min(num_parts)
         .max(1);
 
+    #[cfg(feature = "compression")]
     let compression = crate::compression::compression_config();
 
     let (tx, rx) = std::sync::mpsc::channel::<Result<PartResult, IngestError>>();
@@ -143,6 +144,7 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
         let stop = Arc::clone(&stop);
         let backend = backend.clone();
         let part_store = repo.part_store.clone();
+        #[cfg(feature = "compression")]
         let worker_compression = compression;
 
         let start = worker_idx * num_parts / workers;
@@ -163,6 +165,7 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
                     break;
                 };
 
+                #[cfg(feature = "compression")]
                 let res = ingest_one_part(
                     &backend,
                     &part_store,
@@ -172,6 +175,9 @@ pub(crate) fn ingest_file_with_backend<B: IngestBackend>(
                     len,
                     worker_compression,
                 );
+                #[cfg(not(feature = "compression"))]
+                let res =
+                    ingest_one_part(&backend, &part_store, part_index, part_number, offset, len);
                 if res.is_err() {
                     stop.store(true, Ordering::Relaxed);
                 }
@@ -280,21 +286,26 @@ fn ingest_one_part(
     part_number: u32,
     offset: u64,
     len: u64,
-    _compression: Option<crate::compression::CompressionConfig>,
+    #[cfg(feature = "compression")] compression: Option<CompressionConfig>,
 ) -> Result<PartResult, IngestError> {
     let mut buf = vec![0_u8; len as usize];
     backend.read_exact_at(offset, &mut buf)?;
 
-    let mut stored = buf;
-    let mut compression_alg = pbv1::CompressionAlgorithm::None as i32;
-
     #[cfg(feature = "compression")]
-    if let Some(cfg) = _compression {
-        if let Some(compressed) = compress_zstd_seekable(&stored, cfg)? {
-            stored = compressed;
-            compression_alg = pbv1::CompressionAlgorithm::ZstdSeekable as i32;
+    let (stored, compression_alg) = {
+        let mut stored = buf;
+        let mut compression_alg = pbv1::CompressionAlgorithm::None as i32;
+        if let Some(cfg) = compression {
+            if let Some(compressed) = compress_zstd_seekable(&stored, cfg)? {
+                stored = compressed;
+                compression_alg = pbv1::CompressionAlgorithm::ZstdSeekable as i32;
+            }
         }
-    }
+        (stored, compression_alg)
+    };
+
+    #[cfg(not(feature = "compression"))]
+    let (stored, compression_alg) = (buf, pbv1::CompressionAlgorithm::None as i32);
 
     let crc32c = crc32c_bytes(&stored);
     let blake3_256 = blake3_256_bytes(&stored);
