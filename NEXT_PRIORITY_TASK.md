@@ -1,21 +1,20 @@
 # Next Priority Task
 
-Smoke-test CLI version metadata in CI.
+Assert exact release version metadata.
 
-The README release quick-start documents `./omnisstream version`, and the CLI embeds
-`SPEC_PIN.txt` in that output. CI already checks the submodule pin and runs vector
-`verify`/`inspect` commands, but it does not exercise the documented `version` command.
-Adding a small smoke check would catch regressions in build metadata wiring without changing
-runtime behavior.
+The CI `spec-contract` job now checks that `cargo run -p omnisstream_cli -- version`
+prints `spec_pin $(cat SPEC_PIN.txt)`. The release workflow also smoke-tests
+`./target/release/omnisstream version`, but currently only checks that a `spec_pin`
+line exists. Tightening that release check would keep shipped binaries aligned with
+the same exact metadata contract used in CI.
 
 Suggested scope:
 
-- Add a `spec-contract` CI step that runs `cargo run -p omnisstream_cli -- version`.
-- Assert the output contains `spec_pin $(cat SPEC_PIN.txt)`.
-- Keep this separate from vector inspection/verification behavior.
+- Update `.github/workflows/release.yml` in the existing `"smoke: version output"` step.
+- Assert that `version.txt` contains `spec_pin $(cat SPEC_PIN.txt)`.
+- Keep the existing key-presence checks so release smoke output remains easy to diagnose.
 
 Suggested validation:
 
-- `cargo run -p omnisstream_cli -- version`
-- `cargo run -p omnisstream_cli -- inspect spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `cargo run -p omnisstream_cli -- verify spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
+- `cargo run -p omnisstream_cli -- version | tee version.txt`
+- `grep -Fx "spec_pin $(cat SPEC_PIN.txt)" version.txt`
