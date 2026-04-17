@@ -272,7 +272,7 @@ pub unsafe extern "C" fn os_owned_bytes_free(b: *mut OsOwnedBytes) {
             (*b).len = 0;
             return;
         }
-        let slice = slice::from_raw_parts_mut((*b).ptr, (*b).len);
+        let slice = ptr::slice_from_raw_parts_mut((*b).ptr, (*b).len);
         drop(Box::from_raw(slice));
         (*b).ptr = ptr::null_mut();
         (*b).len = 0;
@@ -562,6 +562,42 @@ mod tests {
             os_owned_bytes_free(&mut out_bytes);
             os_partstore_close(store);
         }
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it() {
+        let dir = temp_test_dir("non_empty_part");
+        let root = dir.to_str().unwrap();
+        let mut store = ptr::null_mut();
+
+        let rc = unsafe { os_partstore_open(span_from_bytes(root.as_bytes()), &mut store) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!store.is_null());
+
+        let payload = b"owned ffi bytes";
+        let mut digest = OsDigest { bytes: [0; 32] };
+        let rc = unsafe { os_partstore_put(store, span_from_bytes(payload), &mut digest) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+
+        let mut out_bytes = OsOwnedBytes {
+            ptr: ptr::null_mut(),
+            len: 0,
+        };
+        let rc = unsafe { os_partstore_get(store, &digest, &mut out_bytes) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, payload.len());
+
+        let got = unsafe { slice::from_raw_parts(out_bytes.ptr, out_bytes.len) };
+        assert_eq!(got, payload);
+
+        unsafe {
+            os_owned_bytes_free(&mut out_bytes);
+            os_partstore_close(store);
+        }
+        assert!(out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, 0);
         std::fs::remove_dir_all(dir).unwrap();
     }
 }
