@@ -84,6 +84,8 @@ int os_partstore_put(OsPartStore *store, OsSpan data, OsDigest *out_digest);
  * - `digest` must be non-null and point to a valid `OsDigest`.
  * - `out_bytes` must be non-null and writable.
  * - On success, `out_bytes->ptr` must be released with `os_owned_bytes_free`.
+ * - On failure, `out_bytes->ptr` is set to null and `out_bytes->len` is set to zero when
+ *   `out_bytes` is non-null.
  */
 int os_partstore_get(OsPartStore *store, const OsDigest *digest, OsOwnedBytes *out_bytes);
 
@@ -124,6 +126,8 @@ int os_verify_manifest_on_disk(OsManifest *m, OsSpan base_dir_utf8);
  * - `m` must be a pointer returned by `os_manifest_load_pb`.
  * - `out_utf8` must be non-null and writable.
  * - On success, `out_utf8->ptr` must be released with `os_owned_bytes_free`.
+ * - On failure, `out_utf8->ptr` is set to null and `out_utf8->len` is set to zero when
+ *   `out_utf8` is non-null.
  */
 int os_manifest_inspect(OsManifest *m, OsOwnedBytes *out_utf8);
 
