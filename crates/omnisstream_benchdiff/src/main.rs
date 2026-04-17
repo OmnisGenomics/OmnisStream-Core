@@ -139,24 +139,7 @@ fn main() -> anyhow::Result<()> {
         );
     }
 
-    if base.params.preset != new.params.preset
-        || base.params.file_size_bytes != new.params.file_size_bytes
-        || base.params.part_size_bytes != new.params.part_size_bytes
-        || base.params.range_len_bytes != new.params.range_len_bytes
-        || base.params.range_ops != new.params.range_ops
-        || base.params.seed != new.params.seed
-        || base.params.relaxed_durability != new.params.relaxed_durability
-        || base.params.bench_decompression != new.params.bench_decompression
-        || base.params.input_file_blake3_256 != new.params.input_file_blake3_256
-        || base.params.compression != new.params.compression
-        || base.params.compression_level != new.params.compression_level
-        || base.params.compression_frame_size_bytes != new.params.compression_frame_size_bytes
-        || base.params.group_commit != new.params.group_commit
-        || base.params.group_commit_max_ops != new.params.group_commit_max_ops
-        || base.params.group_commit_window_ms != new.params.group_commit_window_ms
-    {
-        anyhow::bail!("bench params differ; refuse to diff different scenarios");
-    }
+    ensure_same_params(&base.params, &new.params)?;
 
     let rows = diff_rows(base.results, new.results, base.params.bench_decompression)?;
 
@@ -192,6 +175,39 @@ fn validate_threshold_percent(threshold: f64) -> anyhow::Result<()> {
     if !threshold.is_finite() || threshold < 0.0 {
         anyhow::bail!("threshold_percent must be finite and >= 0");
     }
+
+    Ok(())
+}
+
+fn ensure_same_params(base: &BenchParamsJson, new: &BenchParamsJson) -> anyhow::Result<()> {
+    macro_rules! ensure_same_param {
+        ($field:ident) => {
+            if base.$field != new.$field {
+                anyhow::bail!(
+                    "bench param {} differs (base={:?}, new={:?}); refuse to diff different scenarios",
+                    stringify!($field),
+                    &base.$field,
+                    &new.$field
+                );
+            }
+        };
+    }
+
+    ensure_same_param!(preset);
+    ensure_same_param!(file_size_bytes);
+    ensure_same_param!(part_size_bytes);
+    ensure_same_param!(range_len_bytes);
+    ensure_same_param!(range_ops);
+    ensure_same_param!(seed);
+    ensure_same_param!(relaxed_durability);
+    ensure_same_param!(bench_decompression);
+    ensure_same_param!(input_file_blake3_256);
+    ensure_same_param!(compression);
+    ensure_same_param!(compression_level);
+    ensure_same_param!(compression_frame_size_bytes);
+    ensure_same_param!(group_commit);
+    ensure_same_param!(group_commit_max_ops);
+    ensure_same_param!(group_commit_window_ms);
 
     Ok(())
 }
@@ -438,6 +454,26 @@ fn print_table(rows: &[MetricRow]) {
 mod tests {
     use super::*;
 
+    fn params() -> BenchParamsJson {
+        BenchParamsJson {
+            preset: "default".to_string(),
+            file_size_bytes: 1024,
+            part_size_bytes: 256,
+            range_len_bytes: 64,
+            range_ops: 8,
+            seed: 42,
+            relaxed_durability: false,
+            bench_decompression: false,
+            input_file_blake3_256: None,
+            compression: false,
+            compression_level: None,
+            compression_frame_size_bytes: None,
+            group_commit: false,
+            group_commit_max_ops: None,
+            group_commit_window_ms: None,
+        }
+    }
+
     fn bytes(ok: bool, bytes_per_sec: f64, wall_seconds: f64) -> BytesScenarioJson {
         BytesScenarioJson {
             ok,
@@ -580,6 +616,19 @@ mod tests {
 
             assert!(msg.contains("finite and >= 0"), "{msg}");
         }
+    }
+
+    #[test]
+    fn ensure_same_params_reports_changed_field() {
+        let base = params();
+        let mut new = params();
+        new.group_commit_window_ms = Some(25);
+
+        let err = ensure_same_params(&base, &new).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("group_commit_window_ms"), "{msg}");
+        assert!(msg.contains("refuse to diff different scenarios"), "{msg}");
     }
 
     #[test]
