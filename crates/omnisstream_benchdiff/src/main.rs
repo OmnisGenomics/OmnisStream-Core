@@ -112,6 +112,10 @@ impl MetricRow {
     }
 
     fn is_regression(self, threshold_pct: f64) -> bool {
+        if self.base == 0.0 {
+            return matches!(self.better, Better::Lower) && self.new > 0.0;
+        }
+
         let Some(d) = self.delta_pct() else {
             return false;
         };
@@ -616,6 +620,32 @@ mod tests {
 
             assert!(msg.contains("finite and >= 0"), "{msg}");
         }
+    }
+
+    #[test]
+    fn lower_metric_regresses_from_zero_baseline() {
+        let row = MetricRow {
+            key: "ingest.wall_seconds",
+            better: Better::Lower,
+            base: 0.0,
+            new: 0.1,
+        };
+
+        assert!(row.is_regression(100.0));
+        assert_eq!(row.delta_pct(), None);
+    }
+
+    #[test]
+    fn higher_metric_does_not_regress_from_zero_baseline() {
+        let row = MetricRow {
+            key: "ingest.bytes_per_sec",
+            better: Better::Higher,
+            base: 0.0,
+            new: 100.0,
+        };
+
+        assert!(!row.is_regression(0.0));
+        assert_eq!(row.delta_pct(), None);
     }
 
     #[test]
