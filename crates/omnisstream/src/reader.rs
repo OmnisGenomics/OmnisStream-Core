@@ -379,10 +379,22 @@ fn copy_exact(reader: &mut impl Read, writer: &mut impl Write, mut n: u64) -> io
 }
 
 fn hash_reader_exact(reader: &mut impl Read, n: u64) -> Result<HashSummary, ReaderError> {
-    let mut limited = reader.take(n);
-    let summary = hash_reader(&mut limited)?;
-    if summary.len != n {
-        return Err(ReaderError::UnexpectedEof);
+    let summary = {
+        let mut limited = reader.take(n);
+        let summary = hash_reader(&mut limited)?;
+        if summary.len != n {
+            return Err(ReaderError::UnexpectedEof);
+        }
+        summary
+    };
+
+    let mut trailing = [0_u8; 1];
+    if reader.read(&mut trailing)? != 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "part payload has trailing bytes beyond manifest stored_length",
+        )
+        .into());
     }
     Ok(summary)
 }
@@ -483,6 +495,23 @@ mod tests {
         Manifest::from_pb_bytes(&bytes).unwrap()
     }
 
+    fn copy_vector_to_temp(vector: &str) -> (tempfile::TempDir, PathBuf) {
+        let temp = tempfile::tempdir().unwrap();
+        let src = spec_root().join("test-vectors").join(vector);
+        let dst = temp.path().join(vector);
+
+        std::fs::create_dir_all(dst.join("parts")).unwrap();
+        std::fs::copy(src.join("manifest.pb"), dst.join("manifest.pb")).unwrap();
+        for ent in std::fs::read_dir(src.join("parts")).unwrap() {
+            let ent = ent.unwrap();
+            if ent.file_type().unwrap().is_file() {
+                std::fs::copy(ent.path(), dst.join("parts").join(ent.file_name())).unwrap();
+            }
+        }
+
+        (temp, dst)
+    }
+
     #[test]
     fn cat_matches_vector_minimal_bytes() {
         let manifest = load_manifest("vector-minimal");
@@ -522,27 +551,7 @@ mod tests {
 
     #[test]
     fn verify_detects_corruption() {
-        let temp = tempfile::tempdir().unwrap();
-        let src = spec_root().join("test-vectors/vector-minimal");
-        let dst = temp.path().join("vector-minimal");
-
-        std::fs::create_dir_all(dst.join("parts")).unwrap();
-        std::fs::copy(src.join("manifest.pb"), dst.join("manifest.pb")).unwrap();
-        std::fs::copy(
-            src.join("parts/part-0001.bin"),
-            dst.join("parts/part-0001.bin"),
-        )
-        .unwrap();
-        std::fs::copy(
-            src.join("parts/part-0002.bin"),
-            dst.join("parts/part-0002.bin"),
-        )
-        .unwrap();
-        std::fs::copy(
-            src.join("parts/part-0003.bin"),
-            dst.join("parts/part-0003.bin"),
-        )
-        .unwrap();
+        let (_temp, dst) = copy_vector_to_temp("vector-minimal");
 
         let bytes = std::fs::read(dst.join("manifest.pb")).unwrap();
         let manifest = Manifest::from_pb_bytes(&bytes).unwrap();
@@ -562,27 +571,7 @@ mod tests {
 
     #[test]
     fn verify_detects_truncated_part() {
-        let temp = tempfile::tempdir().unwrap();
-        let src = spec_root().join("test-vectors/vector-minimal");
-        let dst = temp.path().join("vector-minimal");
-
-        std::fs::create_dir_all(dst.join("parts")).unwrap();
-        std::fs::copy(src.join("manifest.pb"), dst.join("manifest.pb")).unwrap();
-        std::fs::copy(
-            src.join("parts/part-0001.bin"),
-            dst.join("parts/part-0001.bin"),
-        )
-        .unwrap();
-        std::fs::copy(
-            src.join("parts/part-0002.bin"),
-            dst.join("parts/part-0002.bin"),
-        )
-        .unwrap();
-        std::fs::copy(
-            src.join("parts/part-0003.bin"),
-            dst.join("parts/part-0003.bin"),
-        )
-        .unwrap();
+        let (_temp, dst) = copy_vector_to_temp("vector-minimal");
 
         let bytes = std::fs::read(dst.join("manifest.pb")).unwrap();
         let manifest = Manifest::from_pb_bytes(&bytes).unwrap();
@@ -598,6 +587,27 @@ mod tests {
 
         let err = verify(&manifest, &resolver).unwrap_err();
         assert!(matches!(err, ReaderError::UnexpectedEof));
+    }
+
+    #[test]
+    fn verify_detects_trailing_part_bytes() {
+        let (_temp, dst) = copy_vector_to_temp("vector-minimal");
+
+        let bytes = std::fs::read(dst.join("manifest.pb")).unwrap();
+        let manifest = Manifest::from_pb_bytes(&bytes).unwrap();
+        let resolver = PartResolver::new(&dst);
+
+        verify(&manifest, &resolver).unwrap();
+
+        let part_path = dst.join("parts/part-0001.bin");
+        let mut f = std::fs::OpenOptions::new()
+            .append(true)
+            .open(&part_path)
+            .unwrap();
+        f.write_all(b"extra").unwrap();
+
+        let err = verify(&manifest, &resolver).unwrap_err();
+        assert!(matches!(err, ReaderError::Io(e) if e.kind() == io::ErrorKind::InvalidData));
     }
 
     #[test]
