@@ -201,12 +201,12 @@ fn diff_rows(
     }
 
     let mut rows = Vec::new();
-    rows.extend(bytes_rows("ingest", base.ingest, new.ingest));
-    rows.extend(bytes_rows("verify", base.verify, new.verify));
+    rows.extend(bytes_rows("ingest", base.ingest, new.ingest)?);
+    rows.extend(bytes_rows("verify", base.verify, new.verify)?);
 
     match (base.decompress, new.decompress) {
         (Some(base_decompress), Some(new_decompress)) => {
-            rows.extend(bytes_rows("decompress", base_decompress, new_decompress));
+            rows.extend(bytes_rows("decompress", base_decompress, new_decompress)?);
         }
         (None, None) if bench_decompression => {
             anyhow::bail!("bench_decompression is true but decompress result is missing");
@@ -217,7 +217,11 @@ fn diff_rows(
         }
     }
 
-    rows.extend(range_rows("range_reads", base.range_reads, new.range_reads));
+    rows.extend(range_rows(
+        "range_reads",
+        base.range_reads,
+        new.range_reads,
+    )?);
     Ok(rows)
 }
 
@@ -234,7 +238,7 @@ fn bytes_rows(
     prefix: &'static str,
     base: BytesScenarioJson,
     new: BytesScenarioJson,
-) -> Vec<MetricRow> {
+) -> anyhow::Result<Vec<MetricRow>> {
     let mut out = Vec::new();
     out.push(MetricRow {
         key: concat_key(prefix, "bytes_per_sec"),
@@ -248,38 +252,38 @@ fn bytes_rows(
         base: base.wall_seconds,
         new: new.wall_seconds,
     });
-    if let (Some(b), Some(n)) = (base.cpu_seconds, new.cpu_seconds) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "cpu_seconds"),
-            better: Better::Lower,
-            base: b,
-            new: n,
-        });
-    }
-    if let (Some(b), Some(n)) = (base.cpu_percent, new.cpu_percent) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "cpu_percent"),
-            better: Better::Lower,
-            base: b,
-            new: n,
-        });
-    }
-    if let (Some(b), Some(n)) = (base.peak_rss_bytes, new.peak_rss_bytes) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "peak_rss_bytes"),
-            better: Better::Lower,
-            base: b as f64,
-            new: n as f64,
-        });
-    }
-    out
+    push_optional_row(
+        &mut out,
+        prefix,
+        "cpu_seconds",
+        Better::Lower,
+        base.cpu_seconds,
+        new.cpu_seconds,
+    )?;
+    push_optional_row(
+        &mut out,
+        prefix,
+        "cpu_percent",
+        Better::Lower,
+        base.cpu_percent,
+        new.cpu_percent,
+    )?;
+    push_optional_row(
+        &mut out,
+        prefix,
+        "peak_rss_bytes",
+        Better::Lower,
+        base.peak_rss_bytes.map(|v| v as f64),
+        new.peak_rss_bytes.map(|v| v as f64),
+    )?;
+    Ok(out)
 }
 
 fn range_rows(
     prefix: &'static str,
     base: RangeScenarioJson,
     new: RangeScenarioJson,
-) -> Vec<MetricRow> {
+) -> anyhow::Result<Vec<MetricRow>> {
     let mut out = Vec::new();
     out.push(MetricRow {
         key: concat_key(prefix, "ops_per_sec"),
@@ -299,31 +303,54 @@ fn range_rows(
         base: base.wall_seconds,
         new: new.wall_seconds,
     });
-    if let (Some(b), Some(n)) = (base.cpu_seconds, new.cpu_seconds) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "cpu_seconds"),
-            better: Better::Lower,
-            base: b,
-            new: n,
-        });
+    push_optional_row(
+        &mut out,
+        prefix,
+        "cpu_seconds",
+        Better::Lower,
+        base.cpu_seconds,
+        new.cpu_seconds,
+    )?;
+    push_optional_row(
+        &mut out,
+        prefix,
+        "cpu_percent",
+        Better::Lower,
+        base.cpu_percent,
+        new.cpu_percent,
+    )?;
+    push_optional_row(
+        &mut out,
+        prefix,
+        "peak_rss_bytes",
+        Better::Lower,
+        base.peak_rss_bytes.map(|v| v as f64),
+        new.peak_rss_bytes.map(|v| v as f64),
+    )?;
+    Ok(out)
+}
+
+fn push_optional_row(
+    out: &mut Vec<MetricRow>,
+    prefix: &'static str,
+    metric: &'static str,
+    better: Better,
+    base: Option<f64>,
+    new: Option<f64>,
+) -> anyhow::Result<()> {
+    let key = concat_key(prefix, metric);
+    match (base, new) {
+        (Some(base), Some(new)) => out.push(MetricRow {
+            key,
+            better,
+            base,
+            new,
+        }),
+        (None, None) => {}
+        _ => anyhow::bail!("{key} presence differs; refuse to diff different result shapes"),
     }
-    if let (Some(b), Some(n)) = (base.cpu_percent, new.cpu_percent) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "cpu_percent"),
-            better: Better::Lower,
-            base: b,
-            new: n,
-        });
-    }
-    if let (Some(b), Some(n)) = (base.peak_rss_bytes, new.peak_rss_bytes) {
-        out.push(MetricRow {
-            key: concat_key(prefix, "peak_rss_bytes"),
-            better: Better::Lower,
-            base: b as f64,
-            new: n as f64,
-        });
-    }
-    out
+
+    Ok(())
 }
 
 fn concat_key(prefix: &'static str, metric: &'static str) -> &'static str {
@@ -450,6 +477,33 @@ mod tests {
         let msg = err.to_string();
 
         assert!(msg.contains("decompress result presence differs"), "{msg}");
+    }
+
+    #[test]
+    fn diff_rows_reject_optional_bytes_metric_presence_mismatch() {
+        let mut base = results(None);
+        let new = results(None);
+        base.ingest.cpu_seconds = Some(1.0);
+
+        let err = diff_rows(base, new, false).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("ingest.cpu_seconds presence differs"), "{msg}");
+    }
+
+    #[test]
+    fn diff_rows_reject_optional_range_metric_presence_mismatch() {
+        let base = results(None);
+        let mut new = results(None);
+        new.range_reads.peak_rss_bytes = Some(1024);
+
+        let err = diff_rows(base, new, false).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(
+            msg.contains("range_reads.peak_rss_bytes presence differs"),
+            "{msg}"
+        );
     }
 
     #[test]
