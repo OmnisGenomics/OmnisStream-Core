@@ -72,6 +72,7 @@ impl Manifest {
     pub fn part_store_digests_hex(&self) -> Result<Vec<String>, ManifestValidationError> {
         self.validate_basic()?;
 
+        let mut seen = HashSet::with_capacity(self.pb.parts.len());
         let mut out = Vec::with_capacity(self.pb.parts.len());
         for (index, part) in self.pb.parts.iter().enumerate() {
             if !part.relative_path.is_empty() {
@@ -100,7 +101,10 @@ impl Manifest {
             // Round-trip through the digest type to guarantee stable formatting.
             let mut bytes = [0_u8; 32];
             bytes.copy_from_slice(&hash.digest);
-            out.push(Blake3Digest::from_bytes(bytes).to_hex());
+            let digest_hex = Blake3Digest::from_bytes(bytes).to_hex();
+            if seen.insert(digest_hex.clone()) {
+                out.push(digest_hex);
+            }
         }
         Ok(out)
     }
@@ -549,6 +553,47 @@ mod tests {
             err,
             ManifestValidationError::InvalidRelativePath { index: 0, .. }
         ));
+    }
+
+    #[test]
+    fn part_store_digests_hex_returns_unique_digests() {
+        let repeated_blake3 = vec![0xAB; 32];
+        let mut pb = pbv1::ObjectManifest {
+            manifest_version: "0.1.0".to_string(),
+            object_id: "object-1".to_string(),
+            object_length: 2,
+            parts: Vec::new(),
+            upload_session: None,
+            commit: None,
+            tags: Default::default(),
+            extensions: Default::default(),
+        };
+
+        for (part_number, offset) in [(1, 0), (2, 1)] {
+            pb.parts.push(pbv1::PartMeta {
+                part_number,
+                offset,
+                length: 1,
+                stored_length: 1,
+                compression: pbv1::CompressionAlgorithm::None as i32,
+                hashes: vec![
+                    pbv1::HashDigest {
+                        alg: pbv1::HashAlgorithm::Blake3256 as i32,
+                        digest: repeated_blake3.clone(),
+                    },
+                    pbv1::HashDigest {
+                        alg: pbv1::HashAlgorithm::Crc32c as i32,
+                        digest: vec![0, 0, 0, part_number as u8],
+                    },
+                ],
+                relative_path: String::new(),
+                tags: Default::default(),
+                extensions: Default::default(),
+            });
+        }
+
+        let digests = Manifest::new(pb).part_store_digests_hex().unwrap();
+        assert_eq!(digests, vec![hex::encode(repeated_blake3)]);
     }
 
     #[test]
