@@ -123,6 +123,10 @@ impl MetricRow {
 
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
+    if let Some(threshold) = args.threshold_percent {
+        validate_threshold_percent(threshold)?;
+    }
+
     let base: BenchJson = serde_json::from_slice(&std::fs::read(&args.base)?)?;
     let new: BenchJson = serde_json::from_slice(&std::fs::read(&args.new)?)?;
 
@@ -158,10 +162,6 @@ fn main() -> anyhow::Result<()> {
     print_table(&rows);
 
     if let Some(threshold) = args.threshold_percent {
-        if threshold < 0.0 {
-            anyhow::bail!("threshold_percent must be >= 0");
-        }
-
         let mut bad = Vec::new();
         for row in rows {
             if row.is_regression(threshold) {
@@ -175,6 +175,14 @@ fn main() -> anyhow::Result<()> {
                 bad.join(", ")
             );
         }
+    }
+
+    Ok(())
+}
+
+fn validate_threshold_percent(threshold: f64) -> anyhow::Result<()> {
+    if !threshold.is_finite() || threshold < 0.0 {
+        anyhow::bail!("threshold_percent must be finite and >= 0");
     }
 
     Ok(())
@@ -442,5 +450,21 @@ mod tests {
         let msg = err.to_string();
 
         assert!(msg.contains("decompress result presence differs"), "{msg}");
+    }
+
+    #[test]
+    fn validate_threshold_percent_accepts_finite_non_negative_values() {
+        validate_threshold_percent(0.0).unwrap();
+        validate_threshold_percent(5.0).unwrap();
+    }
+
+    #[test]
+    fn validate_threshold_percent_rejects_negative_and_non_finite_values() {
+        for threshold in [-1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            let err = validate_threshold_percent(threshold).unwrap_err();
+            let msg = err.to_string();
+
+            assert!(msg.contains("finite and >= 0"), "{msg}");
+        }
     }
 }
