@@ -131,12 +131,12 @@ impl UploadSession {
         upload_id: impl Into<String>,
     ) -> Result<Self, UploadError> {
         let repo_root = repo_root.as_ref();
+        let upload_id = upload_id.into();
+        crate::upload::validate_upload_id(&upload_id)?;
+
         let part_store = PartStore::new(repo_root.join("parts"))?;
         let uploads = crate::upload::UploadManager::new(repo_root.join("uploads"), part_store)?;
-        Ok(Self {
-            uploads,
-            upload_id: upload_id.into(),
-        })
+        Ok(Self { uploads, upload_id })
     }
 
     pub fn upload_id(&self) -> &str {

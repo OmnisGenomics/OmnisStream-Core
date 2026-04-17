@@ -1,3 +1,4 @@
+use omnisstream::api::UploadError;
 use omnisstream::{ingest_file, Manifest, PartStore, Reader, UploadSession};
 
 #[test]
@@ -48,5 +49,29 @@ fn manifest_roundtrips_pb_bytes() -> Result<(), Box<dyn std::error::Error>> {
     manifest.validate_basic()?;
     let out = manifest.to_pb_bytes();
     assert!(!out.is_empty());
+    Ok(())
+}
+
+#[test]
+fn upload_session_open_rejects_pathlike_upload_ids() -> Result<(), Box<dyn std::error::Error>> {
+    let dir = tempfile::tempdir()?;
+    let repo_root = dir.path().join("repo");
+
+    for upload_id in [
+        "",
+        ".",
+        "..",
+        "../escape",
+        "nested/id",
+        r"nested\id",
+        "C:drive",
+    ] {
+        let err = UploadSession::open(&repo_root, upload_id).unwrap_err();
+        assert!(
+            matches!(err, UploadError::InvalidUploadId),
+            "unexpected error for {upload_id:?}: {err:?}"
+        );
+    }
+
     Ok(())
 }
