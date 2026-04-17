@@ -240,18 +240,20 @@ fn bytes_rows(
     new: BytesScenarioJson,
 ) -> anyhow::Result<Vec<MetricRow>> {
     let mut out = Vec::new();
-    out.push(MetricRow {
-        key: concat_key(prefix, "bytes_per_sec"),
-        better: Better::Higher,
-        base: base.bytes_per_sec,
-        new: new.bytes_per_sec,
-    });
-    out.push(MetricRow {
-        key: concat_key(prefix, "wall_seconds"),
-        better: Better::Lower,
-        base: base.wall_seconds,
-        new: new.wall_seconds,
-    });
+    push_row(
+        &mut out,
+        concat_key(prefix, "bytes_per_sec"),
+        Better::Higher,
+        base.bytes_per_sec,
+        new.bytes_per_sec,
+    )?;
+    push_row(
+        &mut out,
+        concat_key(prefix, "wall_seconds"),
+        Better::Lower,
+        base.wall_seconds,
+        new.wall_seconds,
+    )?;
     push_optional_row(
         &mut out,
         prefix,
@@ -285,24 +287,27 @@ fn range_rows(
     new: RangeScenarioJson,
 ) -> anyhow::Result<Vec<MetricRow>> {
     let mut out = Vec::new();
-    out.push(MetricRow {
-        key: concat_key(prefix, "ops_per_sec"),
-        better: Better::Higher,
-        base: base.ops_per_sec,
-        new: new.ops_per_sec,
-    });
-    out.push(MetricRow {
-        key: concat_key(prefix, "bytes_per_sec"),
-        better: Better::Higher,
-        base: base.bytes_per_sec,
-        new: new.bytes_per_sec,
-    });
-    out.push(MetricRow {
-        key: concat_key(prefix, "wall_seconds"),
-        better: Better::Lower,
-        base: base.wall_seconds,
-        new: new.wall_seconds,
-    });
+    push_row(
+        &mut out,
+        concat_key(prefix, "ops_per_sec"),
+        Better::Higher,
+        base.ops_per_sec,
+        new.ops_per_sec,
+    )?;
+    push_row(
+        &mut out,
+        concat_key(prefix, "bytes_per_sec"),
+        Better::Higher,
+        base.bytes_per_sec,
+        new.bytes_per_sec,
+    )?;
+    push_row(
+        &mut out,
+        concat_key(prefix, "wall_seconds"),
+        Better::Lower,
+        base.wall_seconds,
+        new.wall_seconds,
+    )?;
     push_optional_row(
         &mut out,
         prefix,
@@ -330,6 +335,31 @@ fn range_rows(
     Ok(out)
 }
 
+fn push_row(
+    out: &mut Vec<MetricRow>,
+    key: &'static str,
+    better: Better,
+    base: f64,
+    new: f64,
+) -> anyhow::Result<()> {
+    validate_metric_value(key, "base", base)?;
+    validate_metric_value(key, "new", new)?;
+    out.push(MetricRow {
+        key,
+        better,
+        base,
+        new,
+    });
+    Ok(())
+}
+
+fn validate_metric_value(key: &'static str, side: &str, value: f64) -> anyhow::Result<()> {
+    if !value.is_finite() || value < 0.0 {
+        anyhow::bail!("{key} {side} value must be finite and >= 0");
+    }
+    Ok(())
+}
+
 fn push_optional_row(
     out: &mut Vec<MetricRow>,
     prefix: &'static str,
@@ -340,12 +370,7 @@ fn push_optional_row(
 ) -> anyhow::Result<()> {
     let key = concat_key(prefix, metric);
     match (base, new) {
-        (Some(base), Some(new)) => out.push(MetricRow {
-            key,
-            better,
-            base,
-            new,
-        }),
+        (Some(base), Some(new)) => push_row(out, key, better, base, new)?,
         (None, None) => {}
         _ => anyhow::bail!("{key} presence differs; refuse to diff different result shapes"),
     }
@@ -504,6 +529,33 @@ mod tests {
             msg.contains("range_reads.peak_rss_bytes presence differs"),
             "{msg}"
         );
+    }
+
+    #[test]
+    fn diff_rows_reject_negative_required_metric() {
+        let mut base = results(None);
+        let new = results(None);
+        base.ingest.bytes_per_sec = -1.0;
+
+        let err = diff_rows(base, new, false).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("ingest.bytes_per_sec base value"), "{msg}");
+        assert!(msg.contains("finite and >= 0"), "{msg}");
+    }
+
+    #[test]
+    fn diff_rows_reject_non_finite_optional_metric() {
+        let mut base = results(None);
+        let mut new = results(None);
+        base.verify.cpu_percent = Some(50.0);
+        new.verify.cpu_percent = Some(f64::INFINITY);
+
+        let err = diff_rows(base, new, false).unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("verify.cpu_percent new value"), "{msg}");
+        assert!(msg.contains("finite and >= 0"), "{msg}");
     }
 
     #[test]
