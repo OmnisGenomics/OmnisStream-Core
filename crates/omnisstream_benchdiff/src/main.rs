@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
+use anyhow::Context as _;
 use clap::Parser;
 use serde::Deserialize;
 
@@ -127,8 +128,8 @@ fn main() -> anyhow::Result<()> {
         validate_threshold_percent(threshold)?;
     }
 
-    let base: BenchJson = serde_json::from_slice(&std::fs::read(&args.base)?)?;
-    let new: BenchJson = serde_json::from_slice(&std::fs::read(&args.new)?)?;
+    let base = load_bench_json(&args.base, "base")?;
+    let new = load_bench_json(&args.new, "new")?;
 
     if base.schema_version != 1 || new.schema_version != 1 {
         anyhow::bail!(
@@ -178,6 +179,13 @@ fn main() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn load_bench_json(path: &Path, side: &str) -> anyhow::Result<BenchJson> {
+    let bytes = std::fs::read(path)
+        .with_context(|| format!("reading {side} benchmark JSON {}", path.display()))?;
+    serde_json::from_slice(&bytes)
+        .with_context(|| format!("decoding {side} benchmark JSON {}", path.display()))
 }
 
 fn validate_threshold_percent(threshold: f64) -> anyhow::Result<()> {
@@ -572,5 +580,37 @@ mod tests {
 
             assert!(msg.contains("finite and >= 0"), "{msg}");
         }
+    }
+
+    #[test]
+    fn load_bench_json_read_error_includes_path_and_side() {
+        let path = std::env::temp_dir().join(format!(
+            "omnisstream_benchdiff_missing_{}_base.json",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_file(&path);
+
+        let err = load_bench_json(&path, "base").unwrap_err();
+        let msg = format!("{err:#}");
+
+        assert!(msg.contains("reading base benchmark JSON"), "{msg}");
+        assert!(msg.contains(&path.display().to_string()), "{msg}");
+    }
+
+    #[test]
+    fn load_bench_json_decode_error_includes_path_and_side() {
+        let path = std::env::temp_dir().join(format!(
+            "omnisstream_benchdiff_invalid_{}_new.json",
+            std::process::id()
+        ));
+        std::fs::write(&path, b"{").unwrap();
+
+        let err = load_bench_json(&path, "new").unwrap_err();
+        let msg = format!("{err:#}");
+
+        assert!(msg.contains("decoding new benchmark JSON"), "{msg}");
+        assert!(msg.contains(&path.display().to_string()), "{msg}");
+
+        std::fs::remove_file(path).unwrap();
     }
 }
