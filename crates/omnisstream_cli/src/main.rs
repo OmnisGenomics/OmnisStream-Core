@@ -36,7 +36,7 @@ enum Command {
         out: PathBuf,
 
         /// Worker threads for part-parallel reconstruction (default: logical cores).
-        #[arg(long)]
+        #[arg(long, value_parser = parse_positive_usize)]
         jobs: Option<usize>,
     },
 
@@ -199,6 +199,16 @@ fn load_manifest(path: &Path) -> anyhow::Result<Manifest> {
     Manifest::from_pb_bytes(&bytes).with_context(|| format!("decoding manifest {}", path.display()))
 }
 
+fn parse_positive_usize(value: &str) -> Result<usize, String> {
+    let parsed = value
+        .parse::<usize>()
+        .map_err(|e| format!("invalid positive integer: {e}"))?;
+    if parsed == 0 {
+        return Err("must be greater than 0".to_string());
+    }
+    Ok(parsed)
+}
+
 struct OffsetWriter {
     file: Arc<File>,
     pos: u64,
@@ -291,7 +301,12 @@ fn write_object_parallel(
     let default_jobs = std::thread::available_parallelism()
         .map(|n| n.get())
         .unwrap_or(1);
-    let jobs = jobs.unwrap_or(default_jobs).max(1).min(parts.len().max(1));
+    let jobs = match jobs {
+        Some(0) => anyhow::bail!("jobs must be greater than 0"),
+        Some(jobs) => jobs,
+        None => default_jobs,
+    }
+    .min(parts.len());
 
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(jobs)
@@ -687,6 +702,39 @@ mod tests {
 
         let got = std::fs::read(&out).unwrap();
         assert_eq!(got, input_bytes);
+    }
+
+    #[test]
+    fn get_object_rejects_zero_jobs() {
+        let err = Cli::try_parse_from([
+            "omnisstream",
+            "get-object",
+            "sample-object",
+            "out.bin",
+            "--jobs",
+            "0",
+        ])
+        .unwrap_err();
+
+        let msg = err.to_string();
+        assert!(msg.contains("must be greater than 0"), "{msg}");
+    }
+
+    #[test]
+    fn write_object_parallel_rejects_zero_jobs() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        std::fs::create_dir_all(&repo_root).unwrap();
+
+        let input = dir.path().join("input.bin");
+        std::fs::write(&input, b"hello").unwrap();
+
+        let res = omnisstream::ingest_file(&repo_root, &input, 2).unwrap();
+        let manifest = load_manifest(&res.manifest_path).unwrap();
+        let reader = reader_for_manifest(Some(&repo_root), manifest, &res.manifest_path).unwrap();
+
+        let err = write_object_parallel(&reader, &dir.path().join("out.bin"), Some(0)).unwrap_err();
+        assert!(err.to_string().contains("jobs must be greater than 0"));
     }
 
     #[test]
