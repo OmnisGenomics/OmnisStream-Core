@@ -58,6 +58,7 @@ void os_clear_last_error(void);
  * - `root_utf8.ptr` must be valid for `root_utf8.len` bytes for the duration of the call.
  * - `out_store` must be non-null and writable.
  * - On success, `*out_store` must be released with `os_partstore_close` exactly once.
+ * - On failure, `*out_store` is set to null.
  */
 int os_partstore_open(OsSpan root_utf8, OsPartStore **out_store);
 
@@ -99,6 +100,7 @@ void os_owned_bytes_free(OsOwnedBytes *b);
  * - `pb_bytes.ptr` must be valid for `pb_bytes.len` bytes for the duration of the call.
  * - `out_manifest` must be non-null and writable.
  * - On success, `*out_manifest` must be released with `os_manifest_free` exactly once.
+ * - On failure, `*out_manifest` is set to null.
  */
 int os_manifest_load_pb(OsSpan pb_bytes, OsManifest **out_manifest);
 
