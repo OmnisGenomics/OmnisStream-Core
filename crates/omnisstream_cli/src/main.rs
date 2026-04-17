@@ -483,7 +483,7 @@ fn list_part_files(parts_root: &Path) -> io::Result<Vec<PartFile>> {
 
             let id = ent.file_name().to_string_lossy().to_string();
             // PartStore ids are lowercase hex blake3 digests (64 chars).
-            if id.len() != 64 || !id.is_ascii() || !id.bytes().all(|b| b.is_ascii_hexdigit()) {
+            if !is_canonical_part_id(&id) {
                 continue;
             }
 
@@ -493,6 +493,10 @@ fn list_part_files(parts_root: &Path) -> io::Result<Vec<PartFile>> {
     }
 
     Ok(out)
+}
+
+fn is_canonical_part_id(id: &str) -> bool {
+    id.len() == 64 && id.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
 }
 
 fn run_gc(repo_root: &Path, force: bool, print_ids: bool) -> anyhow::Result<GcStats> {
@@ -665,6 +669,26 @@ mod tests {
 
         let got = std::fs::read(&out).unwrap();
         assert_eq!(got, input_bytes);
+    }
+
+    #[test]
+    fn list_part_files_ignores_noncanonical_part_ids() {
+        let dir = tempfile::tempdir().unwrap();
+        let parts_root = dir.path().join("parts");
+        std::fs::create_dir_all(parts_root.join("aa").join("bb")).unwrap();
+
+        let canonical = "a".repeat(64);
+        let uppercase = "A".repeat(64);
+        let invalid = format!("{}g", "a".repeat(63));
+
+        std::fs::write(parts_root.join("aa").join("bb").join(&canonical), b"ok").unwrap();
+        std::fs::write(parts_root.join("aa").join("bb").join(uppercase), b"skip").unwrap();
+        std::fs::write(parts_root.join("aa").join("bb").join(invalid), b"skip").unwrap();
+
+        let files = list_part_files(&parts_root).unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].id, canonical);
+        assert_eq!(files[0].bytes, 2);
     }
 
     #[test]
