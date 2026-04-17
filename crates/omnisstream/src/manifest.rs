@@ -192,13 +192,12 @@ pub enum ManifestValidationError {
 }
 
 pub fn validate_manifest_basic(pb: &pbv1::ObjectManifest) -> Result<(), ManifestValidationError> {
-    let v = semver::Version::parse(pb.manifest_version.trim())
+    semver::Version::parse(&pb.manifest_version)
         .ok()
         .filter(|v| v.pre.is_empty() && v.build.is_empty() && v.major == 0 && v.minor == 1)
         .ok_or_else(|| ManifestValidationError::InvalidManifestVersion {
             manifest_version: pb.manifest_version.clone(),
         })?;
-    let _ = v;
 
     if pb.object_id.trim().is_empty() {
         return Err(ManifestValidationError::MissingObjectId);
@@ -496,6 +495,19 @@ mod tests {
         pb.object_id.clear();
         let err = Manifest::new(pb).validate_basic().unwrap_err();
         assert!(matches!(err, ManifestValidationError::MissingObjectId));
+    }
+
+    #[test]
+    fn validate_rejects_manifest_version_with_whitespace() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.manifest_version = " 0.1.0".to_string();
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::InvalidManifestVersion { manifest_version }
+                if manifest_version == " 0.1.0"
+        ));
     }
 
     #[test]
