@@ -47,8 +47,8 @@ impl PartStore {
     }
 
     pub fn put_bytes(&self, bytes: &[u8]) -> io::Result<Blake3Digest> {
-        let digest = crate::hashing::blake3_256_bytes(bytes);
-        self.put_bytes_with_digest(digest, bytes)?;
+        let digest = blake3_256_bytes(bytes);
+        self.put_bytes_with_verified_digest(digest, bytes)?;
         Ok(digest)
     }
 
@@ -59,7 +59,10 @@ impl PartStore {
                 "part digest does not match bytes",
             ));
         }
+        self.put_bytes_with_verified_digest(digest, bytes)
+    }
 
+    fn put_bytes_with_verified_digest(&self, digest: Blake3Digest, bytes: &[u8]) -> io::Result<()> {
         let final_path = self.path_for_digest(digest);
 
         #[cfg(all(feature = "group-commit", target_os = "linux"))]
