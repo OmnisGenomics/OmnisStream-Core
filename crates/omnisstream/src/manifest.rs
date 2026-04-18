@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{collections::HashSet, path::Path};
 
 use prost::Message as _;
 
@@ -72,6 +72,7 @@ impl Manifest {
     pub fn part_store_digests_hex(&self) -> Result<Vec<String>, ManifestValidationError> {
         self.validate_basic()?;
 
+        let mut seen = HashSet::with_capacity(self.pb.parts.len());
         let mut out = Vec::with_capacity(self.pb.parts.len());
         for (index, part) in self.pb.parts.iter().enumerate() {
             if !part.relative_path.is_empty() {
@@ -100,7 +101,10 @@ impl Manifest {
             // Round-trip through the digest type to guarantee stable formatting.
             let mut bytes = [0_u8; 32];
             bytes.copy_from_slice(&hash.digest);
-            out.push(Blake3Digest::from_bytes(bytes).to_hex());
+            let digest_hex = Blake3Digest::from_bytes(bytes).to_hex();
+            if seen.insert(digest_hex.clone()) {
+                out.push(digest_hex);
+            }
         }
         Ok(out)
     }
@@ -149,6 +153,9 @@ pub enum ManifestValidationError {
     #[error("part_number must be > 0 (part index {index})")]
     InvalidPartNumber { index: usize },
 
+    #[error("duplicate part_number {part_number} (part index {index})")]
+    DuplicatePartNumber { index: usize, part_number: u32 },
+
     #[error("part length must be > 0 (part index {index})")]
     InvalidPartLength { index: usize },
 
@@ -158,7 +165,7 @@ pub enum ManifestValidationError {
     #[error("compression must not be unspecified (part index {index})")]
     CompressionUnspecified { index: usize },
 
-    #[error("relative_path must be relative and must not contain '..' (part index {index}): {relative_path:?}")]
+    #[error("relative_path must be relative and must not contain '.' or '..' path segments (part index {index}): {relative_path:?}")]
     InvalidRelativePath { index: usize, relative_path: String },
 
     #[error("tag/extension key is invalid ({location}): {key:?}")]
@@ -189,13 +196,12 @@ pub enum ManifestValidationError {
 }
 
 pub fn validate_manifest_basic(pb: &pbv1::ObjectManifest) -> Result<(), ManifestValidationError> {
-    let v = semver::Version::parse(pb.manifest_version.trim())
+    semver::Version::parse(&pb.manifest_version)
         .ok()
         .filter(|v| v.pre.is_empty() && v.build.is_empty() && v.major == 0 && v.minor == 1)
         .ok_or_else(|| ManifestValidationError::InvalidManifestVersion {
             manifest_version: pb.manifest_version.clone(),
         })?;
-    let _ = v;
 
     if pb.object_id.trim().is_empty() {
         return Err(ManifestValidationError::MissingObjectId);
@@ -208,8 +214,15 @@ pub fn validate_manifest_basic(pb: &pbv1::ObjectManifest) -> Result<(), Manifest
     validate_keys("object tags", pb.tags.keys())?;
     validate_keys("object extensions", pb.extensions.keys())?;
 
+    let mut seen_part_numbers = HashSet::with_capacity(pb.parts.len());
     for (index, part) in pb.parts.iter().enumerate() {
         validate_part_basic(index, part)?;
+        if !seen_part_numbers.insert(part.part_number) {
+            return Err(ManifestValidationError::DuplicatePartNumber {
+                index,
+                part_number: part.part_number,
+            });
+        }
     }
 
     validate_parts_order_and_coverage(pb)?;
@@ -265,7 +278,11 @@ fn validate_relative_path(
                 invalid = true;
                 break;
             }
-            Component::CurDir | Component::Normal(_) => {}
+            Component::CurDir => {
+                invalid = true;
+                break;
+            }
+            Component::Normal(_) => {}
         }
     }
 
@@ -485,6 +502,19 @@ mod tests {
     }
 
     #[test]
+    fn validate_rejects_manifest_version_with_whitespace() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.manifest_version = " 0.1.0".to_string();
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::InvalidManifestVersion { manifest_version }
+                if manifest_version == " 0.1.0"
+        ));
+    }
+
+    #[test]
     fn validate_rejects_out_of_order_parts() {
         let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
         let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
@@ -496,6 +526,74 @@ mod tests {
                 | ManifestValidationError::PartsMustStartAtZero { .. }
                 | ManifestValidationError::PartsNotContiguous { .. }
         ));
+    }
+
+    #[test]
+    fn validate_rejects_duplicate_part_number() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.parts[1].part_number = pb.parts[0].part_number;
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::DuplicatePartNumber {
+                index: 1,
+                part_number: 1,
+            }
+        ));
+    }
+
+    #[test]
+    fn validate_rejects_curdir_relative_path_segment() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.parts[0].relative_path = "./parts/part-0001.bin".to_string();
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::InvalidRelativePath { index: 0, .. }
+        ));
+    }
+
+    #[test]
+    fn part_store_digests_hex_returns_unique_digests() {
+        let repeated_blake3 = vec![0xAB; 32];
+        let mut pb = pbv1::ObjectManifest {
+            manifest_version: "0.1.0".to_string(),
+            object_id: "object-1".to_string(),
+            object_length: 2,
+            parts: Vec::new(),
+            upload_session: None,
+            commit: None,
+            tags: Default::default(),
+            extensions: Default::default(),
+        };
+
+        for (part_number, offset) in [(1, 0), (2, 1)] {
+            pb.parts.push(pbv1::PartMeta {
+                part_number,
+                offset,
+                length: 1,
+                stored_length: 1,
+                compression: pbv1::CompressionAlgorithm::None as i32,
+                hashes: vec![
+                    pbv1::HashDigest {
+                        alg: pbv1::HashAlgorithm::Blake3256 as i32,
+                        digest: repeated_blake3.clone(),
+                    },
+                    pbv1::HashDigest {
+                        alg: pbv1::HashAlgorithm::Crc32c as i32,
+                        digest: vec![0, 0, 0, part_number as u8],
+                    },
+                ],
+                relative_path: String::new(),
+                tags: Default::default(),
+                extensions: Default::default(),
+            });
+        }
+
+        let digests = Manifest::new(pb).part_store_digests_hex().unwrap();
+        assert_eq!(digests, vec![hex::encode(repeated_blake3)]);
     }
 
     #[test]

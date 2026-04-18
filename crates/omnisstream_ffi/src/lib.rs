@@ -220,22 +220,25 @@ pub unsafe extern "C" fn os_partstore_put(
 /// - `digest` must be non-null and point to a valid `OsDigest`.
 /// - `out_bytes` must be non-null and writable.
 /// - On success, `out_bytes->ptr` must be released with `os_owned_bytes_free`.
+/// - On failure, `out_bytes->ptr` is set to null and `out_bytes->len` is set to zero when
+///   `out_bytes` is non-null.
 pub unsafe extern "C" fn os_partstore_get(
     store: *mut OsPartStore,
     digest: *const OsDigest,
     out_bytes: *mut OsOwnedBytes,
 ) -> c_int {
     with_boundary(|| {
+        if out_bytes.is_null() {
+            set_last_error("out_bytes is null");
+            return Err(OS_INVALID_ARGUMENT);
+        }
+        reset_owned_bytes(out_bytes);
         if store.is_null() {
             set_last_error("store is null");
             return Err(OS_INVALID_ARGUMENT);
         }
         if digest.is_null() {
             set_last_error("digest is null");
-            return Err(OS_INVALID_ARGUMENT);
-        }
-        if out_bytes.is_null() {
-            set_last_error("out_bytes is null");
             return Err(OS_INVALID_ARGUMENT);
         }
 
@@ -269,7 +272,7 @@ pub unsafe extern "C" fn os_owned_bytes_free(b: *mut OsOwnedBytes) {
             (*b).len = 0;
             return;
         }
-        let slice = slice::from_raw_parts_mut((*b).ptr, (*b).len);
+        let slice = ptr::slice_from_raw_parts_mut((*b).ptr, (*b).len);
         drop(Box::from_raw(slice));
         (*b).ptr = ptr::null_mut();
         (*b).len = 0;
@@ -385,17 +388,20 @@ pub unsafe extern "C" fn os_verify_manifest_on_disk(
 /// - `m` must be a pointer returned by `os_manifest_load_pb`.
 /// - `out_utf8` must be non-null and writable.
 /// - On success, `out_utf8->ptr` must be released with `os_owned_bytes_free`.
+/// - On failure, `out_utf8->ptr` is set to null and `out_utf8->len` is set to zero when
+///   `out_utf8` is non-null.
 pub unsafe extern "C" fn os_manifest_inspect(
     m: *mut OsManifest,
     out_utf8: *mut OsOwnedBytes,
 ) -> c_int {
     with_boundary(|| {
-        if m.is_null() {
-            set_last_error("manifest is null");
-            return Err(OS_INVALID_ARGUMENT);
-        }
         if out_utf8.is_null() {
             set_last_error("out_utf8 is null");
+            return Err(OS_INVALID_ARGUMENT);
+        }
+        reset_owned_bytes(out_utf8);
+        if m.is_null() {
+            set_last_error("manifest is null");
             return Err(OS_INVALID_ARGUMENT);
         }
         let handle = unsafe { &mut *(m as *mut ManifestHandle) };
@@ -405,7 +411,19 @@ pub unsafe extern "C" fn os_manifest_inspect(
     })
 }
 
+fn reset_owned_bytes(out: *mut OsOwnedBytes) {
+    unsafe {
+        (*out).ptr = ptr::null_mut();
+        (*out).len = 0;
+    }
+}
+
 fn write_owned_bytes(out: *mut OsOwnedBytes, mut bytes: Vec<u8>) {
+    if bytes.is_empty() {
+        reset_owned_bytes(out);
+        return;
+    }
+
     bytes.shrink_to_fit();
     let boxed: Box<[u8]> = bytes.into_boxed_slice();
     let len = boxed.len();
@@ -432,6 +450,23 @@ mod tests {
             ptr: bytes.as_ptr(),
             len: bytes.len(),
         }
+    }
+
+    fn last_error_string() -> String {
+        unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned()
+    }
+
+    fn temp_test_dir(name: &str) -> std::path::PathBuf {
+        let path = std::env::temp_dir().join(format!(
+            "omnisstream_ffi_test_{}_{}",
+            std::process::id(),
+            name
+        ));
+        let _ = std::fs::remove_dir_all(&path);
+        std::fs::create_dir_all(&path).unwrap();
+        path
     }
 
     #[test]
@@ -461,5 +496,108 @@ mod tests {
             .to_string_lossy()
             .into_owned();
         assert!(err.contains("failed to decode"), "{err}");
+    }
+
+    #[test]
+    fn partstore_get_clears_owned_bytes_on_argument_failure() {
+        let mut out_bytes = OsOwnedBytes {
+            ptr: std::ptr::NonNull::<c_uchar>::dangling().as_ptr(),
+            len: 99,
+        };
+        let digest = OsDigest { bytes: [0; 32] };
+
+        let rc = unsafe { os_partstore_get(ptr::null_mut(), &digest, &mut out_bytes) };
+
+        assert_eq!(rc, OS_INVALID_ARGUMENT);
+        assert!(out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, 0);
+        let err = unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned();
+        assert!(err.contains("store is null"), "{err}");
+    }
+
+    #[test]
+    fn manifest_inspect_clears_owned_bytes_on_argument_failure() {
+        let mut out_utf8 = OsOwnedBytes {
+            ptr: std::ptr::NonNull::<c_uchar>::dangling().as_ptr(),
+            len: 99,
+        };
+
+        let rc = unsafe { os_manifest_inspect(ptr::null_mut(), &mut out_utf8) };
+
+        assert_eq!(rc, OS_INVALID_ARGUMENT);
+        assert!(out_utf8.ptr.is_null());
+        assert_eq!(out_utf8.len, 0);
+        let err = unsafe { std::ffi::CStr::from_ptr(os_last_error_message()) }
+            .to_string_lossy()
+            .into_owned();
+        assert!(err.contains("manifest is null"), "{err}");
+    }
+
+    #[test]
+    fn partstore_get_empty_part_returns_null_owned_bytes() {
+        let dir = temp_test_dir("empty_part");
+        let root = dir.to_str().unwrap();
+        let mut store = ptr::null_mut();
+
+        let rc = unsafe { os_partstore_open(span_from_bytes(root.as_bytes()), &mut store) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!store.is_null());
+
+        let mut digest = OsDigest { bytes: [0; 32] };
+        let rc = unsafe { os_partstore_put(store, empty_span(), &mut digest) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+
+        let mut out_bytes = OsOwnedBytes {
+            ptr: std::ptr::NonNull::<c_uchar>::dangling().as_ptr(),
+            len: 99,
+        };
+        let rc = unsafe { os_partstore_get(store, &digest, &mut out_bytes) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, 0);
+
+        unsafe {
+            os_owned_bytes_free(&mut out_bytes);
+            os_partstore_close(store);
+        }
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it() {
+        let dir = temp_test_dir("non_empty_part");
+        let root = dir.to_str().unwrap();
+        let mut store = ptr::null_mut();
+
+        let rc = unsafe { os_partstore_open(span_from_bytes(root.as_bytes()), &mut store) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!store.is_null());
+
+        let payload = b"owned ffi bytes";
+        let mut digest = OsDigest { bytes: [0; 32] };
+        let rc = unsafe { os_partstore_put(store, span_from_bytes(payload), &mut digest) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+
+        let mut out_bytes = OsOwnedBytes {
+            ptr: ptr::null_mut(),
+            len: 0,
+        };
+        let rc = unsafe { os_partstore_get(store, &digest, &mut out_bytes) };
+        assert_eq!(rc, OS_OK, "{}", last_error_string());
+        assert!(!out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, payload.len());
+
+        let got = unsafe { slice::from_raw_parts(out_bytes.ptr, out_bytes.len) };
+        assert_eq!(got, payload);
+
+        unsafe {
+            os_owned_bytes_free(&mut out_bytes);
+            os_partstore_close(store);
+        }
+        assert!(out_bytes.ptr.is_null());
+        assert_eq!(out_bytes.len, 0);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 }

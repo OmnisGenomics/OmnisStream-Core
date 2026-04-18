@@ -36,7 +36,7 @@ enum Command {
         out: PathBuf,
 
         /// Worker threads for part-parallel reconstruction (default: logical cores).
-        #[arg(long)]
+        #[arg(long, value_parser = parse_positive_usize)]
         jobs: Option<usize>,
     },
 
@@ -199,6 +199,16 @@ fn load_manifest(path: &Path) -> anyhow::Result<Manifest> {
     Manifest::from_pb_bytes(&bytes).with_context(|| format!("decoding manifest {}", path.display()))
 }
 
+fn parse_positive_usize(value: &str) -> Result<usize, String> {
+    let parsed = value
+        .parse::<usize>()
+        .map_err(|e| format!("invalid positive integer: {e}"))?;
+    if parsed == 0 {
+        return Err("must be greater than 0".to_string());
+    }
+    Ok(parsed)
+}
+
 struct OffsetWriter {
     file: Arc<File>,
     pos: u64,
@@ -291,7 +301,12 @@ fn write_object_parallel(
     let default_jobs = std::thread::available_parallelism()
         .map(|n| n.get())
         .unwrap_or(1);
-    let jobs = jobs.unwrap_or(default_jobs).max(1).min(parts.len().max(1));
+    let jobs = match jobs {
+        Some(0) => anyhow::bail!("jobs must be greater than 0"),
+        Some(jobs) => jobs,
+        None => default_jobs,
+    }
+    .min(parts.len());
 
     let pool = rayon::ThreadPoolBuilder::new()
         .num_threads(jobs)
@@ -373,10 +388,7 @@ fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Re
         );
     }
 
-    if Path::new(&object_version)
-        .components()
-        .any(|c| !matches!(c, Component::Normal(_)))
-    {
+    if !is_single_normal_path_component(&object_version) {
         anyhow::bail!("invalid object version: {object_version:?}");
     }
 
@@ -392,6 +404,13 @@ fn resolve_object_manifest_path(repo_root: &Path, object_id: &str) -> anyhow::Re
     }
 
     Ok(manifest_path)
+}
+
+fn is_single_normal_path_component(value: &str) -> bool {
+    use std::path::Component;
+
+    let mut components = Path::new(value).components();
+    matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none()
 }
 
 #[derive(Debug, Clone)]
@@ -483,7 +502,7 @@ fn list_part_files(parts_root: &Path) -> io::Result<Vec<PartFile>> {
 
             let id = ent.file_name().to_string_lossy().to_string();
             // PartStore ids are lowercase hex blake3 digests (64 chars).
-            if id.len() != 64 || !id.is_ascii() || !id.bytes().all(|b| b.is_ascii_hexdigit()) {
+            if !is_canonical_part_id(&id) {
                 continue;
             }
 
@@ -493,6 +512,10 @@ fn list_part_files(parts_root: &Path) -> io::Result<Vec<PartFile>> {
     }
 
     Ok(out)
+}
+
+fn is_canonical_part_id(id: &str) -> bool {
+    id.len() == 64 && id.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'))
 }
 
 fn run_gc(repo_root: &Path, force: bool, print_ids: bool) -> anyhow::Result<GcStats> {
@@ -622,6 +645,20 @@ mod tests {
     }
 
     #[test]
+    fn resolve_object_manifest_path_rejects_nested_latest_version() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        let object_dir = repo_root.join("objects").join("sample");
+        std::fs::create_dir_all(&object_dir).unwrap();
+        std::fs::write(object_dir.join("latest"), "v1/nested").unwrap();
+
+        let err = resolve_object_manifest_path(&repo_root, "sample").unwrap_err();
+        let msg = err.to_string();
+
+        assert!(msg.contains("invalid object version"), "{msg}");
+    }
+
+    #[test]
     fn load_manifest_missing_file_error_includes_path() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("missing.pb");
@@ -665,6 +702,59 @@ mod tests {
 
         let got = std::fs::read(&out).unwrap();
         assert_eq!(got, input_bytes);
+    }
+
+    #[test]
+    fn get_object_rejects_zero_jobs() {
+        let err = Cli::try_parse_from([
+            "omnisstream",
+            "get-object",
+            "sample-object",
+            "out.bin",
+            "--jobs",
+            "0",
+        ])
+        .unwrap_err();
+
+        let msg = err.to_string();
+        assert!(msg.contains("must be greater than 0"), "{msg}");
+    }
+
+    #[test]
+    fn write_object_parallel_rejects_zero_jobs() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo_root = dir.path().join("repo");
+        std::fs::create_dir_all(&repo_root).unwrap();
+
+        let input = dir.path().join("input.bin");
+        std::fs::write(&input, b"hello").unwrap();
+
+        let res = omnisstream::ingest_file(&repo_root, &input, 2).unwrap();
+        let manifest = load_manifest(&res.manifest_path).unwrap();
+        let reader = reader_for_manifest(Some(&repo_root), manifest, &res.manifest_path).unwrap();
+
+        let err = write_object_parallel(&reader, &dir.path().join("out.bin"), Some(0)).unwrap_err();
+        assert!(err.to_string().contains("jobs must be greater than 0"));
+    }
+
+    #[test]
+    fn list_part_files_ignores_noncanonical_part_ids() {
+        let dir = tempfile::tempdir().unwrap();
+        let parts_root = dir.path().join("parts");
+        std::fs::create_dir_all(parts_root.join("aa").join("bb")).unwrap();
+
+        let canonical = "a".repeat(64);
+        let uppercase = "A".repeat(64);
+        let invalid = format!("{}g", "a".repeat(63));
+
+        std::fs::write(parts_root.join("aa").join("bb").join(&canonical), b"ok").unwrap();
+        std::fs::write(parts_root.join("aa").join("bb").join(uppercase), b"skip").unwrap();
+        std::fs::write(parts_root.join("aa").join("bb").join(invalid), b"skip").unwrap();
+
+        let files = list_part_files(&parts_root).unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].id, canonical);
+        assert_eq!(files[0].bytes, 2);
     }
 
     #[test]

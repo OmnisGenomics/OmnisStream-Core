@@ -197,6 +197,8 @@ impl UploadManager {
     }
 
     fn load_session(&self, upload_id: &str) -> Result<SessionFile, UploadError> {
+        validate_upload_id(upload_id)?;
+
         let path = self.session_path(upload_id);
         let Some(s) = read_to_string_if_exists(&path)? else {
             return Err(UploadError::NotFound);
@@ -207,6 +209,8 @@ impl UploadManager {
     }
 
     fn save_session(&self, upload_id: &str, session: &SessionFile) -> Result<(), UploadError> {
+        validate_upload_id(upload_id)?;
+
         let bytes = serde_json::to_vec_pretty(session)?;
         atomic_write_bytes(&self.session_path(upload_id), &bytes)?;
         Ok(())
@@ -258,6 +262,9 @@ pub enum UploadError {
     #[error("object_id must be non-empty")]
     InvalidObjectId,
 
+    #[error("upload_id must be a non-empty single path segment")]
+    InvalidUploadId,
+
     #[error("part_number must be > 0")]
     InvalidPartNumber,
 
@@ -290,6 +297,21 @@ pub enum UploadError {
 
     #[error("invalid digest hex in session file")]
     InvalidDigestHex,
+}
+
+pub(crate) fn validate_upload_id(upload_id: &str) -> Result<(), UploadError> {
+    if upload_id.is_empty()
+        || upload_id == "."
+        || upload_id == ".."
+        || upload_id.contains('/')
+        || upload_id.contains('\\')
+        || upload_id.contains('\0')
+        || upload_id.contains(':')
+    {
+        return Err(UploadError::InvalidUploadId);
+    }
+
+    Ok(())
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -392,6 +414,29 @@ mod tests {
         uploads.put_part(&upload_id, 1, b"hello").unwrap();
         let err = uploads.put_part(&upload_id, 1, b"world").unwrap_err();
         assert!(matches!(err, UploadError::PartConflict { part_number: 1 }));
+    }
+
+    #[test]
+    fn put_part_rejects_pathlike_upload_ids() {
+        let dir = tempfile::tempdir().unwrap();
+        let part_store = PartStore::new(dir.path().join("parts")).unwrap();
+        let uploads = UploadManager::new(dir.path().join("uploads"), part_store).unwrap();
+
+        for upload_id in [
+            "",
+            ".",
+            "..",
+            "../escape",
+            "nested/id",
+            r"nested\id",
+            "C:drive",
+        ] {
+            let err = uploads.put_part(upload_id, 1, b"hello").unwrap_err();
+            assert!(
+                matches!(err, UploadError::InvalidUploadId),
+                "unexpected error for {upload_id:?}: {err:?}"
+            );
+        }
     }
 
     #[test]

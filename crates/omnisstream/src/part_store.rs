@@ -3,7 +3,7 @@ use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 
 use crate::fs_util::{fsync_dir, sync_file};
-use crate::hashing::{Blake3Digest, HashSummary};
+use crate::hashing::{blake3_256_bytes, Blake3Digest, HashSummary};
 
 #[cfg(all(feature = "group-commit", target_os = "linux"))]
 use std::sync::Arc;
@@ -47,12 +47,22 @@ impl PartStore {
     }
 
     pub fn put_bytes(&self, bytes: &[u8]) -> io::Result<Blake3Digest> {
-        let digest = crate::hashing::blake3_256_bytes(bytes);
-        self.put_bytes_with_digest(digest, bytes)?;
+        let digest = blake3_256_bytes(bytes);
+        self.put_bytes_with_verified_digest(digest, bytes)?;
         Ok(digest)
     }
 
     pub fn put_bytes_with_digest(&self, digest: Blake3Digest, bytes: &[u8]) -> io::Result<()> {
+        if blake3_256_bytes(bytes) != digest {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "part digest does not match bytes",
+            ));
+        }
+        self.put_bytes_with_verified_digest(digest, bytes)
+    }
+
+    fn put_bytes_with_verified_digest(&self, digest: Blake3Digest, bytes: &[u8]) -> io::Result<()> {
         let final_path = self.path_for_digest(digest);
 
         #[cfg(all(feature = "group-commit", target_os = "linux"))]
@@ -262,6 +272,21 @@ mod tests {
 
         let path = store.path_for_digest(d1);
         assert!(path.is_file());
+    }
+
+    #[test]
+    fn put_bytes_with_digest_rejects_mismatched_digest() {
+        let dir = tempfile::tempdir().unwrap();
+        let store = PartStore::new(dir.path()).unwrap();
+        let digest = blake3_256_bytes(b"different bytes");
+        let path = store.path_for_digest(digest);
+
+        let err = store
+            .put_bytes_with_digest(digest, b"stored bytes")
+            .unwrap_err();
+
+        assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
+        assert!(!path.exists());
     }
 
     #[test]
