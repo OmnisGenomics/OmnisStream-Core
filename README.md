@@ -106,8 +106,9 @@ cargo run -p omnisstream_cli -- range spec/omnisstream-spec/test-vectors/vector-
 Optional but recommended:
 
 ```sh
-cargo fmt --all
-cargo clippy --all-targets --all-features
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-features
 ```
 
 ## License
