@@ -433,7 +433,7 @@ fn concat_key(prefix: &'static str, metric: &'static str) -> &'static str {
         ("range_reads", "cpu_seconds") => "range_reads.cpu_seconds",
         ("range_reads", "cpu_percent") => "range_reads.cpu_percent",
         ("range_reads", "peak_rss_bytes") => "range_reads.peak_rss_bytes",
-        _ => "unknown",
+        _ => unreachable!("unknown bench metric key: {prefix}.{metric}"),
     }
 }
 
@@ -604,6 +604,12 @@ mod tests {
 
         assert!(msg.contains("verify.cpu_percent new value"), "{msg}");
         assert!(msg.contains("finite and >= 0"), "{msg}");
+    }
+
+    #[test]
+    #[should_panic(expected = "unknown bench metric key")]
+    fn concat_key_rejects_unknown_metric() {
+        let _ = concat_key("ingest", "not_a_metric");
     }
 
     #[test]
