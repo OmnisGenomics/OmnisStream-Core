@@ -1,0 +1,1576 @@
+---
+page_id: dependencies
+page_type: dependencies
+generation_mode: inferred
+freshness_status: reused
+updated_at: 2026-04-18T05:55:58.251Z
+---
+
+<details>
+<summary>Build metadata</summary>
+
+```json
+{
+  "freshnessKey": "d6d93eccf5abd233c40315b9f0a54b20ed2384da",
+  "plannerReason": "Workspace template selected because deterministic evidence suggests a multi-package or multi-application repository.",
+  "changedPaths": [],
+  "dependencyPaths": [
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "crates/omnisstream_bench/src/main.rs",
+    "crates/omnisstream_bench/Cargo.toml",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml",
+    "crates/omnisstream_ffi/src/bin/header_gen.rs",
+    "crates/omnisstream_ffi/Cargo.toml",
+    "crates/omnisstream/build.rs",
+    "crates/omnisstream/Cargo.toml",
+    "crates/omnisstream_backend_api/Cargo.toml",
+    "crates/omnisstream_backend_api/src/lib.rs",
+    "crates/omnisstream_cli/build.rs",
+    "crates/omnisstream_ffi/cbindgen.toml",
+    "Cargo.toml",
+    "crates/omnisstream_ffi/src/lib.rs",
+    "crates/omnisstream/src/api.rs",
+    "crates/omnisstream/src/compression.rs",
+    "docs/ffi_cmake.md",
+    "README.md",
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "spec/omnisstream-spec/tools/validator/README.md",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/test-vectors/README.md"
+  ],
+  "dependencyEvidenceIds": [
+    "ingest:file:crates/omnisstream_bench/src/main.rs",
+    "ingest:file:crates/omnisstream/src/hashing.rs",
+    "ingest:file:crates/omnisstream/src/api.rs",
+    "ingest:file:crates/omnisstream_benchdiff/src/main.rs",
+    "ingest:file:crates/omnisstream_cli/build.rs",
+    "ingest:file:crates/omnisstream_cli/src/main.rs",
+    "ingest:file:crates/omnisstream/src/manifest.rs",
+    "ingest:file:crates/omnisstream_ffi/src/lib.rs",
+    "ingest:file:crates/omnisstream/src/fs_util.rs",
+    "ingest:file:crates/omnisstream/src/repo.rs",
+    "ingest:file:crates/omnisstream/src/group_commit.rs",
+    "ingest:file:crates/omnisstream/src/ingest_backend.rs",
+    "ingest:file:crates/omnisstream/src/inspect.rs",
+    "ingest:file:crates/omnisstream/src/reader.rs",
+    "ingest:file:crates/omnisstream/src/object_version.rs",
+    "ingest:file:crates/omnisstream/src/part_store.rs",
+    "ingest:file:crates/omnisstream/src/lib.rs",
+    "ingest:file:crates/omnisstream/src/upload.rs",
+    "ingest:file:crates/omnisstream/tests/api_surface.rs",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
+    "component:crates/omnisstream_bench/Cargo.toml",
+    "component:crates/omnisstream_benchdiff/Cargo.toml",
+    "component:crates/omnisstream_ffi/Cargo.toml",
+    "component:crates/omnisstream_cli/Cargo.toml",
+    "component:crates/omnisstream_backend_api/Cargo.toml",
+    "component:crates/omnisstream/Cargo.toml",
+    "ingest:file:crates/omnisstream_backend_api/src/lib.rs",
+    "ingest:file:crates/omnisstream_ffi/src/bin/header_gen.rs",
+    "ingest:file:crates/omnisstream/src/compression.rs",
+    "ingest:file:crates/omnisstream/src/durability.rs",
+    "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:README.md",
+    "ingest:file:spec/omnisstream-spec/proto/README.md",
+    "ingest:file:spec/omnisstream-spec/README.md",
+    "ingest:file:spec/omnisstream-spec/test-vectors/README.md",
+    "ingest:file:spec/omnisstream-spec/tools/validator/README.md",
+    "component:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface",
+    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface.json",
+    "ingest:file:target/debug/build/cbindgen-741b44f13a1fd46a/out/tests.rs",
+    "ingest:file:target/debug/build/serde-4318e20821b822c5/out/private.rs"
+  ],
+  "evidenceIds": [
+    "ingest:file:crates/omnisstream_bench/src/main.rs",
+    "ingest:file:crates/omnisstream/src/hashing.rs",
+    "ingest:file:crates/omnisstream/src/api.rs",
+    "ingest:file:crates/omnisstream_benchdiff/src/main.rs",
+    "ingest:file:crates/omnisstream_cli/build.rs",
+    "ingest:file:crates/omnisstream_cli/src/main.rs",
+    "ingest:file:crates/omnisstream/src/manifest.rs",
+    "ingest:file:crates/omnisstream_ffi/src/lib.rs",
+    "ingest:file:crates/omnisstream/src/fs_util.rs",
+    "ingest:file:crates/omnisstream/src/repo.rs",
+    "ingest:file:crates/omnisstream/src/group_commit.rs",
+    "ingest:file:crates/omnisstream/src/ingest_backend.rs",
+    "ingest:file:crates/omnisstream/src/inspect.rs",
+    "ingest:file:crates/omnisstream/src/reader.rs",
+    "ingest:file:crates/omnisstream/src/object_version.rs",
+    "ingest:file:crates/omnisstream/src/part_store.rs",
+    "ingest:file:crates/omnisstream/src/lib.rs",
+    "ingest:file:crates/omnisstream/src/upload.rs",
+    "ingest:file:crates/omnisstream/tests/api_surface.rs",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
+    "component:crates/omnisstream_bench/Cargo.toml",
+    "component:crates/omnisstream_benchdiff/Cargo.toml",
+    "component:crates/omnisstream_ffi/Cargo.toml",
+    "component:crates/omnisstream_cli/Cargo.toml",
+    "component:crates/omnisstream_backend_api/Cargo.toml",
+    "component:crates/omnisstream/Cargo.toml",
+    "ingest:file:crates/omnisstream_backend_api/src/lib.rs",
+    "ingest:file:crates/omnisstream_ffi/src/bin/header_gen.rs",
+    "ingest:file:crates/omnisstream/src/compression.rs",
+    "ingest:file:crates/omnisstream/src/durability.rs",
+    "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:README.md",
+    "ingest:file:spec/omnisstream-spec/proto/README.md",
+    "ingest:file:spec/omnisstream-spec/README.md",
+    "ingest:file:spec/omnisstream-spec/test-vectors/README.md",
+    "ingest:file:spec/omnisstream-spec/tools/validator/README.md",
+    "component:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
+    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api",
+    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench",
+    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff",
+    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header",
+    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface",
+    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream.json",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface",
+    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface.json",
+    "ingest:file:target/debug/build/cbindgen-741b44f13a1fd46a/out/tests.rs",
+    "ingest:file:target/debug/build/serde-4318e20821b822c5/out/private.rs"
+  ],
+  "qualityWarnings": []
+}
+
+```
+</details>
+
+# Dependencies
+
+Dependency and relationship guide for OmnisStream-Core.
+
+## Related Pages
+
+- [components](components.md)
+- [diagrams](diagrams.md)
+
+## Design-Shaping Dependencies
+
+Insufficient evidence to infer design-shaping dependencies confidently.
+
+<details>
+<summary>Supporting citations:</summary>
+
+- none
+</details>
+
+
+## Dependency Boundaries
+
+Insufficient evidence to infer dependency boundaries confidently.
+
+<details>
+<summary>Supporting citations:</summary>
+
+- none
+</details>
+
+
+## Dependency Inventory
+
+- `symbol:crates/omnisstream_bench/src/main.rs:blake3_256_hex:1213` calls `symbol:crates/omnisstream_bench/src/main.rs:new:562` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:blake3_256_hex:1213` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream_bench/src/main.rs:blake3_256_hex:1213` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (low)
+- `symbol:crates/omnisstream_bench/src/main.rs:generated_unix_ms:510` calls `symbol:crates/omnisstream_bench/src/main.rs:now:406` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:git_head:524` calls `symbol:crates/omnisstream_bench/src/main.rs:new:562` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:git_head:524` calls `symbol:crates/omnisstream_bench/src/main.rs:read_optional_trimmed:517` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:blake3_256_hex:1213` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:from_args:115` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:generated_unix_ms:510` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:git_head:524` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:read_optional_trimmed:517` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:run_bench:795` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream_bench/src/main.rs:write:1134` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream/src/api.rs:set_compression_config:69` (low)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream/src/api.rs:set_group_commit_config:36` (low)
+- `symbol:crates/omnisstream_bench/src/main.rs:main:597` calls `symbol:crates/omnisstream/src/api.rs:set_relaxed_durability:21` (low)
+- `symbol:crates/omnisstream_bench/src/main.rs:walk:1095` calls `symbol:crates/omnisstream_bench/src/main.rs:new:562` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:write_deterministic_file:535` calls `symbol:crates/omnisstream_bench/src/main.rs:new:562` (high)
+- `symbol:crates/omnisstream_bench/src/main.rs:write_deterministic_file:535` calls `symbol:crates/omnisstream_bench/src/main.rs:next_u64:566` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:concat_key_rejects_unknown_metric:611` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:concat_key:409` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_include_decompress_when_present:519` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_include_decompress_when_present:519` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:delta_pct:107` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_include_decompress_when_present:519` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_include_decompress_when_present:519` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_decompress_presence_mismatch:547` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_decompress_presence_mismatch:547` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_decompress_presence_mismatch:547` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_missing_decompress_when_enabled:539` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_missing_decompress_when_enabled:539` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_negative_required_metric:583` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_negative_required_metric:583` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_non_finite_optional_metric:596` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_non_finite_optional_metric:596` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_optional_bytes_metric_presence_mismatch:556` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_optional_bytes_metric_presence_mismatch:556` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_optional_range_metric_presence_mismatch:568` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows_reject_optional_range_metric_presence_mismatch:568` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:ensure_same_params_reports_changed_field:658` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:ensure_same_params:186` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:ensure_same_params_reports_changed_field:658` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:params:461` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:higher_metric_does_not_regress_from_zero_baseline:645` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:delta_pct:107` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:higher_metric_does_not_regress_from_zero_baseline:645` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:is_regression:114` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:is_regression:114` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:delta_pct:107` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json_decode_error_includes_path_and_side:686` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json:171` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json_read_error_includes_path_and_side:671` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json:171` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json:171` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:lower_metric_regresses_from_zero_baseline:632` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:delta_pct:107` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:lower_metric_regresses_from_zero_baseline:632` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:is_regression:114` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:diff_rows:219` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:ensure_same_params:186` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:is_regression:114` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:load_bench_json:171` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:print_table:440` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:main:129` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:validate_threshold_percent:178` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:print_table:440` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:delta_pct:107` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:results:509` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:range:492` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:validate_threshold_percent_accepts_finite_non_negative_values:616` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:validate_threshold_percent:178` (high)
+- `symbol:crates/omnisstream_benchdiff/src/main.rs:validate_threshold_percent_rejects_negative_and_non_finite_values:622` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:validate_threshold_percent:178` (high)
+- `symbol:crates/omnisstream_cli/build.rs:find_git_dir:16` calls `symbol:crates/omnisstream_cli/build.rs:read_gitdir_file:31` (high)
+- `symbol:crates/omnisstream_cli/build.rs:main:1` calls `symbol:crates/omnisstream_cli/build.rs:find_common_git_dir:42` (high)
+- `symbol:crates/omnisstream_cli/build.rs:main:1` calls `symbol:crates/omnisstream_cli/build.rs:find_git_dir:16` (high)
+- `symbol:crates/omnisstream_cli/build.rs:main:1` calls `symbol:crates/omnisstream_cli/build.rs:read_git_commit:62` (high)
+- `symbol:crates/omnisstream_cli/build.rs:read_git_commit:62` calls `symbol:crates/omnisstream_cli/build.rs:candidate_git_paths:110` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:find_manifest_paths:433` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:is_canonical_part_id:517` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:is_single_normal_path_component:409` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:741` calls `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:741` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` calls `symbol:crates/omnisstream_cli/src/main.rs:is_canonical_part_id:517` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:674` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:674` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_missing_file_error_includes_path:662` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:print_version:597` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:run_gc:521` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_absolute_ids:637` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:648` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:648` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` calls `symbol:crates/omnisstream_cli/src/main.rs:is_single_normal_path_component:409` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:run_gc:521` calls `symbol:crates/omnisstream_cli/src/main.rs:collect_referenced_part_ids:456` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:run_gc:521` calls `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write:240` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write:265` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:manifest_load_pb_nulls_output_on_decode_failure:487` calls `symbol:crates/omnisstream_ffi/src/lib.rs:span_from_bytes:448` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:map_io:111` calls `symbol:crates/omnisstream_ffi/src/lib.rs:set_last_error:59` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_empty_part_returns_null_owned_bytes:539` calls `symbol:crates/omnisstream_ffi/src/lib.rs:empty_span:441` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_empty_part_returns_null_owned_bytes:539` calls `symbol:crates/omnisstream_ffi/src/lib.rs:last_error_string:455` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_empty_part_returns_null_owned_bytes:539` calls `symbol:crates/omnisstream_ffi/src/lib.rs:span_from_bytes:448` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_empty_part_returns_null_owned_bytes:539` calls `symbol:crates/omnisstream_ffi/src/lib.rs:temp_test_dir:461` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_empty_part_returns_null_owned_bytes:539` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (low)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it:569` calls `symbol:crates/omnisstream_ffi/src/lib.rs:last_error_string:455` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it:569` calls `symbol:crates/omnisstream_ffi/src/lib.rs:span_from_bytes:448` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it:569` calls `symbol:crates/omnisstream_ffi/src/lib.rs:temp_test_dir:461` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_get_non_empty_part_returns_owned_bytes_and_free_clears_it:569` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (low)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:partstore_open_nulls_output_on_failure:473` calls `symbol:crates/omnisstream_ffi/src/lib.rs:empty_span:441` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:span_as_slice:75` calls `symbol:crates/omnisstream_ffi/src/lib.rs:set_last_error:59` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:span_to_utf8_string:86` calls `symbol:crates/omnisstream_ffi/src/lib.rs:set_last_error:59` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:span_to_utf8_string:86` calls `symbol:crates/omnisstream_ffi/src/lib.rs:span_as_slice:75` (high)
+- `symbol:crates/omnisstream_ffi/src/lib.rs:write_owned_bytes:421` calls `symbol:crates/omnisstream_ffi/src/lib.rs:reset_owned_bytes:414` (high)
+- `symbol:crates/omnisstream/src/api.rs:create:121` calls `symbol:crates/omnisstream/src/api.rs:new:84` (high)
+- `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` calls `symbol:crates/omnisstream/src/fs_util.rs:fsync_dir:5` (high)
+- `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` calls `symbol:crates/omnisstream/src/fs_util.rs:tmp_path_for_final:51` (high)
+- `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (medium)
+- `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_string:47` calls `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` (high)
+- `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_string:47` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (medium)
+- `symbol:crates/omnisstream/src/group_commit.rs:barrier_syncfs:324` calls `symbol:crates/omnisstream_bench/src/main.rs:now:406` (low)
+- `symbol:crates/omnisstream/src/group_commit.rs:barrier_syncfs:324` calls `symbol:crates/omnisstream/src/group_commit.rs:duration_to_nanos:64` (high)
+- `symbol:crates/omnisstream/src/group_commit.rs:last_error_message:207` calls `symbol:crates/omnisstream/src/repo.rs:into_inner:365` (medium)
+- `symbol:crates/omnisstream/src/group_commit.rs:submit_locked:180` calls `symbol:crates/omnisstream/src/group_commit.rs:last_error_message:207` (high)
+- `symbol:crates/omnisstream/src/group_commit.rs:submit_locked:180` calls `symbol:crates/omnisstream/src/group_commit.rs:Token:105` (high)
+- `symbol:crates/omnisstream/src/group_commit.rs:worker:226` calls `symbol:crates/omnisstream_bench/src/main.rs:now:406` (low)
+- `symbol:crates/omnisstream/src/group_commit.rs:worker:226` calls `symbol:crates/omnisstream/src/group_commit.rs:barrier_syncfs:324` (high)
+- `symbol:crates/omnisstream/src/group_commit.rs:worker:226` calls `symbol:crates/omnisstream/src/group_commit.rs:Token:105` (high)
+- `symbol:crates/omnisstream/src/group_commit.rs:worker:226` calls `symbol:crates/omnisstream/src/group_commit.rs:update_max:69` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` calls `symbol:crates/omnisstream/src/hashing.rs:Blake3Digest:26` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:blake3_hex_matches:196` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:blake3_hex_matches:196` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:crc32c_big_endian_hex_matches:188` calls `symbol:crates/omnisstream/src/hashing.rs:crc32c_bytes:49` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:crc32c_big_endian_hex_matches:188` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_bytes:16` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:crc32c_big_endian_hex_matches:188` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_hex:20` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:crc32c_big_endian_hex_matches:188` calls `symbol:crates/omnisstream/src/hashing.rs:value:11` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:crc32c_bytes:49` calls `symbol:crates/omnisstream/src/hashing.rs:Crc32c:4` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:digests_match_spec_vectors_compressed:183` calls `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:digests_match_spec_vectors_minimal:178` calls `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader_matches_bytes_functions:229` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader_matches_bytes_functions:229` calls `symbol:crates/omnisstream/src/hashing.rs:crc32c_bytes:49` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader_matches_bytes_functions:229` calls `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` calls `symbol:crates/omnisstream/src/hashing.rs:Blake3Digest:26` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` calls `symbol:crates/omnisstream/src/hashing.rs:Crc32c:4` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:to_be_hex_is_lowercase_stable:238` calls `symbol:crates/omnisstream/src/hashing.rs:crc32c_bytes:49` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:to_be_hex_is_lowercase_stable:238` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_hex:20` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:to_be_hex:20` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_bytes:16` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:to_hex_is_lowercase_stable:246` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:to_hex_is_lowercase_stable:246` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector_paths_are_relative:254` calls `symbol:crates/omnisstream/src/hashing.rs:parse_expected_line:99` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector_paths_are_relative:254` calls `symbol:crates/omnisstream/src/hashing.rs:spec_root:95` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` calls `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` calls `symbol:crates/omnisstream/src/hashing.rs:parse_expected_line:99` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` calls `symbol:crates/omnisstream/src/hashing.rs:spec_root:95` (high)
+- `symbol:crates/omnisstream/src/hashing.rs:verify_vector:142` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_bytes:16` (high)
+- `symbol:crates/omnisstream/src/ingest_backend.rs:read_exact_at:21` calls `symbol:crates/omnisstream/src/ingest_backend.rs:read_at:42` (high)
+- `symbol:crates/omnisstream/src/inspect.rs:inspect_is_deterministic:152` calls `symbol:crates/omnisstream/src/inspect.rs:load_manifest:140` (high)
+- `symbol:crates/omnisstream/src/inspect.rs:inspect_works_on_both_vectors:158` calls `symbol:crates/omnisstream/src/inspect.rs:load_manifest:140` (high)
+- `symbol:crates/omnisstream/src/inspect.rs:load_manifest:140` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/inspect.rs:load_manifest:140` calls `symbol:crates/omnisstream/src/inspect.rs:spec_root:136` (high)
+- `symbol:crates/omnisstream/src/inspect.rs:load_manifest:140` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:is_valid_map_key:441` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:is_valid_map_key:441` calls `symbol:crates/omnisstream/src/manifest.rs:is_ascii_alnum:463` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_compressed:489` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_compressed:489` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_compressed:489` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_minimal:482` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_minimal:482` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:parse_and_validate_vector_minimal:482` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex_returns_unique_digests:559` calls `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex:72` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex:72` calls `symbol:crates/omnisstream/src/hashing.rs:from_bytes:29` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex:72` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex:72` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:part_store_digests_hex:72` calls `symbol:crates/omnisstream/src/reader.rs:insert:71` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` calls `symbol:crates/omnisstream/src/manifest.rs:spec_root:473` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` calls `symbol:crates/omnisstream/src/manifest.rs:validate_manifest_basic:198` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_manifest_basic:198` calls `symbol:crates/omnisstream/src/manifest.rs:validate_keys:426` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_manifest_basic:198` calls `symbol:crates/omnisstream/src/manifest.rs:validate_part_basic:232` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_manifest_basic:198` calls `symbol:crates/omnisstream/src/manifest.rs:validate_parts_order_and_coverage:298` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_manifest_basic:198` calls `symbol:crates/omnisstream/src/reader.rs:insert:71` (medium)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_part_basic:232` calls `symbol:crates/omnisstream/src/manifest.rs:validate_hashes:352` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_part_basic:232` calls `symbol:crates/omnisstream/src/manifest.rs:validate_keys:426` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_part_basic:232` calls `symbol:crates/omnisstream/src/manifest.rs:validate_relative_path:266` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_adjacent_part_end_overflow:612` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_adjacent_part_end_overflow:612` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_adjacent_part_end_overflow:612` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_curdir_relative_path_segment:547` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_curdir_relative_path_segment:547` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_curdir_relative_path_segment:547` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_duplicate_part_number:532` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_duplicate_part_number:532` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_duplicate_part_number:532` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_final_part_end_overflow:639` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_final_part_end_overflow:639` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_final_part_end_overflow:639` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_manifest_version_with_whitespace:505` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_manifest_version_with_whitespace:505` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_manifest_version_with_whitespace:505` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_missing_object_id:496` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_missing_object_id:496` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_missing_object_id:496` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_object_length_mismatch:600` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_object_length_mismatch:600` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_object_length_mismatch:600` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_out_of_order_parts:518` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_out_of_order_parts:518` calls `symbol:crates/omnisstream/src/manifest.rs:read_spec:477` (high)
+- `symbol:crates/omnisstream/src/manifest.rs:validate_rejects_out_of_order_parts:518` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (high)
+- `symbol:crates/omnisstream/src/object_version.rs:compute_object_version:14` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (medium)
+- `symbol:crates/omnisstream/src/object_version.rs:compute_object_version:14` calls `symbol:crates/omnisstream/src/hashing.rs:from_bytes:29` (medium)
+- `symbol:crates/omnisstream/src/object_version.rs:compute_object_version:14` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_bytes:16` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` calls `symbol:crates/omnisstream/src/hashing.rs:from_bytes:29` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` calls `symbol:crates/omnisstream/src/hashing.rs:from_u32:7` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:exists:41` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:open:45` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_is_deduped:265` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_is_deduped:265` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_is_deduped:265` calls `symbol:crates/omnisstream/src/part_store.rs:put_bytes:49` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_rejects_mismatched_digest:278` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_rejects_mismatched_digest:278` calls `symbol:crates/omnisstream/src/part_store.rs:exists:41` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_rejects_mismatched_digest:278` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_rejects_mismatched_digest:278` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_rejects_mismatched_digest:278` calls `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest:55` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest:55` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest:55` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest:55` calls `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` calls `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_digest_group_commit:163` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` calls `symbol:crates/omnisstream/src/part_store.rs:rename_atomic_strict:126` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` calls `symbol:crates/omnisstream/src/part_store.rs:tmp_dir:122` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` calls `symbol:crates/omnisstream/src/repo.rs:flush:379` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes:49` calls `symbol:crates/omnisstream/src/hashing.rs:blake3_256_bytes:53` (medium)
+- `symbol:crates/omnisstream/src/part_store.rs:put_bytes:49` calls `symbol:crates/omnisstream/src/part_store.rs:put_bytes_with_verified_digest:65` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader_is_atomic_and_deduped:293` calls `symbol:crates/omnisstream/src/part_store.rs:exists:41` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader_is_atomic_and_deduped:293` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader_is_atomic_and_deduped:293` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader_is_atomic_and_deduped:293` calls `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/part_store.rs:copy_and_hash:236` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/part_store.rs:path_for_digest:116` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/part_store.rs:put_reader_group_commit:200` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/part_store.rs:rename_atomic_strict:126` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/part_store.rs:tmp_dir:122` (high)
+- `symbol:crates/omnisstream/src/part_store.rs:put_reader:89` calls `symbol:crates/omnisstream/src/repo.rs:flush:379` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:blake3_digest_from_part:402` calls `symbol:crates/omnisstream/src/hashing.rs:from_bytes:29` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/lib.rs:pb:14` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` (high)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:cat_matches_vector_minimal_bytes:516` calls `symbol:crates/omnisstream/src/reader.rs:spec_root:483` (high)
+- `symbol:crates/omnisstream/src/reader.rs:copy_exact:364` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:copy_exact:364` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:copy_vector_to_temp:498` calls `symbol:crates/omnisstream/src/reader.rs:spec_root:483` (high)
+- `symbol:crates/omnisstream/src/reader.rs:crc32c_digest_from_part:420` calls `symbol:crates/omnisstream/src/hashing.rs:from_u32:7` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:get:62` calls `symbol:crates/omnisstream/src/reader.rs:touch:55` (high)
+- `symbol:crates/omnisstream/src/reader.rs:hash_reader_exact:381` calls `symbol:crates/omnisstream/src/hashing.rs:hash_reader:58` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:hash_reader_exact:381` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:hash_reader_exact:381` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` calls `symbol:crates/omnisstream/src/reader.rs:spec_root:483` (high)
+- `symbol:crates/omnisstream/src/reader.rs:open_part:113` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:open_part:113` calls `symbol:crates/omnisstream/src/reader.rs:blake3_digest_from_part:402` (high)
+- `symbol:crates/omnisstream/src/reader.rs:range_spans_part_boundaries:535` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:range_spans_part_boundaries:535` calls `symbol:crates/omnisstream/src/api.rs:range:108` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:range_spans_part_boundaries:535` calls `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` (high)
+- `symbol:crates/omnisstream/src/reader.rs:range_spans_part_boundaries:535` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:range_spans_part_boundaries:535` calls `symbol:crates/omnisstream/src/reader.rs:spec_root:483` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/reader.rs:copy_vector_to_temp:498` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_corruption:553` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/reader.rs:copy_vector_to_temp:498` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_trailing_part_bytes:593` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/reader.rs:copy_vector_to_temp:498` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_detects_truncated_part:573` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_passes_vector_compressed:614` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (medium)
+- `symbol:crates/omnisstream/src/reader.rs:verify_passes_vector_compressed:614` calls `symbol:crates/omnisstream/src/reader.rs:load_manifest:487` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_passes_vector_compressed:614` calls `symbol:crates/omnisstream/src/reader.rs:new:47` (high)
+- `symbol:crates/omnisstream/src/reader.rs:verify_passes_vector_compressed:614` calls `symbol:crates/omnisstream/src/reader.rs:spec_root:483` (high)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_is_deterministic_for_unchanged_file:480` calls `symbol:crates/omnisstream/src/manifest.rs:to_pb_bytes:39` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_is_deterministic_for_unchanged_file:480` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_is_deterministic_for_unchanged_file:480` calls `symbol:crates/omnisstream/src/repo.rs:ingest_file:38` (high)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_is_deterministic_for_unchanged_file:480` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (high)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_backend_rejects_zero_part_size:526` calls `symbol:crates/omnisstream/src/api.rs:ingest_file_with_backend:170` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_backend_rejects_zero_part_size:526` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_backend_rejects_zero_part_size:526` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_backend_rejects_zero_part_size:526` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (high)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/api.rs:range:108` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/api.rs:set_compression_config:69` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/repo.rs:ingest_file:38` (high)
+- `symbol:crates/omnisstream/src/repo.rs:ingest_with_compression_sets_stored_length_and_alg:548` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (high)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/api.rs:ingest_file_with_backend:170` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/manifest.rs:to_pb_bytes:39` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/part_store.rs:open:45` (medium)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/repo.rs:ingest_file:38` (high)
+- `symbol:crates/omnisstream/src/repo.rs:manifest_bytes_are_identical_across_backends:496` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (high)
+- `symbol:crates/omnisstream/src/repo.rs:with_limit:358` calls `symbol:crates/omnisstream/src/part_store.rs:new:19` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete_is_idempotent:443` calls `symbol:crates/omnisstream/src/upload.rs:complete:101` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete_is_idempotent:443` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete_is_idempotent:443` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete_is_idempotent:443` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/hashing.rs:as_bytes:33` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/hashing.rs:to_be_bytes:16` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/manifest.rs:to_pb_bytes:39` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/object_version.rs:compute_object_version:14` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:decode_blake3_hex:371` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:decode_crc32c_hex:381` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:load_session:199` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:object_version_hex:330` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:save_session:211` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:session_dir:219` (high)
+- `symbol:crates/omnisstream/src/upload.rs:complete:101` calls `symbol:crates/omnisstream/src/upload.rs:unix_ms_now:360` (high)
+- `symbol:crates/omnisstream/src/upload.rs:create:26` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:create:26` calls `symbol:crates/omnisstream/src/upload.rs:save_session:211` (high)
+- `symbol:crates/omnisstream/src/upload.rs:create:26` calls `symbol:crates/omnisstream/src/upload.rs:session_dir:219` (high)
+- `symbol:crates/omnisstream/src/upload.rs:create:26` calls `symbol:crates/omnisstream/src/upload.rs:unix_ms_now:360` (high)
+- `symbol:crates/omnisstream/src/upload.rs:decode_blake3_hex:371` calls `symbol:crates/omnisstream/src/hashing.rs:from_bytes:29` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:decode_crc32c_hex:381` calls `symbol:crates/omnisstream/src/hashing.rs:from_u32:7` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:load_session:199` calls `symbol:crates/omnisstream/src/fs_util.rs:read_to_string_if_exists:57` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:load_session:199` calls `symbol:crates/omnisstream/src/upload.rs:recover_session_state:227` (high)
+- `symbol:crates/omnisstream/src/upload.rs:load_session:199` calls `symbol:crates/omnisstream/src/upload.rs:session_path:223` (high)
+- `symbol:crates/omnisstream/src/upload.rs:new:21` calls `symbol:crates/omnisstream/src/fs_util.rs:ensure_dir:65` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:object_version_hex:330` calls `symbol:crates/omnisstream/src/hashing.rs:to_hex:37` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:object_version_hex:330` calls `symbol:crates/omnisstream/src/object_version.rs:compute_object_version:14` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:object_version_hex:330` calls `symbol:crates/omnisstream/src/upload.rs:decode_blake3_hex:371` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_is_idempotent:396` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_is_idempotent:396` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_is_idempotent:396` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_rejects_conflict:408` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_rejects_conflict:408` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_rejects_conflict:408` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_rejects_pathlike_upload_ids:420` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:put_part_rejects_pathlike_upload_ids:420` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/fs_util.rs:tmp_path_for_final:51` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/part_store.rs:exists:41` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/repo.rs:write:371` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_ignores_stray_manifest_tmp:479` calls `symbol:crates/omnisstream/src/upload.rs:session_dir:219` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/upload.rs:complete:101` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:recovery_marks_complete_if_manifest_exists:458` calls `symbol:crates/omnisstream/src/upload.rs:session_path:223` (high)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/group_commit.rs:drop:216` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/upload.rs:complete:101` (high)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/upload.rs:create:26` (high)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/upload.rs:new:21` (high)
+- `symbol:crates/omnisstream/src/upload.rs:resume_after_restart_completes:497` calls `symbol:crates/omnisstream/src/upload.rs:put_part:51` (high)
+- `symbol:crates/omnisstream/src/upload.rs:save_session:211` calls `symbol:crates/omnisstream/src/fs_util.rs:atomic_write_bytes:20` (medium)
+- `symbol:crates/omnisstream/src/upload.rs:save_session:211` calls `symbol:crates/omnisstream/src/upload.rs:session_path:223` (high)
+- `symbol:crates/omnisstream/src/upload.rs:session_path:223` calls `symbol:crates/omnisstream/src/upload.rs:session_dir:219` (high)
+- `symbol:crates/omnisstream/src/upload.rs:unix_ms_now:360` calls `symbol:crates/omnisstream_bench/src/main.rs:now:406` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:api_surface_allows_core_workflows:5` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:api_surface_allows_core_workflows:5` calls `symbol:crates/omnisstream/src/api.rs:Reader:78` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:api_surface_allows_core_workflows:5` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:api_surface_allows_core_workflows:5` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:manifest_roundtrips_pb_bytes:44` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:manifest_roundtrips_pb_bytes:44` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:manifest_roundtrips_pb_bytes:44` calls `symbol:crates/omnisstream/src/manifest.rs:to_pb_bytes:39` (low)
+- `symbol:crates/omnisstream/tests/api_surface.rs:manifest_roundtrips_pb_bytes:44` calls `symbol:crates/omnisstream/src/manifest.rs:validate_basic:43` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:main:24` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:_parse_args:11` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:main:24` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:load_manifest:218` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:main:24` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_as_bytes_map_b64:67` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_b64_decode:19` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_compression_name_from_proto:23` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_hash_alg_name_from_proto:35` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_session_state_name_from_proto:45` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py:CommitMeta:36` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py:HashDigest:7` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py:ObjectManifest:42` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py:PartMeta:13` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py:UploadSession:26` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:load_manifest:218` calls `symbol:crates/omnisstream/src/part_store.rs:exists:41` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:load_manifest:218` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_fmt_from_path:15` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:load_manifest:218` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_json:130` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:load_manifest:218` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:_from_protobuf:77` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:req_int:141` calls `symbol:crates/omnisstream/src/reader.rs:get:62` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py:req_str:135` calls `symbol:crates/omnisstream/src/reader.rs:get:62` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:crates/omnisstream/src/part_store.rs:exists:41` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:crates/omnisstream/src/reader.rs:get:62` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py:blake3_256:11` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py:crc32c_be:7` (medium)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:_digest_map:43` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:_is_safe_relative_path:23` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:_resolve_under_base:35` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:ValidationIssue:16` (high)
+- `symbol:spec/omnisstream-spec/tools/validator/tests/test_vectors.py:test_corrupt_byte_fails:29` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/tests/test_vectors.py:test_corrupt_byte_fails:29` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/tests/test_vectors.py:test_vector_compressed_passes:23` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` (low)
+- `symbol:spec/omnisstream-spec/tools/validator/tests/test_vectors.py:test_vector_minimal_passes:17` calls `symbol:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py:validate_manifest:50` (low)
+- `repository` contains `component:bin:omnisstream_bench` (high)
+- `repository` contains `component:bin:omnisstream_benchdiff` (high)
+- `repository` contains `component:bin:omnisstream_ffi_header` (high)
+- `repository` contains `component:bin:omnisstream` (high)
+- `repository` contains `component:cargo:crates/omnisstream_backend_api` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:cargo:crates/omnisstream` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:anyhow.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:blake3.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:clap.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:libc.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:serde_json.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:serde.workspace` (high)
+- `component:cargo:crates/omnisstream_bench` depends_on `component:external:rust:tempfile.workspace` (high)
+- `repository` contains `component:cargo:crates/omnisstream_bench` (high)
+- `component:cargo:crates/omnisstream_benchdiff` depends_on `component:external:rust:anyhow.workspace` (high)
+- `component:cargo:crates/omnisstream_benchdiff` depends_on `component:external:rust:clap.workspace` (high)
+- `component:cargo:crates/omnisstream_benchdiff` depends_on `component:external:rust:serde_json.workspace` (high)
+- `component:cargo:crates/omnisstream_benchdiff` depends_on `component:external:rust:serde.workspace` (high)
+- `repository` contains `component:cargo:crates/omnisstream_benchdiff` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:cargo:crates/omnisstream` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:anyhow.workspace` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:clap.workspace` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:rayon.workspace` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:tempfile.workspace` (high)
+- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:tracing-subscriber.workspace` (high)
+- `repository` contains `component:cargo:crates/omnisstream_cli` (high)
+- `component:cargo:crates/omnisstream_ffi` depends_on `component:cargo:crates/omnisstream` (high)
+- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:cbindgen` (high)
+- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:name` (high)
+- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:path` (high)
+- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:required-features` (high)
+- `repository` contains `component:cargo:crates/omnisstream_ffi` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:cargo:crates/omnisstream_backend_api` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:anyhow.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:blake3.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:bytes.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:crc32c.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:hex.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:prost-build` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:prost-types.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:prost.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:protoc-bin-vendored` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:rayon.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:rustix` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:semver.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:serde_json.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:serde.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:tempfile.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:thiserror.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:tracing.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:uuid.workspace` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:external:rust:zstd-framed` (high)
+- `repository` contains `component:cargo:crates/omnisstream` (high)
+- `repository` contains `component:crates/omnisstream_backend_api/src` (high)
+- `repository` contains `component:crates/omnisstream_bench/src` (high)
+- `repository` contains `component:crates/omnisstream_benchdiff/src` (high)
+- `repository` contains `component:crates/omnisstream_cli/src` (high)
+- `repository` contains `component:crates/omnisstream_ffi/src` (high)
+- `repository` contains `component:crates/omnisstream/src` (high)
+- `component:docs` documents `component:bin:omnisstream` (medium)
+- `component:docs` documents `component:bin:omnisstream_bench` (medium)
+- `component:docs` documents `component:bin:omnisstream_benchdiff` (medium)
+- `component:docs` documents `component:bin:omnisstream_ffi_header` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream_backend_api` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream_bench` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream_benchdiff` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream_cli` (medium)
+- `component:docs` documents `component:cargo:crates/omnisstream_ffi` (medium)
+- `component:docs` documents `component:Cargo.toml` (medium)
+- `component:docs` documents `component:crates/omnisstream_backend_api/src` (medium)
+- `component:docs` documents `component:crates/omnisstream_bench/src` (medium)
+- `component:docs` documents `component:crates/omnisstream_benchdiff/src` (medium)
+- `component:docs` documents `component:crates/omnisstream_cli/src` (medium)
+- `component:docs` documents `component:crates/omnisstream_ffi/src` (medium)
+- `component:docs` documents `component:crates/omnisstream/src` (medium)
+- `component:docs` documents `component:external:rust:aho-corasick` (medium)
+- `component:docs` documents `component:external:rust:anstream` (medium)
+- `component:docs` documents `component:external:rust:anstyle` (medium)
+- `component:docs` documents `component:external:rust:anstyle-parse` (medium)
+- `component:docs` documents `component:external:rust:anstyle-query` (medium)
+- `component:docs` documents `component:external:rust:anstyle-wincon` (medium)
+- `component:docs` documents `component:external:rust:anyhow` (medium)
+- `component:docs` documents `component:external:rust:anyhow.workspace` (medium)
+- `component:docs` documents `component:external:rust:arrayref` (medium)
+- `component:docs` documents `component:external:rust:arrayvec` (medium)
+- `component:docs` documents `component:external:rust:bitflags` (medium)
+- `component:docs` documents `component:external:rust:blake3` (medium)
+- `component:docs` documents `component:external:rust:blake3.workspace` (medium)
+- `component:docs` documents `component:external:rust:bumpalo` (medium)
+- `component:docs` documents `component:external:rust:bytes` (medium)
+- `component:docs` documents `component:external:rust:bytes.workspace` (medium)
+- `component:docs` documents `component:external:rust:cbindgen` (medium)
+- `component:docs` documents `component:external:rust:cc` (medium)
+- `component:docs` documents `component:external:rust:cfg-if` (medium)
+- `component:docs` documents `component:external:rust:clap` (medium)
+- `component:docs` documents `component:external:rust:clap_builder` (medium)
+- `component:docs` documents `component:external:rust:clap_derive` (medium)
+- `component:docs` documents `component:external:rust:clap_lex` (medium)
+- `component:docs` documents `component:external:rust:clap.workspace` (medium)
+- `component:docs` documents `component:external:rust:colorchoice` (medium)
+- `component:docs` documents `component:external:rust:constant_time_eq` (medium)
+- `component:docs` documents `component:external:rust:crc32c` (medium)
+- `component:docs` documents `component:external:rust:crc32c.workspace` (medium)
+- `component:docs` documents `component:external:rust:crossbeam-deque` (medium)
+- `component:docs` documents `component:external:rust:crossbeam-epoch` (medium)
+- `component:docs` documents `component:external:rust:crossbeam-utils` (medium)
+- `component:docs` documents `component:external:rust:either` (medium)
+- `component:docs` documents `component:external:rust:equivalent` (medium)
+- `component:docs` documents `component:external:rust:errno` (medium)
+- `component:docs` documents `component:external:rust:fastrand` (medium)
+- `component:docs` documents `component:external:rust:find-msvc-tools` (medium)
+- `component:docs` documents `component:external:rust:fixedbitset` (medium)
+- `component:docs` documents `component:external:rust:getrandom` (medium)
+- `component:docs` documents `component:external:rust:hashbrown` (medium)
+- `component:docs` documents `component:external:rust:heck` (medium)
+- `component:docs` documents `component:external:rust:hex` (medium)
+- `component:docs` documents `component:external:rust:hex.workspace` (medium)
+- `component:docs` documents `component:external:rust:indexmap` (medium)
+- `component:docs` documents `component:external:rust:is_terminal_polyfill` (medium)
+- `component:docs` documents `component:external:rust:itertools` (medium)
+- `component:docs` documents `component:external:rust:itoa` (medium)
+- `component:docs` documents `component:external:rust:jobserver` (medium)
+- `component:docs` documents `component:external:rust:js-sys` (medium)
+- `component:docs` documents `component:external:rust:lazy_static` (medium)
+- `component:docs` documents `component:external:rust:libc` (medium)
+- `component:docs` documents `component:external:rust:libc.workspace` (medium)
+- `component:docs` documents `component:external:rust:linux-raw-sys` (medium)
+- `component:docs` documents `component:external:rust:log` (medium)
+- `component:docs` documents `component:external:rust:matchers` (medium)
+- `component:docs` documents `component:external:rust:memchr` (medium)
+- `component:docs` documents `component:external:rust:multimap` (medium)
+- `component:docs` documents `component:external:rust:name` (medium)
+- `component:docs` documents `component:external:rust:nu-ansi-term` (medium)
+- `component:docs` documents `component:external:rust:once_cell` (medium)
+- `component:docs` documents `component:external:rust:once_cell_polyfill` (medium)
+- `component:docs` documents `component:external:rust:path` (medium)
+- `component:docs` documents `component:external:rust:petgraph` (medium)
+- `component:docs` documents `component:external:rust:pin-project-lite` (medium)
+- `component:docs` documents `component:external:rust:pkg-config` (medium)
+- `component:docs` documents `component:external:rust:prettyplease` (medium)
+- `component:docs` documents `component:external:rust:proc-macro2` (medium)
+- `component:docs` documents `component:external:rust:prost` (medium)
+- `component:docs` documents `component:external:rust:prost-build` (medium)
+- `component:docs` documents `component:external:rust:prost-derive` (medium)
+- `component:docs` documents `component:external:rust:prost-types` (medium)
+- `component:docs` documents `component:external:rust:prost-types.workspace` (medium)
+- `component:docs` documents `component:external:rust:prost.workspace` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-linux-aarch_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-linux-ppcle_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-linux-s390_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-linux-x86_32` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-linux-x86_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-macos-aarch_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-macos-x86_64` (medium)
+- `component:docs` documents `component:external:rust:protoc-bin-vendored-win32` (medium)
+- `component:docs` documents `component:external:rust:quote` (medium)
+- `component:docs` documents `component:external:rust:r-efi` (medium)
+- `component:docs` documents `component:external:rust:rayon` (medium)
+- `component:docs` documents `component:external:rust:rayon-core` (medium)
+- `component:docs` documents `component:external:rust:rayon.workspace` (medium)
+- `component:docs` documents `component:external:rust:regex` (medium)
+- `component:docs` documents `component:external:rust:regex-automata` (medium)
+- `component:docs` documents `component:external:rust:regex-syntax` (medium)
+- `component:docs` documents `component:external:rust:required-features` (medium)
+- `component:docs` documents `component:external:rust:rustc_version` (medium)
+- `component:docs` documents `component:external:rust:rustix` (medium)
+- `component:docs` documents `component:external:rust:rustversion` (medium)
+- `component:docs` documents `component:external:rust:ryu` (medium)
+- `component:docs` documents `component:external:rust:semver` (medium)
+- `component:docs` documents `component:external:rust:semver.workspace` (medium)
+- `component:docs` documents `component:external:rust:serde` (medium)
+- `component:docs` documents `component:external:rust:serde_core` (medium)
+- `component:docs` documents `component:external:rust:serde_derive` (medium)
+- `component:docs` documents `component:external:rust:serde_json` (medium)
+- `component:docs` documents `component:external:rust:serde_json.workspace` (medium)
+- `component:docs` documents `component:external:rust:serde_spanned` (medium)
+- `component:docs` documents `component:external:rust:serde.workspace` (medium)
+- `component:docs` documents `component:external:rust:sharded-slab` (medium)
+- `component:docs` documents `component:external:rust:shlex` (medium)
+- `component:docs` documents `component:external:rust:smallvec` (medium)
+- `component:docs` documents `component:external:rust:strsim` (medium)
+- `component:docs` documents `component:external:rust:syn` (medium)
+- `component:docs` documents `component:external:rust:tempfile` (medium)
+- `component:docs` documents `component:external:rust:tempfile.workspace` (medium)
+- `component:docs` documents `component:external:rust:thiserror` (medium)
+- `component:docs` documents `component:external:rust:thiserror-impl` (medium)
+- `component:docs` documents `component:external:rust:thiserror.workspace` (medium)
+- `component:docs` documents `component:external:rust:thread_local` (medium)
+- `component:docs` documents `component:external:rust:toml` (medium)
+- `component:docs` documents `component:external:rust:toml_datetime` (medium)
+- `component:docs` documents `component:external:rust:toml_edit` (medium)
+- `component:docs` documents `component:external:rust:toml_write` (medium)
+- `component:docs` documents `component:external:rust:tracing` (medium)
+- `component:docs` documents `component:external:rust:tracing-attributes` (medium)
+- `component:docs` documents `component:external:rust:tracing-core` (medium)
+- `component:docs` documents `component:external:rust:tracing-log` (medium)
+- `component:docs` documents `component:external:rust:tracing-subscriber` (medium)
+- `component:docs` documents `component:external:rust:tracing-subscriber.workspace` (medium)
+- `component:docs` documents `component:external:rust:tracing.workspace` (medium)
+- `component:docs` documents `component:external:rust:unicode-ident` (medium)
+- `component:docs` documents `component:external:rust:utf8parse` (medium)
+- `component:docs` documents `component:external:rust:uuid` (medium)
+- `component:docs` documents `component:external:rust:uuid.workspace` (medium)
+- `component:docs` documents `component:external:rust:valuable` (medium)
+- `component:docs` documents `component:external:rust:wasip2` (medium)
+- `component:docs` documents `component:external:rust:wasm-bindgen` (medium)
+- `component:docs` documents `component:external:rust:wasm-bindgen-macro` (medium)
+- `component:docs` documents `component:external:rust:wasm-bindgen-macro-support` (medium)
+- `component:docs` documents `component:external:rust:wasm-bindgen-shared` (medium)
+- `component:docs` documents `component:external:rust:windows-link` (medium)
+- `component:docs` documents `component:external:rust:windows-sys` (medium)
+- `component:docs` documents `component:external:rust:winnow` (medium)
+- `component:docs` documents `component:external:rust:wit-bindgen` (medium)
+- `component:docs` documents `component:external:rust:zstd` (medium)
+- `component:docs` documents `component:external:rust:zstd-framed` (medium)
+- `component:docs` documents `component:external:rust:zstd-safe` (medium)
+- `component:docs` documents `component:external:rust:zstd-sys` (medium)
+- `component:docs` documents `component:python-script:spec/omnisstream-spec/tools/validator/pyproject.toml:omnisstream-validate` (medium)
+- `component:docs` documents `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (medium)
+- `component:docs` documents `component:spec/omnisstream-spec/tools/validator/src` (medium)
+- `component:docs` documents `component:tests` (medium)
+- `component:external:rust:aho-corasick` depends_on `component:external:rust:memchr` (medium)
+- `repository` contains `component:external:rust:aho-corasick` (high)
+- `component:external:rust:anstream` depends_on `component:external:rust:anstyle-parse` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:anstyle-query` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:anstyle-wincon` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:anstyle` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:colorchoice` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:is_terminal_polyfill` (medium)
+- `component:external:rust:anstream` depends_on `component:external:rust:utf8parse` (medium)
+- `repository` contains `component:external:rust:anstream` (high)
+- `repository` contains `component:external:rust:anstyle` (high)
+- `component:external:rust:anstyle-parse` depends_on `component:external:rust:utf8parse` (medium)
+- `repository` contains `component:external:rust:anstyle-parse` (high)
+- `component:external:rust:anstyle-query` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:anstyle-query` (high)
+- `component:external:rust:anstyle-wincon` depends_on `component:external:rust:anstyle` (medium)
+- `component:external:rust:anstyle-wincon` depends_on `component:external:rust:once_cell_polyfill` (medium)
+- `component:external:rust:anstyle-wincon` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:anstyle-wincon` (high)
+- `repository` contains `component:external:rust:anyhow` (high)
+- `repository` contains `component:external:rust:anyhow.workspace` (high)
+- `repository` contains `component:external:rust:arrayref` (high)
+- `repository` contains `component:external:rust:arrayvec` (high)
+- `repository` contains `component:external:rust:bitflags` (high)
+- `component:external:rust:blake3` depends_on `component:external:rust:arrayref` (medium)
+- `component:external:rust:blake3` depends_on `component:external:rust:arrayvec` (medium)
+- `component:external:rust:blake3` depends_on `component:external:rust:cc` (medium)
+- `component:external:rust:blake3` depends_on `component:external:rust:cfg-if` (medium)
+- `component:external:rust:blake3` depends_on `component:external:rust:constant_time_eq` (medium)
+- `repository` contains `component:external:rust:blake3` (high)
+- `repository` contains `component:external:rust:blake3.workspace` (high)
+- `repository` contains `component:external:rust:bumpalo` (high)
+- `repository` contains `component:external:rust:bytes` (high)
+- `repository` contains `component:external:rust:bytes.workspace` (high)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:clap` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:heck` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:indexmap` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:log` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:serde_json` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:serde` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:syn` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:tempfile` (medium)
+- `component:external:rust:cbindgen` depends_on `component:external:rust:toml` (medium)
+- `repository` contains `component:external:rust:cbindgen` (high)
+- `component:external:rust:cc` depends_on `component:external:rust:find-msvc-tools` (medium)
+- `component:external:rust:cc` depends_on `component:external:rust:jobserver` (medium)
+- `component:external:rust:cc` depends_on `component:external:rust:libc` (medium)
+- `component:external:rust:cc` depends_on `component:external:rust:shlex` (medium)
+- `repository` contains `component:external:rust:cc` (high)
+- `repository` contains `component:external:rust:cfg-if` (high)
+- `component:external:rust:clap_builder` depends_on `component:external:rust:anstream` (medium)
+- `component:external:rust:clap_builder` depends_on `component:external:rust:anstyle` (medium)
+- `component:external:rust:clap_builder` depends_on `component:external:rust:clap_lex` (medium)
+- `component:external:rust:clap_builder` depends_on `component:external:rust:strsim` (medium)
+- `repository` contains `component:external:rust:clap_builder` (high)
+- `component:external:rust:clap_derive` depends_on `component:external:rust:heck` (medium)
+- `component:external:rust:clap_derive` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:clap_derive` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:clap_derive` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:clap_derive` (high)
+- `repository` contains `component:external:rust:clap_lex` (high)
+- `component:external:rust:clap` depends_on `component:external:rust:clap_builder` (medium)
+- `component:external:rust:clap` depends_on `component:external:rust:clap_derive` (medium)
+- `repository` contains `component:external:rust:clap` (high)
+- `repository` contains `component:external:rust:clap.workspace` (high)
+- `repository` contains `component:external:rust:colorchoice` (high)
+- `repository` contains `component:external:rust:constant_time_eq` (high)
+- `component:external:rust:crc32c` depends_on `component:external:rust:rustc_version` (medium)
+- `repository` contains `component:external:rust:crc32c` (high)
+- `repository` contains `component:external:rust:crc32c.workspace` (high)
+- `component:external:rust:crossbeam-deque` depends_on `component:external:rust:crossbeam-epoch` (medium)
+- `component:external:rust:crossbeam-deque` depends_on `component:external:rust:crossbeam-utils` (medium)
+- `repository` contains `component:external:rust:crossbeam-deque` (high)
+- `component:external:rust:crossbeam-epoch` depends_on `component:external:rust:crossbeam-utils` (medium)
+- `repository` contains `component:external:rust:crossbeam-epoch` (high)
+- `repository` contains `component:external:rust:crossbeam-utils` (high)
+- `repository` contains `component:external:rust:either` (high)
+- `repository` contains `component:external:rust:equivalent` (high)
+- `component:external:rust:errno` depends_on `component:external:rust:libc` (medium)
+- `component:external:rust:errno` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:errno` (high)
+- `repository` contains `component:external:rust:fastrand` (high)
+- `repository` contains `component:external:rust:find-msvc-tools` (high)
+- `repository` contains `component:external:rust:fixedbitset` (high)
+- `component:external:rust:getrandom` depends_on `component:external:rust:cfg-if` (medium)
+- `component:external:rust:getrandom` depends_on `component:external:rust:libc` (medium)
+- `component:external:rust:getrandom` depends_on `component:external:rust:r-efi` (medium)
+- `component:external:rust:getrandom` depends_on `component:external:rust:wasip2` (medium)
+- `repository` contains `component:external:rust:getrandom` (high)
+- `repository` contains `component:external:rust:hashbrown` (high)
+- `repository` contains `component:external:rust:heck` (high)
+- `repository` contains `component:external:rust:hex` (high)
+- `repository` contains `component:external:rust:hex.workspace` (high)
+- `component:external:rust:indexmap` depends_on `component:external:rust:equivalent` (medium)
+- `component:external:rust:indexmap` depends_on `component:external:rust:hashbrown` (medium)
+- `repository` contains `component:external:rust:indexmap` (high)
+- `repository` contains `component:external:rust:is_terminal_polyfill` (high)
+- `component:external:rust:itertools` depends_on `component:external:rust:either` (medium)
+- `repository` contains `component:external:rust:itertools` (high)
+- `repository` contains `component:external:rust:itoa` (high)
+- `component:external:rust:jobserver` depends_on `component:external:rust:getrandom` (medium)
+- `component:external:rust:jobserver` depends_on `component:external:rust:libc` (medium)
+- `repository` contains `component:external:rust:jobserver` (high)
+- `component:external:rust:js-sys` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:js-sys` depends_on `component:external:rust:wasm-bindgen` (medium)
+- `repository` contains `component:external:rust:js-sys` (high)
+- `repository` contains `component:external:rust:lazy_static` (high)
+- `repository` contains `component:external:rust:libc` (high)
+- `repository` contains `component:external:rust:libc.workspace` (high)
+- `repository` contains `component:external:rust:linux-raw-sys` (high)
+- `repository` contains `component:external:rust:log` (high)
+- `component:external:rust:matchers` depends_on `component:external:rust:regex-automata` (medium)
+- `repository` contains `component:external:rust:matchers` (high)
+- `repository` contains `component:external:rust:memchr` (high)
+- `repository` contains `component:external:rust:multimap` (high)
+- `repository` contains `component:external:rust:name` (high)
+- `component:external:rust:nu-ansi-term` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:nu-ansi-term` (high)
+- `repository` contains `component:external:rust:once_cell_polyfill` (high)
+- `repository` contains `component:external:rust:once_cell` (high)
+- `repository` contains `component:external:rust:path` (high)
+- `component:external:rust:petgraph` depends_on `component:external:rust:fixedbitset` (medium)
+- `component:external:rust:petgraph` depends_on `component:external:rust:indexmap` (medium)
+- `repository` contains `component:external:rust:petgraph` (high)
+- `repository` contains `component:external:rust:pin-project-lite` (high)
+- `repository` contains `component:external:rust:pkg-config` (high)
+- `component:external:rust:prettyplease` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:prettyplease` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:prettyplease` (high)
+- `component:external:rust:proc-macro2` depends_on `component:external:rust:unicode-ident` (medium)
+- `repository` contains `component:external:rust:proc-macro2` (high)
+- `component:external:rust:prost` depends_on `component:external:rust:bytes` (medium)
+- `component:external:rust:prost` depends_on `component:external:rust:prost-derive` (medium)
+- `repository` contains `component:external:rust:prost` (high)
+- `component:external:rust:prost-build` depends_on `component:external:rust:heck` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:itertools` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:log` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:multimap` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:petgraph` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:prettyplease` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:prost-types` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:prost` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:regex` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:syn` (medium)
+- `component:external:rust:prost-build` depends_on `component:external:rust:tempfile` (medium)
+- `repository` contains `component:external:rust:prost-build` (high)
+- `component:external:rust:prost-derive` depends_on `component:external:rust:anyhow` (medium)
+- `component:external:rust:prost-derive` depends_on `component:external:rust:itertools` (medium)
+- `component:external:rust:prost-derive` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:prost-derive` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:prost-derive` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:prost-derive` (high)
+- `component:external:rust:prost-types` depends_on `component:external:rust:prost` (medium)
+- `repository` contains `component:external:rust:prost-types` (high)
+- `repository` contains `component:external:rust:prost-types.workspace` (high)
+- `repository` contains `component:external:rust:prost.workspace` (high)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-linux-aarch_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-linux-ppcle_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-linux-s390_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-linux-x86_32` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-linux-x86_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-macos-aarch_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-macos-x86_64` (medium)
+- `component:external:rust:protoc-bin-vendored` depends_on `component:external:rust:protoc-bin-vendored-win32` (medium)
+- `repository` contains `component:external:rust:protoc-bin-vendored` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-linux-aarch_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-linux-ppcle_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-linux-s390_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-linux-x86_32` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-linux-x86_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-macos-aarch_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-macos-x86_64` (high)
+- `repository` contains `component:external:rust:protoc-bin-vendored-win32` (high)
+- `component:external:rust:quote` depends_on `component:external:rust:proc-macro2` (medium)
+- `repository` contains `component:external:rust:quote` (high)
+- `repository` contains `component:external:rust:r-efi` (high)
+- `component:external:rust:rayon` depends_on `component:external:rust:either` (medium)
+- `component:external:rust:rayon` depends_on `component:external:rust:rayon-core` (medium)
+- `repository` contains `component:external:rust:rayon` (high)
+- `component:external:rust:rayon-core` depends_on `component:external:rust:crossbeam-deque` (medium)
+- `component:external:rust:rayon-core` depends_on `component:external:rust:crossbeam-utils` (medium)
+- `repository` contains `component:external:rust:rayon-core` (high)
+- `repository` contains `component:external:rust:rayon.workspace` (high)
+- `component:external:rust:regex` depends_on `component:external:rust:aho-corasick` (medium)
+- `component:external:rust:regex` depends_on `component:external:rust:memchr` (medium)
+- `component:external:rust:regex` depends_on `component:external:rust:regex-automata` (medium)
+- `component:external:rust:regex` depends_on `component:external:rust:regex-syntax` (medium)
+- `repository` contains `component:external:rust:regex` (high)
+- `component:external:rust:regex-automata` depends_on `component:external:rust:aho-corasick` (medium)
+- `component:external:rust:regex-automata` depends_on `component:external:rust:memchr` (medium)
+- `component:external:rust:regex-automata` depends_on `component:external:rust:regex-syntax` (medium)
+- `repository` contains `component:external:rust:regex-automata` (high)
+- `repository` contains `component:external:rust:regex-syntax` (high)
+- `repository` contains `component:external:rust:required-features` (high)
+- `component:external:rust:rustc_version` depends_on `component:external:rust:semver` (medium)
+- `repository` contains `component:external:rust:rustc_version` (high)
+- `component:external:rust:rustix` depends_on `component:external:rust:bitflags` (medium)
+- `component:external:rust:rustix` depends_on `component:external:rust:errno` (medium)
+- `component:external:rust:rustix` depends_on `component:external:rust:libc` (medium)
+- `component:external:rust:rustix` depends_on `component:external:rust:linux-raw-sys` (medium)
+- `component:external:rust:rustix` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:rustix` (high)
+- `repository` contains `component:external:rust:rustversion` (high)
+- `repository` contains `component:external:rust:ryu` (high)
+- `repository` contains `component:external:rust:semver` (high)
+- `repository` contains `component:external:rust:semver.workspace` (high)
+- `component:external:rust:serde_core` depends_on `component:external:rust:serde_derive` (medium)
+- `repository` contains `component:external:rust:serde_core` (high)
+- `component:external:rust:serde_derive` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:serde_derive` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:serde_derive` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:serde_derive` (high)
+- `component:external:rust:serde_json` depends_on `component:external:rust:itoa` (medium)
+- `component:external:rust:serde_json` depends_on `component:external:rust:memchr` (medium)
+- `component:external:rust:serde_json` depends_on `component:external:rust:ryu` (medium)
+- `component:external:rust:serde_json` depends_on `component:external:rust:serde_core` (medium)
+- `component:external:rust:serde_json` depends_on `component:external:rust:serde` (medium)
+- `repository` contains `component:external:rust:serde_json` (high)
+- `repository` contains `component:external:rust:serde_json.workspace` (high)
+- `component:external:rust:serde_spanned` depends_on `component:external:rust:serde` (medium)
+- `repository` contains `component:external:rust:serde_spanned` (high)
+- `component:external:rust:serde` depends_on `component:external:rust:serde_core` (medium)
+- `component:external:rust:serde` depends_on `component:external:rust:serde_derive` (medium)
+- `repository` contains `component:external:rust:serde` (high)
+- `repository` contains `component:external:rust:serde.workspace` (high)
+- `component:external:rust:sharded-slab` depends_on `component:external:rust:lazy_static` (medium)
+- `repository` contains `component:external:rust:sharded-slab` (high)
+- `repository` contains `component:external:rust:shlex` (high)
+- `repository` contains `component:external:rust:smallvec` (high)
+- `repository` contains `component:external:rust:strsim` (high)
+- `component:external:rust:syn` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:syn` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:syn` depends_on `component:external:rust:unicode-ident` (medium)
+- `repository` contains `component:external:rust:syn` (high)
+- `component:external:rust:tempfile` depends_on `component:external:rust:fastrand` (medium)
+- `component:external:rust:tempfile` depends_on `component:external:rust:getrandom` (medium)
+- `component:external:rust:tempfile` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:tempfile` depends_on `component:external:rust:rustix` (medium)
+- `component:external:rust:tempfile` depends_on `component:external:rust:windows-sys` (medium)
+- `repository` contains `component:external:rust:tempfile` (high)
+- `repository` contains `component:external:rust:tempfile.workspace` (high)
+- `component:external:rust:thiserror` depends_on `component:external:rust:thiserror-impl` (medium)
+- `repository` contains `component:external:rust:thiserror` (high)
+- `component:external:rust:thiserror-impl` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:thiserror-impl` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:thiserror-impl` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:thiserror-impl` (high)
+- `repository` contains `component:external:rust:thiserror.workspace` (high)
+- `component:external:rust:thread_local` depends_on `component:external:rust:cfg-if` (medium)
+- `repository` contains `component:external:rust:thread_local` (high)
+- `component:external:rust:toml_datetime` depends_on `component:external:rust:serde` (medium)
+- `repository` contains `component:external:rust:toml_datetime` (high)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:indexmap` (medium)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:serde_spanned` (medium)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:serde` (medium)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:toml_datetime` (medium)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:toml_write` (medium)
+- `component:external:rust:toml_edit` depends_on `component:external:rust:winnow` (medium)
+- `repository` contains `component:external:rust:toml_edit` (high)
+- `repository` contains `component:external:rust:toml_write` (high)
+- `component:external:rust:toml` depends_on `component:external:rust:serde_spanned` (medium)
+- `component:external:rust:toml` depends_on `component:external:rust:serde` (medium)
+- `component:external:rust:toml` depends_on `component:external:rust:toml_datetime` (medium)
+- `component:external:rust:toml` depends_on `component:external:rust:toml_edit` (medium)
+- `repository` contains `component:external:rust:toml` (high)
+- `component:external:rust:tracing` depends_on `component:external:rust:pin-project-lite` (medium)
+- `component:external:rust:tracing` depends_on `component:external:rust:tracing-attributes` (medium)
+- `component:external:rust:tracing` depends_on `component:external:rust:tracing-core` (medium)
+- `repository` contains `component:external:rust:tracing` (high)
+- `component:external:rust:tracing-attributes` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:tracing-attributes` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:tracing-attributes` depends_on `component:external:rust:syn` (medium)
+- `repository` contains `component:external:rust:tracing-attributes` (high)
+- `component:external:rust:tracing-core` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:tracing-core` depends_on `component:external:rust:valuable` (medium)
+- `repository` contains `component:external:rust:tracing-core` (high)
+- `component:external:rust:tracing-log` depends_on `component:external:rust:log` (medium)
+- `component:external:rust:tracing-log` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:tracing-log` depends_on `component:external:rust:tracing-core` (medium)
+- `repository` contains `component:external:rust:tracing-log` (high)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:matchers` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:nu-ansi-term` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:regex-automata` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:sharded-slab` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:smallvec` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:thread_local` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:tracing-core` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:tracing-log` (medium)
+- `component:external:rust:tracing-subscriber` depends_on `component:external:rust:tracing` (medium)
+- `repository` contains `component:external:rust:tracing-subscriber` (high)
+- `repository` contains `component:external:rust:tracing-subscriber.workspace` (high)
+- `repository` contains `component:external:rust:tracing.workspace` (high)
+- `repository` contains `component:external:rust:unicode-ident` (high)
+- `repository` contains `component:external:rust:utf8parse` (high)
+- `component:external:rust:uuid` depends_on `component:external:rust:getrandom` (medium)
+- `component:external:rust:uuid` depends_on `component:external:rust:js-sys` (medium)
+- `component:external:rust:uuid` depends_on `component:external:rust:wasm-bindgen` (medium)
+- `repository` contains `component:external:rust:uuid` (high)
+- `repository` contains `component:external:rust:uuid.workspace` (high)
+- `repository` contains `component:external:rust:valuable` (high)
+- `component:external:rust:wasip2` depends_on `component:external:rust:wit-bindgen` (medium)
+- `repository` contains `component:external:rust:wasip2` (high)
+- `component:external:rust:wasm-bindgen` depends_on `component:external:rust:cfg-if` (medium)
+- `component:external:rust:wasm-bindgen` depends_on `component:external:rust:once_cell` (medium)
+- `component:external:rust:wasm-bindgen` depends_on `component:external:rust:rustversion` (medium)
+- `component:external:rust:wasm-bindgen` depends_on `component:external:rust:wasm-bindgen-macro` (medium)
+- `component:external:rust:wasm-bindgen` depends_on `component:external:rust:wasm-bindgen-shared` (medium)
+- `repository` contains `component:external:rust:wasm-bindgen` (high)
+- `component:external:rust:wasm-bindgen-macro` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:wasm-bindgen-macro` depends_on `component:external:rust:wasm-bindgen-macro-support` (medium)
+- `repository` contains `component:external:rust:wasm-bindgen-macro` (high)
+- `component:external:rust:wasm-bindgen-macro-support` depends_on `component:external:rust:bumpalo` (medium)
+- `component:external:rust:wasm-bindgen-macro-support` depends_on `component:external:rust:proc-macro2` (medium)
+- `component:external:rust:wasm-bindgen-macro-support` depends_on `component:external:rust:quote` (medium)
+- `component:external:rust:wasm-bindgen-macro-support` depends_on `component:external:rust:syn` (medium)
+- `component:external:rust:wasm-bindgen-macro-support` depends_on `component:external:rust:wasm-bindgen-shared` (medium)
+- `repository` contains `component:external:rust:wasm-bindgen-macro-support` (high)
+- `component:external:rust:wasm-bindgen-shared` depends_on `component:external:rust:unicode-ident` (medium)
+- `repository` contains `component:external:rust:wasm-bindgen-shared` (high)
+- `repository` contains `component:external:rust:windows-link` (high)
+- `component:external:rust:windows-sys` depends_on `component:external:rust:windows-link` (medium)
+- `repository` contains `component:external:rust:windows-sys` (high)
+- `component:external:rust:winnow` depends_on `component:external:rust:memchr` (medium)
+- `repository` contains `component:external:rust:winnow` (high)
+- `repository` contains `component:external:rust:wit-bindgen` (high)
+- `component:external:rust:zstd` depends_on `component:external:rust:zstd-safe` (medium)
+- `repository` contains `component:external:rust:zstd` (high)
+- `component:external:rust:zstd-framed` depends_on `component:external:rust:pin-project-lite` (medium)
+- `component:external:rust:zstd-framed` depends_on `component:external:rust:thiserror` (medium)
+- `component:external:rust:zstd-framed` depends_on `component:external:rust:zstd` (medium)
+- `repository` contains `component:external:rust:zstd-framed` (high)
+- `component:external:rust:zstd-safe` depends_on `component:external:rust:zstd-sys` (medium)
+- `repository` contains `component:external:rust:zstd-safe` (high)
+- `component:external:rust:zstd-sys` depends_on `component:external:rust:cc` (medium)
+- `component:external:rust:zstd-sys` depends_on `component:external:rust:pkg-config` (medium)
+- `repository` contains `component:external:rust:zstd-sys` (high)
+- `repository` contains `component:python-script:spec/omnisstream-spec/tools/validator/pyproject.toml:omnisstream-validate` (high)
+- `repository` contains `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (high)
+- `repository` contains `component:spec/omnisstream-spec/tools/validator/src` (high)
+- `component:tests` tests `component:bin:omnisstream` (high)
+- `component:tests` tests `component:bin:omnisstream_bench` (high)
+- `component:tests` tests `component:bin:omnisstream_benchdiff` (high)
+- `component:tests` tests `component:bin:omnisstream_ffi_header` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream_backend_api` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream_bench` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream_benchdiff` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream_cli` (high)
+- `component:tests` tests `component:cargo:crates/omnisstream_ffi` (high)
+- `component:tests` tests `component:Cargo.toml` (high)
+- `component:tests` tests `component:crates/omnisstream_backend_api/src` (high)
+- `component:tests` tests `component:crates/omnisstream_bench/src` (high)
+- `component:tests` tests `component:crates/omnisstream_benchdiff/src` (high)
+- `component:tests` tests `component:crates/omnisstream_cli/src` (high)
+- `component:tests` tests `component:crates/omnisstream_ffi/src` (high)
+- `component:tests` tests `component:crates/omnisstream/src` (high)
+- `component:tests` tests `component:external:rust:aho-corasick` (high)
+- `component:tests` tests `component:external:rust:anstream` (high)
+- `component:tests` tests `component:external:rust:anstyle` (high)
+- `component:tests` tests `component:external:rust:anstyle-parse` (high)
+- `component:tests` tests `component:external:rust:anstyle-query` (high)
+- `component:tests` tests `component:external:rust:anstyle-wincon` (high)
+- `component:tests` tests `component:external:rust:anyhow` (high)
+- `component:tests` tests `component:external:rust:anyhow.workspace` (high)
+- `component:tests` tests `component:external:rust:arrayref` (high)
+- `component:tests` tests `component:external:rust:arrayvec` (high)
+- `component:tests` tests `component:external:rust:bitflags` (high)
+- `component:tests` tests `component:external:rust:blake3` (high)
+- `component:tests` tests `component:external:rust:blake3.workspace` (high)
+- `component:tests` tests `component:external:rust:bumpalo` (high)
+- `component:tests` tests `component:external:rust:bytes` (high)
+- `component:tests` tests `component:external:rust:bytes.workspace` (high)
+- `component:tests` tests `component:external:rust:cbindgen` (high)
+- `component:tests` tests `component:external:rust:cc` (high)
+- `component:tests` tests `component:external:rust:cfg-if` (high)
+- `component:tests` tests `component:external:rust:clap` (high)
+- `component:tests` tests `component:external:rust:clap_builder` (high)
+- `component:tests` tests `component:external:rust:clap_derive` (high)
+- `component:tests` tests `component:external:rust:clap_lex` (high)
+- `component:tests` tests `component:external:rust:clap.workspace` (high)
+- `component:tests` tests `component:external:rust:colorchoice` (high)
+- `component:tests` tests `component:external:rust:constant_time_eq` (high)
+- `component:tests` tests `component:external:rust:crc32c` (high)
+- `component:tests` tests `component:external:rust:crc32c.workspace` (high)
+- `component:tests` tests `component:external:rust:crossbeam-deque` (high)
+- `component:tests` tests `component:external:rust:crossbeam-epoch` (high)
+- `component:tests` tests `component:external:rust:crossbeam-utils` (high)
+- `component:tests` tests `component:external:rust:either` (high)
+- `component:tests` tests `component:external:rust:equivalent` (high)
+- `component:tests` tests `component:external:rust:errno` (high)
+- `component:tests` tests `component:external:rust:fastrand` (high)
+- `component:tests` tests `component:external:rust:find-msvc-tools` (high)
+- `component:tests` tests `component:external:rust:fixedbitset` (high)
+- `component:tests` tests `component:external:rust:getrandom` (high)
+- `component:tests` tests `component:external:rust:hashbrown` (high)
+- `component:tests` tests `component:external:rust:heck` (high)
+- `component:tests` tests `component:external:rust:hex` (high)
+- `component:tests` tests `component:external:rust:hex.workspace` (high)
+- `component:tests` tests `component:external:rust:indexmap` (high)
+- `component:tests` tests `component:external:rust:is_terminal_polyfill` (high)
+- `component:tests` tests `component:external:rust:itertools` (high)
+- `component:tests` tests `component:external:rust:itoa` (high)
+- `component:tests` tests `component:external:rust:jobserver` (high)
+- `component:tests` tests `component:external:rust:js-sys` (high)
+- `component:tests` tests `component:external:rust:lazy_static` (high)
+- `component:tests` tests `component:external:rust:libc` (high)
+- `component:tests` tests `component:external:rust:libc.workspace` (high)
+- `component:tests` tests `component:external:rust:linux-raw-sys` (high)
+- `component:tests` tests `component:external:rust:log` (high)
+- `component:tests` tests `component:external:rust:matchers` (high)
+- `component:tests` tests `component:external:rust:memchr` (high)
+- `component:tests` tests `component:external:rust:multimap` (high)
+- `component:tests` tests `component:external:rust:name` (high)
+- `component:tests` tests `component:external:rust:nu-ansi-term` (high)
+- `component:tests` tests `component:external:rust:once_cell` (high)
+- `component:tests` tests `component:external:rust:once_cell_polyfill` (high)
+- `component:tests` tests `component:external:rust:path` (high)
+- `component:tests` tests `component:external:rust:petgraph` (high)
+- `component:tests` tests `component:external:rust:pin-project-lite` (high)
+- `component:tests` tests `component:external:rust:pkg-config` (high)
+- `component:tests` tests `component:external:rust:prettyplease` (high)
+- `component:tests` tests `component:external:rust:proc-macro2` (high)
+- `component:tests` tests `component:external:rust:prost` (high)
+- `component:tests` tests `component:external:rust:prost-build` (high)
+- `component:tests` tests `component:external:rust:prost-derive` (high)
+- `component:tests` tests `component:external:rust:prost-types` (high)
+- `component:tests` tests `component:external:rust:prost-types.workspace` (high)
+- `component:tests` tests `component:external:rust:prost.workspace` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-linux-aarch_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-linux-ppcle_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-linux-s390_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-linux-x86_32` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-linux-x86_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-macos-aarch_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-macos-x86_64` (high)
+- `component:tests` tests `component:external:rust:protoc-bin-vendored-win32` (high)
+- `component:tests` tests `component:external:rust:quote` (high)
+- `component:tests` tests `component:external:rust:r-efi` (high)
+- `component:tests` tests `component:external:rust:rayon` (high)
+- `component:tests` tests `component:external:rust:rayon-core` (high)
+- `component:tests` tests `component:external:rust:rayon.workspace` (high)
+- `component:tests` tests `component:external:rust:regex` (high)
+- `component:tests` tests `component:external:rust:regex-automata` (high)
+- `component:tests` tests `component:external:rust:regex-syntax` (high)
+- `component:tests` tests `component:external:rust:required-features` (high)
+- `component:tests` tests `component:external:rust:rustc_version` (high)
+- `component:tests` tests `component:external:rust:rustix` (high)
+- `component:tests` tests `component:external:rust:rustversion` (high)
+- `component:tests` tests `component:external:rust:ryu` (high)
+- `component:tests` tests `component:external:rust:semver` (high)
+- `component:tests` tests `component:external:rust:semver.workspace` (high)
+- `component:tests` tests `component:external:rust:serde` (high)
+- `component:tests` tests `component:external:rust:serde_core` (high)
+- `component:tests` tests `component:external:rust:serde_derive` (high)
+- `component:tests` tests `component:external:rust:serde_json` (high)
+- `component:tests` tests `component:external:rust:serde_json.workspace` (high)
+- `component:tests` tests `component:external:rust:serde_spanned` (high)
+- `component:tests` tests `component:external:rust:serde.workspace` (high)
+- `component:tests` tests `component:external:rust:sharded-slab` (high)
+- `component:tests` tests `component:external:rust:shlex` (high)
+- `component:tests` tests `component:external:rust:smallvec` (high)
+- `component:tests` tests `component:external:rust:strsim` (high)
+- `component:tests` tests `component:external:rust:syn` (high)
+- `component:tests` tests `component:external:rust:tempfile` (high)
+- `component:tests` tests `component:external:rust:tempfile.workspace` (high)
+- `component:tests` tests `component:external:rust:thiserror` (high)
+- `component:tests` tests `component:external:rust:thiserror-impl` (high)
+- `component:tests` tests `component:external:rust:thiserror.workspace` (high)
+- `component:tests` tests `component:external:rust:thread_local` (high)
+- `component:tests` tests `component:external:rust:toml` (high)
+- `component:tests` tests `component:external:rust:toml_datetime` (high)
+- `component:tests` tests `component:external:rust:toml_edit` (high)
+- `component:tests` tests `component:external:rust:toml_write` (high)
+- `component:tests` tests `component:external:rust:tracing` (high)
+- `component:tests` tests `component:external:rust:tracing-attributes` (high)
+- `component:tests` tests `component:external:rust:tracing-core` (high)
+- `component:tests` tests `component:external:rust:tracing-log` (high)
+- `component:tests` tests `component:external:rust:tracing-subscriber` (high)
+- `component:tests` tests `component:external:rust:tracing-subscriber.workspace` (high)
+- `component:tests` tests `component:external:rust:tracing.workspace` (high)
+- `component:tests` tests `component:external:rust:unicode-ident` (high)
+- `component:tests` tests `component:external:rust:utf8parse` (high)
+- `component:tests` tests `component:external:rust:uuid` (high)
+- `component:tests` tests `component:external:rust:uuid.workspace` (high)
+- `component:tests` tests `component:external:rust:valuable` (high)
+- `component:tests` tests `component:external:rust:wasip2` (high)
+- `component:tests` tests `component:external:rust:wasm-bindgen` (high)
+- `component:tests` tests `component:external:rust:wasm-bindgen-macro` (high)
+- `component:tests` tests `component:external:rust:wasm-bindgen-macro-support` (high)
+- `component:tests` tests `component:external:rust:wasm-bindgen-shared` (high)
+- `component:tests` tests `component:external:rust:windows-link` (high)
+- `component:tests` tests `component:external:rust:windows-sys` (high)
+- `component:tests` tests `component:external:rust:winnow` (high)
+- `component:tests` tests `component:external:rust:wit-bindgen` (high)
+- `component:tests` tests `component:external:rust:zstd` (high)
+- `component:tests` tests `component:external:rust:zstd-framed` (high)
+- `component:tests` tests `component:external:rust:zstd-safe` (high)
+- `component:tests` tests `component:external:rust:zstd-sys` (high)
+- `component:tests` tests `component:python-script:spec/omnisstream-spec/tools/validator/pyproject.toml:omnisstream-validate` (high)
+- `component:tests` tests `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (high)
+- `component:tests` tests `component:spec/omnisstream-spec/tools/validator/src` (high)
+- `component:bin:omnisstream_bench` depends_on `component:external:rust:clap` (medium)
+- `component:bin:omnisstream_bench` depends_on `component:external:rust:serde` (medium)
+- `component:bin:omnisstream_bench` depends_on `crates/omnisstream/src/lib.rs` (medium)
+- `component:bin:omnisstream_benchdiff` depends_on `component:external:rust:anyhow` (medium)
+- `component:bin:omnisstream_benchdiff` depends_on `component:external:rust:clap` (medium)
+- `component:bin:omnisstream_benchdiff` depends_on `component:external:rust:serde` (medium)
+- `component:bin:omnisstream` depends_on `component:external:rust:anyhow` (medium)
+- `component:bin:omnisstream` depends_on `component:external:rust:clap` (medium)
+- `component:bin:omnisstream` depends_on `component:external:rust:rayon` (medium)
+- `component:bin:omnisstream` depends_on `crates/omnisstream/src/lib.rs` (medium)
+- `component:crates/omnisstream_ffi/src` depends_on `crates/omnisstream/src/lib.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream_backend_api/src/lib.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/durability.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream_backend_api/src/lib.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/manifest.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `component:external:rust:prost` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/fs_util.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `component:external:rust:rayon` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/manifest.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/part_store.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream_backend_api/src/lib.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/compression.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/fs_util.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/ingest_backend.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/manifest.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/object_version.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/part_store.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `component:external:rust:serde` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/fs_util.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/hashing.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/manifest.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/object_version.rs` (medium)
+- `component:crates/omnisstream/src` depends_on `crates/omnisstream/src/part_store.rs` (medium)
+- `component:cargo:crates/omnisstream` depends_on `crates/omnisstream/src/lib.rs` (medium)
+- `target/debug/build/serde-4318e20821b822c5/out/private.rs` depends_on `component:external:rust:serde_core` (medium)
+- `component:python-script:spec/omnisstream-spec/tools/validator/pyproject.toml:omnisstream-validate` exposes `interface:cli:spec/omnisstream-spec/tools/validator/pyproject.toml:omnisstream-validate` (high)
+
+<details>
+<summary>Related files:</summary>
+
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+- `crates/omnisstream_benchdiff/Cargo.toml`
+- `crates/omnisstream_ffi/src/bin/header_gen.rs`
+- `crates/omnisstream_ffi/Cargo.toml`
+- `crates/omnisstream/build.rs`
+- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs`
+- `crates/omnisstream_cli/build.rs`
+- `crates/omnisstream_ffi/cbindgen.toml`
+- `Cargo.toml`
+- `crates/omnisstream_ffi/src/lib.rs`
+- `crates/omnisstream/src/api.rs`
+- `crates/omnisstream/src/compression.rs`
+- `docs/ffi_cmake.md`
+- `README.md`
+- `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py`
+- `crates/omnisstream/tests/api_surface.rs`
+- `spec/omnisstream-spec/test-vectors/README.md`
+</details>
+
+<details>
+<summary>Citations:</summary>
+
+- `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs:20`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs:9`
+- `crates/omnisstream_benchdiff/Cargo.toml`
+- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
+- `crates/omnisstream_ffi/Cargo.toml`
+- `crates/omnisstream/build.rs:3`
+- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
+- `crates/omnisstream_cli/build.rs:110`
+- `crates/omnisstream_ffi/cbindgen.toml`
+- `Cargo.toml`
+- `crates/omnisstream_ffi/src/lib.rs:53`
+- `crates/omnisstream/src/api.rs:100`
+- `crates/omnisstream/src/compression.rs:9`
+- `docs/ffi_cmake.md`
+- `README.md`
+- `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:11`
+- `crates/omnisstream/tests/api_surface.rs:5`
+- `spec/omnisstream-spec/test-vectors/README.md`
+</details>
+
+## Navigation Guidance
+
+- Follow component pages for detailed file lists.
+- Use interfaces to inspect exposed configuration and manifests.
+- Read diagrams for a simplified graph view.
+
+## Citations
+
+<details>
+<summary>Citations:</summary>
+
+- `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs:20`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs:9`
+- `crates/omnisstream_benchdiff/Cargo.toml`
+- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
+- `crates/omnisstream_ffi/Cargo.toml`
+- `crates/omnisstream/build.rs:3`
+- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
+- `crates/omnisstream_cli/build.rs:110`
+- `crates/omnisstream_ffi/cbindgen.toml`
+- `Cargo.toml`
+- `crates/omnisstream_ffi/src/lib.rs:53`
+- `crates/omnisstream/src/api.rs:100`
+- `crates/omnisstream/src/compression.rs:9`
+- `docs/ffi_cmake.md`
+- `README.md`
+- `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
+- `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:11`
+- `crates/omnisstream/tests/api_surface.rs:5`
+- `spec/omnisstream-spec/test-vectors/README.md`
+</details>

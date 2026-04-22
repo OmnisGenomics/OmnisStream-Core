@@ -1,0 +1,17 @@
+{
+  "scan": {
+    "exclude": [
+      ".git",
+      ".jj",
+      "node_modules",
+      ".direnv",
+      "dist",
+      "coverage",
+      ".tmp",
+      ".next",
+      "target",
+      "build",
+      "wiki"
+    ]
+  }
+}
