@@ -102,7 +102,7 @@ Operational guide for validating and debugging OmnisStream-Core.
 
 ## Validation Order
 
-1. Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+1. From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 2. Run `cargo build` (build) from `.`.
 3. Run `cargo check` (check) from `.`.
 4. Run `cargo test` (test) from `.`.
@@ -111,6 +111,7 @@ Operational guide for validating and debugging OmnisStream-Core.
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -118,6 +119,7 @@ Operational guide for validating and debugging OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 

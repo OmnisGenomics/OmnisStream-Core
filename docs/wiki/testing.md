@@ -62,13 +62,14 @@ Testing guidance for OmnisStream-Core.
 
 ## Test Workflows
 
-- `python -m pytest`
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - `cargo test`
 
 <details>
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -76,6 +77,7 @@ Testing guidance for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 

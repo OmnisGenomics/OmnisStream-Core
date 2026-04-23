@@ -149,7 +149,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 
 1. Fast feedback: run `cargo build` (build) from `.`.
 1. Fast feedback: run `cargo check` (check) from `.`.
-2. Behavioral verification: run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+2. Behavioral verification: from `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 2. Behavioral verification: run `cargo test` (test) from `.`.
 3. Release-safety validation: run `cargo build` (build) from `.`.
 
@@ -166,6 +166,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -180,6 +181,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 ## Common Change Paths
@@ -203,7 +205,7 @@ Risk boundary:
 
 Validate with:
 - Run `cargo build` (build) from `.`.
-- Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 
 <details>
 <summary>Supporting citations:</summary>
@@ -212,6 +214,7 @@ Validate with:
 - `crates/omnisstream/src/compression.rs:9`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -221,6 +224,7 @@ Validate with:
 - `crates/omnisstream/src/compression.rs`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -230,6 +234,7 @@ Validate with:
 - `crates/omnisstream/src/compression.rs:9`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 ## Citations

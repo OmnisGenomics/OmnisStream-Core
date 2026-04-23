@@ -44,7 +44,7 @@ Workflow guide for OmnisStream-Core.
 ## Workflow Inventory
 
 - `omnisstream-validate` (run, confidence medium)
-- `python -m pytest` (test, confidence high)
+- `python -m unittest discover -s tools/validator/tests` from `spec/omnisstream-spec` after exposing or installing `tools/validator` (test, README-backed)
 - `cargo build` (build, confidence high)
 - `cargo check` (check, confidence high)
 - `cargo test` (test, confidence high)
@@ -53,6 +53,7 @@ Workflow guide for OmnisStream-Core.
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -60,18 +61,20 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
 ## Testing and Validation
 
-- `python -m pytest`
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - `cargo test`
 
 <details>
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -79,6 +82,7 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -104,5 +108,6 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
+- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
