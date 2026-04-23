@@ -595,6 +595,12 @@ fn reader_for_manifest(
 }
 
 fn print_version() {
+    for line in version_metadata_lines() {
+        println!("{line}");
+    }
+}
+
+fn version_metadata_lines() -> [String; 4] {
     const SPEC_PIN: &str = include_str!("../../../SPEC_PIN.txt");
 
     let version = env!("CARGO_PKG_VERSION");
@@ -602,10 +608,12 @@ fn print_version() {
     let spec_pin = SPEC_PIN.trim();
     let manifest_schema = omnisstream::SUPPORTED_MANIFEST_SCHEMA;
 
-    println!("omnisstream {version}");
-    println!("git_commit {git_commit}");
-    println!("spec_pin {spec_pin}");
-    println!("manifest_schema {manifest_schema}");
+    [
+        format!("omnisstream {version}"),
+        format!("git_commit {git_commit}"),
+        format!("spec_pin {spec_pin}"),
+        format!("manifest_schema {manifest_schema}"),
+    ]
 }
 
 #[cfg(test)]
@@ -631,6 +639,25 @@ mod tests {
         let mut out = Vec::new();
         reader.cat(&mut out).unwrap();
         assert_eq!(out, input_bytes);
+    }
+
+    #[test]
+    fn version_metadata_matches_spec_pin() {
+        let lines = version_metadata_lines();
+
+        assert_eq!(
+            lines[0],
+            format!("omnisstream {}", env!("CARGO_PKG_VERSION"))
+        );
+        assert!(lines[1].starts_with("git_commit "));
+        assert_eq!(
+            lines[2],
+            format!("spec_pin {}", include_str!("../../../SPEC_PIN.txt").trim())
+        );
+        assert_eq!(
+            lines[3],
+            format!("manifest_schema {}", omnisstream::SUPPORTED_MANIFEST_SCHEMA)
+        );
     }
 
     #[test]
