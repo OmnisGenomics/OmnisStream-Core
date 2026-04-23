@@ -1,14 +1,15 @@
 {
-  "title": "Assert exact release version metadata",
+  "title": "Align wiki validator test guidance with the README workflow",
   "priority": "low",
-  "why": "The CI `spec-contract` job now checks that `cargo run -p omnisstream_cli -- version` prints `spec_pin $(cat SPEC_PIN.txt)`. The release workflow also smoke-tests `./target/release/omnisstream version`, but currently only checks that a `spec_pin` line exists.",
+  "why": "Several generated wiki entry points still tell agents to run `python -m pytest` for the spec validator. `docs/monarchic-launch.md` and `spec/omnisstream-spec/tools/validator/README.md` both document the current repo-local validator flow: expose or install the validator package first, then run `python -m unittest discover -s tools/validator/tests` from `spec/omnisstream-spec`. Refreshing the wiki guidance prevents future workers from following the stale RepoIntel-inferred command.",
   "suggested_scope": [
-    "Update `.github/workflows/release.yml` in the existing `\"smoke: version output\"` step.",
-    "Assert that `version.txt` contains `spec_pin $(cat SPEC_PIN.txt)`.",
-    "Keep the existing key-presence checks so release smoke output remains easy to diagnose."
+    "Update validator test-command guidance in `docs/wiki/playbook.md`, `docs/wiki/change-guide.md`, `docs/wiki/testing.md`, and `docs/wiki/workflows.md`.",
+    "Keep the work documentation-only under the Monarchic default `docs/` write scope; no guarded Rust, FFI, or vendored spec semantic surfaces are required.",
+    "Preserve existing generated citations and metadata unless a touched section needs a minimal note explaining the prior `pytest` inference is stale."
   ],
   "validation": [
-    "cargo run -p omnisstream_cli -- version | tee version.txt",
-    "grep -Fx \"spec_pin $(cat SPEC_PIN.txt)\" version.txt"
+    "rg -n \"python -m pytest\" docs/wiki/playbook.md docs/wiki/change-guide.md docs/wiki/testing.md docs/wiki/workflows.md",
+    "rg -n \"python -m unittest discover -s tools/validator/tests\" docs/wiki/playbook.md docs/wiki/change-guide.md docs/wiki/testing.md docs/wiki/workflows.md docs/monarchic-launch.md spec/omnisstream-spec/tools/validator/README.md",
+    "Because this task is documentation-only, code validation is not required unless the worker chooses to edit validator or CLI sources."
   ]
 }
