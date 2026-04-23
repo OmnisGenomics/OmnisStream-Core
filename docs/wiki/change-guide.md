@@ -112,9 +112,9 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 
 ## Where to Start Editing
 
-- Start with `crates/omnisstream/src` via `crates/omnisstream/src/api.rs`, `crates/omnisstream/src/compression.rs`. Then read [crates/omnisstream/src](components/crates-omnisstream-src.md) for the bounded component guide.
-- Start with `omnisstream` via `crates/omnisstream_cli/src/main.rs`, `crates/omnisstream_cli/Cargo.toml`. Then read [omnisstream](components/bin-omnisstream.md) for the bounded component guide.
-- Start with `omnisstream_benchdiff` via `crates/omnisstream_benchdiff/src/main.rs`, `crates/omnisstream_benchdiff/Cargo.toml`. Then read [omnisstream_benchdiff](components/bin-omnisstream_benchdiff.md) for the bounded component guide.
+- Start with `crates/omnisstream/src` via `crates/omnisstream/src/api.rs`, `crates/omnisstream/src/compression.rs`. Then read [crates/omnisstream/src](components/component-crates-omnisstream-src.md) for the bounded component guide.
+- Start with `omnisstream` via `crates/omnisstream_cli/src/main.rs`, `crates/omnisstream_cli/Cargo.toml`. Then read [omnisstream_cli](components/component-cargo-crates-omnisstream_cli.md) for the bounded component guide behind the `omnisstream` binary.
+- Start with `omnisstream_benchdiff` via `crates/omnisstream_benchdiff/src/main.rs`, `crates/omnisstream_benchdiff/Cargo.toml`. Then cross-check [components](components.md) for the current component inventory; this wiki snapshot does not include a dedicated `omnisstream_benchdiff` page.
 
 <details>
 <summary>Related files:</summary>
@@ -190,7 +190,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 
 Start here:
 - Open `crates/omnisstream/src/api.rs` first; it is the strongest workflow or owning file tied to the current validation path.
-- Then cross-check [validation](validation.md) and [crates/omnisstream/src](components/crates-omnisstream-src.md) before changing the command order or scope.
+- Then cross-check [validation](validation.md) and [crates/omnisstream/src](components/component-crates-omnisstream-src.md) before changing the command order or scope.
 
 Likely files:
 - `crates/omnisstream/src/api.rs`
