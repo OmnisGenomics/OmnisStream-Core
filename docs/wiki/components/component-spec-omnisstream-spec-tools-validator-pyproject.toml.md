@@ -333,8 +333,8 @@ Owned interfaces:
 
 Nearby verification surfaces:
 - Run `omnisstream-validate` (run) from `spec/omnisstream-spec/tools/validator`.
-- Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>
@@ -378,7 +378,7 @@ Insufficient evidence to infer change-planning guidance.
 ## Nearby Workflows
 
 - `omnisstream-validate` (run)
-- `python -m pytest` (test)
+- `python -m unittest discover -s tools/validator/tests` (test, after exposing or installing `tools/validator` from `spec/omnisstream-spec`)
 
 <details>
 <summary>Related files:</summary>

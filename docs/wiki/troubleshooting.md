@@ -193,7 +193,7 @@ Failure-first inspection guide for OmnisStream-Core.
 
 ## Relevant Validation Commands
 
-- Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator` after reproducing or patching the issue.
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests` after reproducing or patching the issue.
 - Run `cargo build` (build) from `.` after reproducing or patching the issue.
 - Run `cargo check` (check) from `.` after reproducing or patching the issue.
 - Run `cargo test` (test) from `.` after reproducing or patching the issue.

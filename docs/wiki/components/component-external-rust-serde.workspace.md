@@ -323,7 +323,7 @@ Owned interfaces:
 - none
 
 Nearby verification surfaces:
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>

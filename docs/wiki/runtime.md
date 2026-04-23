@@ -128,7 +128,7 @@ Owned components:
 ## Operational Workflow
 
 Steps:
-1. Run `python -m pytest` for test from `spec/omnisstream-spec/tools/validator`.
+1. From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 2. Run `cargo build` for build from `.`.
 3. Run `cargo test` for test from `.`.
 

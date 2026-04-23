@@ -268,7 +268,7 @@ Context:
 
 Primary capabilities:
 - run: `omnisstream-validate`
-- test: `python -m pytest`
+- test: from `spec/omnisstream-spec`, expose or install `tools/validator`, then run `python -m unittest discover -s tools/validator/tests`
 - build: `cargo build`
 - check: `cargo check`
 

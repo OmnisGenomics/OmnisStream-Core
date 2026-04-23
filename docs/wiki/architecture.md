@@ -1222,7 +1222,7 @@ Coupling hazard: Coupling hazard: crates hands off to `anyhow.workspace`, `blake
 </details>
 
 ### Operational changes tend to fail first at validation boundaries
-Failure boundary: Failure boundary: verify high-coordination component `crates/omnisstream/src` against `python -m pytest` and `cargo build` before and after changes, because those surfaces are the first deterministic checks tied to likely breakage.
+Failure boundary: Failure boundary: verify high-coordination component `crates/omnisstream/src` against the README-backed validator workflow from `spec/omnisstream-spec` (expose or install `tools/validator`, then run `python -m unittest discover -s tools/validator/tests`) and `cargo build` before and after changes, because those surfaces are the first deterministic checks tied to likely breakage.
 
 <details>
 <summary>Supporting citations:</summary>

@@ -64,7 +64,7 @@ Validation strategy guide for OmnisStream-Core.
 
 ## Behavioral Verification
 
-- Use `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator` to confirm user-visible or behavior-level expectations.
+- Use the README-backed validator workflow from `spec/omnisstream-spec`: expose the package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests` to confirm user-visible or behavior-level expectations.
 - Use `cargo test` (test) from `.` to confirm user-visible or behavior-level expectations.
 
 <details>

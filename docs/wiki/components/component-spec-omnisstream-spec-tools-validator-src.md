@@ -340,13 +340,13 @@ Supporting implementation citations:
 ## State Boundaries
 
 Validated at:
-- Likely validated at `validate_manifest` in `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py`; this is inferred from validation-like naming rather than proved full program semantics. Validate with Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`. Run `cargo build` (build) from `.`.
+- Likely validated at `validate_manifest` in `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py`; this is inferred from validation-like naming rather than proved full program semantics. Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`. Run `cargo build` (build) from `.`.
 
 Mutated in:
 - none
 
 Persisted or emitted through:
-- Likely persisted or emitted through `CommitMeta` in `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py`; this is inferred from persistence/emission naming and nearby implementation context. Recheck with Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Likely persisted or emitted through `CommitMeta` in `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py`; this is inferred from persistence/emission naming and nearby implementation context. Recheck with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 
 <details>
 <summary>Supporting citations:</summary>
@@ -521,7 +521,7 @@ High-cost dependencies:
 - 24 inbound edges raise the cost of breaking this component's callers.
 
 First validation checks:
-- Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Run `cargo build` (build) from `.`.
 
 <details>
@@ -576,7 +576,7 @@ Owned interfaces:
 - none
 
 Nearby verification surfaces:
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>
@@ -616,7 +616,7 @@ Impacted areas:
 - Hotspot score 156 with 24 inbound and 27 outbound edges suggests higher coordination risk.
 
 Suggested verification steps:
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>

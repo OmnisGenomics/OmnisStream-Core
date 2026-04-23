@@ -433,7 +433,7 @@ High-cost dependencies:
 - `tempfile.workspace` acts as a external dependency boundary.
 
 First validation checks:
-- Run `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Run `cargo build` (build) from `.`.
 
 <details>
@@ -497,7 +497,7 @@ Owned interfaces:
 - none
 
 Nearby verification surfaces:
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>
@@ -538,7 +538,7 @@ Impacted areas:
 - Hotspot score 51 with 5 inbound and 11 outbound edges suggests higher coordination risk.
 
 Suggested verification steps:
-- Validate with `python -m pytest` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>
