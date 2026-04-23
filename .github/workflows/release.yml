@@ -69,6 +69,10 @@ jobs:
           text = pathlib.Path("version.txt").read_text(encoding="utf-8", errors="replace")
           lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
           assert len(lines) >= 4, lines
+          expected_spec_pin = "spec_pin " + pathlib.Path("SPEC_PIN.txt").read_text(
+              encoding="utf-8"
+          ).strip()
+          assert expected_spec_pin in lines, (expected_spec_pin, lines)
           keys = {ln.split(" ", 1)[0] for ln in lines[1:]}
           assert "git_commit" in keys
           assert "spec_pin" in keys
