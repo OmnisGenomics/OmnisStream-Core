@@ -31,12 +31,6 @@ updated_at: 2026-04-18T05:55:58.252Z
     "spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
     "spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
     "spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
-    "target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api",
-    "target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json",
-    "target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api",
-    "target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json",
-    "target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench",
-    "target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json"
   ],
   "dependencyEvidenceIds": [
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
@@ -54,9 +48,9 @@ updated_at: 2026-04-18T05:55:58.252Z
 
 # Testing
 
-Testing guidance for OmnisStream-Core.
+Testing guidance for OmnisStream-Core. Stale build-artifact carryover removed; repo-local source files remain authoritative.
 
-## Related Pages
+## Related Pages [build-artifact carryover removed]
 
 - [workflows](workflows.md)
 
@@ -97,12 +91,6 @@ Testing guidance for OmnisStream-Core.
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
 - `spec/omnisstream-spec/tools/validator/tests/test_vectors.py`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json`
 
 <details>
 <summary>Related files:</summary>
@@ -121,12 +109,6 @@ Testing guidance for OmnisStream-Core.
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
 - `spec/omnisstream-spec/tools/validator/tests/test_vectors.py`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json`
 </details>
 
 <details>
@@ -146,12 +128,6 @@ Testing guidance for OmnisStream-Core.
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
 - `spec/omnisstream-spec/tools/validator/tests/test_vectors.py:14`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json`
 </details>
 
 ## Citations
@@ -175,10 +151,4 @@ Testing guidance for OmnisStream-Core.
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
 - `spec/omnisstream-spec/tools/validator/tests/test_vectors.py:14`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api`
-- `target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench`
-- `target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json`
 </details>
