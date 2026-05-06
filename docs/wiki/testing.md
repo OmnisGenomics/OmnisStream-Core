@@ -2,8 +2,8 @@
 page_id: testing
 page_type: testing
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.252Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:00.621Z
 ---
 
 <details>
@@ -11,26 +11,55 @@ updated_at: 2026-04-18T05:55:58.252Z
 
 ```json
 {
-  "freshnessKey": "71015bf5d4654424eed633fbebe6aefe37148a62",
+  "freshnessKey": "cf1de889b382a1cf82f6588cfb0461fe6b84f5e7",
   "plannerReason": "Generated because test workflows are critical for validation and agent execution safety.",
-  "changedPaths": [],
-  "dependencyPaths": [
+  "changedPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml",
+    "spec/omnisstream-spec/.editorconfig",
     "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/.gitignore",
+    "spec/omnisstream-spec/CANONICAL_JSON.md",
+    "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "spec/omnisstream-spec/CONTRIBUTING.md",
+    "spec/omnisstream-spec/LICENSE",
+    "spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "spec/omnisstream-spec/NOTICE",
+    "spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "spec/omnisstream-spec/proto/protoc.sh",
+    "spec/omnisstream-spec/proto/README.md",
+    "spec/omnisstream-spec/README.md",
+    "spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "spec/omnisstream-spec/SECURITY.md",
     "spec/omnisstream-spec/test-vectors/README.md",
     "spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
     "spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
-    "spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
-    "spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
     "spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
-    "spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
-    "spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
+    "spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt"
+  ],
+  "dependencyPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "Cargo.toml",
+    "spec/omnisstream-spec/.editorconfig",
+    "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/.gitignore",
+    "spec/omnisstream-spec/CANONICAL_JSON.md",
+    "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "spec/omnisstream-spec/CONTRIBUTING.md",
+    "spec/omnisstream-spec/LICENSE",
+    "spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "spec/omnisstream-spec/NOTICE",
+    "spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "spec/omnisstream-spec/proto/protoc.sh",
+    "spec/omnisstream-spec/proto/README.md",
+    "spec/omnisstream-spec/README.md",
+    "spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "spec/omnisstream-spec/SECURITY.md",
+    "spec/omnisstream-spec/test-vectors/README.md",
+    "spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
+    "spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
+    "spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
+    "spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt"
   ],
   "dependencyEvidenceIds": [
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
@@ -48,22 +77,21 @@ updated_at: 2026-04-18T05:55:58.252Z
 
 # Testing
 
-Testing guidance for OmnisStream-Core. Stale build-artifact carryover removed; repo-local source files remain authoritative.
+Testing guidance for OmnisStream-Core.
 
-## Related Pages [build-artifact carryover removed]
+## Related Pages
 
 - [workflows](workflows.md)
 
 ## Test Workflows
 
-- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+- `python -m unittest discover -s tools/validator/tests`
 - `cargo test`
 
 <details>
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -71,63 +99,80 @@ Testing guidance for OmnisStream-Core. Stale build-artifact carryover removed; r
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
 ## Known Test Files
 
+- `spec/omnisstream-spec/.editorconfig`
 - `crates/omnisstream/tests/api_surface.rs`
+- `spec/omnisstream-spec/.gitignore`
+- `spec/omnisstream-spec/CANONICAL_JSON.md`
+- `spec/omnisstream-spec/CODE_OF_CONDUCT.md`
+- `spec/omnisstream-spec/CONTRIBUTING.md`
+- `spec/omnisstream-spec/LICENSE`
+- `spec/omnisstream-spec/MANIFEST_SPEC.md`
+- `spec/omnisstream-spec/NOTICE`
+- `spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto`
+- `spec/omnisstream-spec/proto/protoc.sh`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/REPOSITORY_SPEC.md`
+- `spec/omnisstream-spec/SECURITY.md`
 - `spec/omnisstream-spec/test-vectors/README.md`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
-- `spec/omnisstream-spec/tools/validator/tests/test_vectors.py`
 
 <details>
 <summary>Related files:</summary>
 
+- `spec/omnisstream-spec/.editorconfig`
 - `crates/omnisstream/tests/api_surface.rs`
+- `spec/omnisstream-spec/.gitignore`
+- `spec/omnisstream-spec/CANONICAL_JSON.md`
+- `spec/omnisstream-spec/CODE_OF_CONDUCT.md`
+- `spec/omnisstream-spec/CONTRIBUTING.md`
+- `spec/omnisstream-spec/LICENSE`
+- `spec/omnisstream-spec/MANIFEST_SPEC.md`
+- `spec/omnisstream-spec/NOTICE`
+- `spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto`
+- `spec/omnisstream-spec/proto/protoc.sh`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/REPOSITORY_SPEC.md`
+- `spec/omnisstream-spec/SECURITY.md`
 - `spec/omnisstream-spec/test-vectors/README.md`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
-- `spec/omnisstream-spec/tools/validator/tests/test_vectors.py`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
+- `spec/omnisstream-spec/.editorconfig`
 - `crates/omnisstream/tests/api_surface.rs:5`
+- `spec/omnisstream-spec/.gitignore`
+- `spec/omnisstream-spec/CANONICAL_JSON.md`
+- `spec/omnisstream-spec/CODE_OF_CONDUCT.md`
+- `spec/omnisstream-spec/CONTRIBUTING.md`
+- `spec/omnisstream-spec/LICENSE`
+- `spec/omnisstream-spec/MANIFEST_SPEC.md`
+- `spec/omnisstream-spec/NOTICE`
+- `spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto`
+- `spec/omnisstream-spec/proto/protoc.sh`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/REPOSITORY_SPEC.md`
+- `spec/omnisstream-spec/SECURITY.md`
 - `spec/omnisstream-spec/test-vectors/README.md`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
-- `spec/omnisstream-spec/tools/validator/tests/test_vectors.py:14`
 </details>
 
 ## Citations
@@ -137,18 +182,24 @@ Testing guidance for OmnisStream-Core. Stale build-artifact carryover removed; r
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
+- `spec/omnisstream-spec/.editorconfig`
 - `crates/omnisstream/tests/api_surface.rs:5`
+- `spec/omnisstream-spec/.gitignore`
+- `spec/omnisstream-spec/CANONICAL_JSON.md`
+- `spec/omnisstream-spec/CODE_OF_CONDUCT.md`
+- `spec/omnisstream-spec/CONTRIBUTING.md`
+- `spec/omnisstream-spec/LICENSE`
+- `spec/omnisstream-spec/MANIFEST_SPEC.md`
+- `spec/omnisstream-spec/NOTICE`
+- `spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto`
+- `spec/omnisstream-spec/proto/protoc.sh`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/REPOSITORY_SPEC.md`
+- `spec/omnisstream-spec/SECURITY.md`
 - `spec/omnisstream-spec/test-vectors/README.md`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin`
 - `spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin`
 - `spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin`
-- `spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin`
-- `spec/omnisstream-spec/tools/validator/tests/test_vectors.py:14`
 </details>

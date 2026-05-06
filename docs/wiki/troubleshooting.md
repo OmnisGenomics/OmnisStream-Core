@@ -2,8 +2,8 @@
 page_id: troubleshooting
 page_type: troubleshooting
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.287Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:11.982Z
 ---
 
 <details>
@@ -11,9 +11,25 @@ updated_at: 2026-04-18T05:55:58.287Z
 
 ```json
 {
-  "freshnessKey": "2c7814a59551eae33da5ebd5bd9afb64a2b30f2b",
+  "freshnessKey": "19abd0ed0ce58a7f497e6febbafda6c5a86618d4",
   "plannerReason": "Generated when enough deterministic runtime, hotspot, and validation evidence exists to assemble a bounded troubleshooting guide.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "Cargo.toml",
+    "crates/omnisstream/build.rs",
+    "crates/omnisstream/Cargo.toml",
+    "crates/omnisstream/src/api.rs",
+    "crates/omnisstream/src/compression.rs",
+    "crates/omnisstream/src/durability.rs",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "crates/omnisstream_cli/build.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml",
@@ -149,7 +165,7 @@ Failure-first inspection guide for OmnisStream-Core.
 ## Likely Failure Boundaries
 
 - crates/omnisstream/src: score 1797; watch inbound 297, outbound 300, and 2 bridged subsystem boundaries from `crates/omnisstream/src`.
-- omnisstream: score 264; watch inbound 38, outbound 49, and 1 bridged subsystem boundary from `crates/omnisstream_cli/src`.
+- omnisstream: score 276; watch inbound 40, outbound 51, and 1 bridged subsystem boundary from `crates/omnisstream_cli/src`.
 - omnisstream_benchdiff: score 255; watch inbound 41, outbound 42, and 2 bridged subsystem boundaries from `crates/omnisstream_benchdiff/src`.
 - omnisstream: score 174; watch inbound 28, outbound 29, and 1 bridged subsystem boundary from `crates/omnisstream`.
 
@@ -193,7 +209,7 @@ Failure-first inspection guide for OmnisStream-Core.
 
 ## Relevant Validation Commands
 
-- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests` after reproducing or patching the issue.
+- Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator` after reproducing or patching the issue.
 - Run `cargo build` (build) from `.` after reproducing or patching the issue.
 - Run `cargo check` (check) from `.` after reproducing or patching the issue.
 - Run `cargo test` (test) from `.` after reproducing or patching the issue.

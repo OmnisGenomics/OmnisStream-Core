@@ -2,8 +2,8 @@
 page_id: validation
 page_type: validation
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.255Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:01.137Z
 ---
 
 <details>
@@ -13,7 +13,10 @@ updated_at: 2026-04-18T05:55:58.255Z
 {
   "freshnessKey": "02e3e503d4903c49486067082da6f595eadb4d97",
   "plannerReason": "Generated when enough deterministic workflow evidence exists to separate fast feedback, behavioral verification, and release-safety validation.",
-  "changedPaths": [],
+  "changedPaths": [
+    "Cargo.toml",
+    "spec/omnisstream-spec/tools/validator/pyproject.toml"
+  ],
   "dependencyPaths": [
     "Cargo.toml",
     "spec/omnisstream-spec/tools/validator/pyproject.toml"
@@ -64,7 +67,7 @@ Validation strategy guide for OmnisStream-Core.
 
 ## Behavioral Verification
 
-- Use the README-backed validator workflow from `spec/omnisstream-spec`: expose the package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests` to confirm user-visible or behavior-level expectations.
+- Use `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator` to confirm user-visible or behavior-level expectations.
 - Use `cargo test` (test) from `.` to confirm user-visible or behavior-level expectations.
 
 <details>

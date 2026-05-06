@@ -1,9 +1,9 @@
 ---
-page_id: component-component:cargo:crates/omnisstream_cli
+page_id: component-component:bin:omnisstream
 page_type: component
 generation_mode: inferred
 freshness_status: new
-updated_at: 2026-05-06T23:01:55.123Z
+updated_at: 2026-05-06T23:01:55.912Z
 ---
 
 <details>
@@ -11,13 +11,12 @@ updated_at: 2026-05-06T23:01:55.123Z
 
 ```json
 {
-  "freshnessKey": "68491fa5087060761136c08223c23a931b17a377",
+  "freshnessKey": "ebfe6742f0565d16778d6568fec3718836955d14",
   "plannerReason": "Generated because the component was ranked as significant for repo navigation.",
   "changedPaths": [
     "crates/omnisstream_cli/src/main.rs",
-    "crates/omnisstream_cli/build.rs",
     "crates/omnisstream_cli/Cargo.toml",
-    "crates/omnisstream_cli",
+    "crates/omnisstream_cli/src",
     "docs/ffi_cmake.md",
     "docs/monarchic-launch.md",
     "README.md",
@@ -28,17 +27,13 @@ updated_at: 2026-05-06T23:01:55.123Z
     "spec/omnisstream-spec/.gitignore",
     "spec/omnisstream-spec/CANONICAL_JSON.md",
     "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
-    "crates/omnisstream_bench/Cargo.toml",
-    "crates/omnisstream_benchdiff/Cargo.toml",
-    "crates/omnisstream/Cargo.toml",
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml"
   ],
   "dependencyPaths": [
     "crates/omnisstream_cli/src/main.rs",
-    "crates/omnisstream_cli/build.rs",
     "crates/omnisstream_cli/Cargo.toml",
-    "crates/omnisstream_cli",
+    "crates/omnisstream_cli/src",
     "docs/ffi_cmake.md",
     "docs/monarchic-launch.md",
     "README.md",
@@ -49,14 +44,15 @@ updated_at: 2026-05-06T23:01:55.123Z
     "spec/omnisstream-spec/.gitignore",
     "spec/omnisstream-spec/CANONICAL_JSON.md",
     "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
-    "crates/omnisstream_bench/Cargo.toml",
-    "crates/omnisstream_benchdiff/Cargo.toml",
-    "crates/omnisstream/Cargo.toml",
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml"
   ],
   "dependencyEvidenceIds": [
-    "ingest:file:crates/omnisstream_cli/build.rs",
+    "ingest:file:crates/omnisstream_cli/src/main.rs",
+    "ingest:file:crates/omnisstream/src/hashing.rs",
+    "ingest:file:crates/omnisstream_benchdiff/src/main.rs",
+    "ingest:file:crates/omnisstream/src/manifest.rs",
+    "ingest:file:crates/omnisstream/src/api.rs",
     "component:crates/omnisstream_cli/Cargo.toml",
     "ingest:file:docs/ffi_cmake.md",
     "ingest:file:docs/monarchic-launch.md",
@@ -98,14 +94,15 @@ updated_at: 2026-05-06T23:01:55.123Z
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
     "ingest:file:spec/omnisstream-spec/VERSIONING.md",
-    "component:crates/omnisstream_bench/Cargo.toml",
-    "component:crates/omnisstream_benchdiff/Cargo.toml",
-    "component:crates/omnisstream/Cargo.toml",
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "workflow:Cargo.toml"
   ],
   "evidenceIds": [
-    "ingest:file:crates/omnisstream_cli/build.rs",
+    "ingest:file:crates/omnisstream_cli/src/main.rs",
+    "ingest:file:crates/omnisstream/src/hashing.rs",
+    "ingest:file:crates/omnisstream_benchdiff/src/main.rs",
+    "ingest:file:crates/omnisstream/src/manifest.rs",
+    "ingest:file:crates/omnisstream/src/api.rs",
     "component:crates/omnisstream_cli/Cargo.toml",
     "ingest:file:docs/ffi_cmake.md",
     "ingest:file:docs/monarchic-launch.md",
@@ -147,9 +144,6 @@ updated_at: 2026-05-06T23:01:55.123Z
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
     "ingest:file:spec/omnisstream-spec/VERSIONING.md",
-    "component:crates/omnisstream_bench/Cargo.toml",
-    "component:crates/omnisstream_benchdiff/Cargo.toml",
-    "component:crates/omnisstream/Cargo.toml",
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "workflow:Cargo.toml"
   ],
@@ -159,9 +153,9 @@ updated_at: 2026-05-06T23:01:55.123Z
 ```
 </details>
 
-# omnisstream_cli
+# omnisstream
 
-omnisstream_cli rust component
+Rust binary target omnisstream.
 
 ## Related Pages
 
@@ -176,121 +170,136 @@ omnisstream_cli rust component
 Role classification: inferred execution boundary.
 Proved signals:
 - Matched an inferred entrypoint or entrypoint symbol in `crates/omnisstream_cli/src/main.rs`.
+- Defines execution-like symbols `main`, `run_gc`.
+- Defines validation-like symbols `parse_positive_usize`.
+- Defines state-change or persistence-like symbols `write_object_parallel_rejects_zero_jobs`, `write_object_parallel`.
+- Defines boundary-oriented symbols `load_manifest_decode_error_includes_path`, `load_manifest_missing_file_error_includes_path`.
+- Imports 1 repository-local path.
+- Participates in 47 connected call edges.
 Why this role fits: These proved signals suggest this unit is a first-hop execution boundary that receives control and hands it into component logic.
 Supporting implementation citations:
-- `crates/omnisstream_cli/src/main.rs:16`
-
-### `crates/omnisstream_cli/build.rs`
-Role classification: inferred execution boundary.
-Proved signals:
-- Defines execution-like symbols `main`.
-- Participates in 5 connected call edges.
-Why this role fits: These proved signals suggest this unit is a first-hop execution boundary that receives control and hands it into component logic.
-Supporting implementation citations:
-- `crates/omnisstream_cli/build.rs:1`
+- `crates/omnisstream_cli/src/main.rs:86`
+- `crates/omnisstream_cli/src/main.rs:521`
 
 <details>
 <summary>Related files:</summary>
 
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_cli/build.rs`
+</details>
+
+<details>
+<summary>Citations:</summary>
+
+- `crates/omnisstream_cli/src/main.rs:86`
+- `crates/omnisstream_cli/src/main.rs:521`
+</details>
+
+## Module Responsibilities
+
+### `crates/omnisstream_cli/src/main.rs`
+Role: Entrypoint and orchestration.
+Primary behavior: Defines `Cli` (class), `Command` (class), `main` (function), suggesting local implementation behavior rather than a manifest-only surface.
+Why this module matters: Matched as an inferred entrypoint for this component. 47 connected call edges mark this file as implementation-active. Imports 1 distinct path, which suggests orchestration or integration work.
+Supporting implementation citations:
+- `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/src/main.rs:26`
+- `crates/omnisstream_cli/src/main.rs:86`
+
+<details>
+<summary>Related files:</summary>
+
+- `crates/omnisstream_cli/src/main.rs`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_cli/build.rs:1`
-</details>
-
-## Module Responsibilities
-
-### `crates/omnisstream_cli/build.rs`
-Role: Internal implementation module.
-Primary behavior: Defines `main` (function), `find_git_dir` (function), `read_gitdir_file` (function), suggesting local implementation behavior rather than a manifest-only surface.
-Why this module matters: 5 connected call edges mark this file as implementation-active.
-Supporting implementation citations:
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:16`
-- `crates/omnisstream_cli/build.rs:31`
-
-<details>
-<summary>Related files:</summary>
-
-- `crates/omnisstream_cli/build.rs`
-</details>
-
-<details>
-<summary>Citations:</summary>
-
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:16`
-- `crates/omnisstream_cli/build.rs:31`
+- `crates/omnisstream_cli/src/main.rs:26`
+- `crates/omnisstream_cli/src/main.rs:86`
 </details>
 
 ## Key Symbols
 
+### `new` (function)
+Behavior: Defines a visible implementation unit in `crates/omnisstream_cli/src/main.rs` without strong downstream call evidence.
+Receives: Called by `find_manifest_paths`, `is_single_normal_path_component`, `list_part_files`.
+Produces or triggers: No strong downstream trigger evidence was inferred.
+Connected symbols:
+- Callers: `find_manifest_paths`, `is_single_normal_path_component`, `list_part_files`.
+Supporting implementation citations:
+- `crates/omnisstream_cli/src/main.rs:218`
+- `crates/omnisstream_cli/src/main.rs:433`
+
 ### `main` (function)
-Behavior: Starts or orchestrates execution for `crates/omnisstream_cli/build.rs`. It directly calls `find_common_git_dir`, `find_git_dir`.
-Receives: No strong upstream caller evidence was inferred.
-Produces or triggers: Triggers `find_common_git_dir`, `find_git_dir`, `read_git_commit`.
+Behavior: Starts or orchestrates execution for `crates/omnisstream_cli/src/main.rs`. It directly calls `load_manifest`, `new`.
+Receives: Receives control close to component entrypoints in `crates/omnisstream_cli/src/main.rs`.
+Produces or triggers: Triggers `load_manifest`, `new`, `print_version`.
 Connected symbols:
-- Callees: `find_common_git_dir`, `find_git_dir`, `read_git_commit`.
+- Callees: `load_manifest`, `new`, `print_version`.
 Supporting implementation citations:
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:42`
+- `crates/omnisstream_cli/src/main.rs:86`
+- `crates/omnisstream_cli/src/main.rs:196`
 
-### `find_git_dir` (function)
-Behavior: Implements component logic in `crates/omnisstream_cli/build.rs` by coordinating nearby symbol calls. It directly calls `read_gitdir_file`.
-Receives: Called by `main`.
-Produces or triggers: Triggers `read_gitdir_file`.
+### `load_manifest` (function)
+Behavior: Reads or loads data or dependencies for `crates/omnisstream_cli/src/main.rs`. It directly calls `read`, `from_pb_bytes`.
+Receives: Called by `get_object_writes_expected_bytes`, `load_manifest_decode_error_includes_path`, `load_manifest_missing_file_error_includes_path`.
+Produces or triggers: Triggers `read`, `from_pb_bytes`.
 Connected symbols:
-- Callers: `main`.
-- Callees: `read_gitdir_file`.
+- Callers: `get_object_writes_expected_bytes`, `load_manifest_decode_error_includes_path`, `load_manifest_missing_file_error_includes_path`.
+- Callees: `read`, `from_pb_bytes`.
 Supporting implementation citations:
-- `crates/omnisstream_cli/build.rs:16`
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:31`
-
-### `read_git_commit` (function)
-Behavior: Reads or loads data or dependencies for `crates/omnisstream_cli/build.rs`. It directly calls `candidate_git_paths`.
-Receives: Called by `main`.
-Produces or triggers: Triggers `candidate_git_paths`.
-Connected symbols:
-- Callers: `main`.
-- Callees: `candidate_git_paths`.
-Supporting implementation citations:
-- `crates/omnisstream_cli/build.rs:62`
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:110`
+- `crates/omnisstream_cli/src/main.rs:196`
+- `crates/omnisstream_cli/src/main.rs:714`
+- `crates/omnisstream/src/hashing.rs:209`
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
+- `crates/omnisstream_cli/src/main.rs`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:42`
-- `crates/omnisstream_cli/build.rs:16`
-- `crates/omnisstream_cli/build.rs:31`
-- `crates/omnisstream_cli/build.rs:62`
-- `crates/omnisstream_cli/build.rs:110`
+- `crates/omnisstream_cli/src/main.rs:218`
+- `crates/omnisstream_cli/src/main.rs:433`
+- `crates/omnisstream_cli/src/main.rs:86`
+- `crates/omnisstream_cli/src/main.rs:196`
+- `crates/omnisstream_cli/src/main.rs:714`
+- `crates/omnisstream/src/hashing.rs:209`
 </details>
 
 ## State Boundaries
 
-Insufficient evidence to infer state boundaries confidently.
+Validated at:
+- Likely validated at `parse_positive_usize` in `crates/omnisstream_cli/src/main.rs`; this is inferred from validation-like naming rather than proved full program semantics. Validate with Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`. Run `cargo build` (build) from `.`.
+
+Mutated in:
+- none
+
+Persisted or emitted through:
+- Likely persisted or emitted through `write_object_parallel_rejects_zero_jobs` in `crates/omnisstream_cli/src/main.rs`; this is inferred from persistence/emission naming and nearby implementation context. Recheck with Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
 
 <details>
 <summary>Supporting citations:</summary>
 
-- none
+- `crates/omnisstream_cli/src/main.rs:202`
+- `crates/omnisstream_cli/src/main.rs:751`
 </details>
 
+<details>
+<summary>Related files:</summary>
+
+- `crates/omnisstream_cli/src/main.rs`
+</details>
+
+<details>
+<summary>Citations:</summary>
+
+- `crates/omnisstream_cli/src/main.rs:202`
+- `crates/omnisstream_cli/src/main.rs:751`
+</details>
 
 ## State Ownership and Handoffs
 
@@ -316,26 +325,24 @@ Insufficient evidence to infer a bounded request lifecycle confidently.
 
 ## Responsibilities
 
-omnisstream_cli rust component
+Rust binary target omnisstream.
 
-Type: package
-Root path: `crates/omnisstream_cli`
+Type: application
+Root path: `crates/omnisstream_cli/src`
 Ecosystem: rust
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
 </details>
 
 ## Entrypoints and Runtime Surface
@@ -361,24 +368,21 @@ Ecosystem: rust
 ## Dependencies and Relationships
 
 Repository-owned edges:
-- `component:cargo:crates/omnisstream_cli` depends_on `component:cargo:crates/omnisstream` (high)
-- `repository` contains `component:cargo:crates/omnisstream_cli` (high)
-- `component:docs` documents `component:cargo:crates/omnisstream_cli` (medium)
-- `component:tests` tests `component:cargo:crates/omnisstream_cli` (high)
+- `repository` contains `component:bin:omnisstream` (high)
+- `component:docs` documents `component:bin:omnisstream` (medium)
+- `component:tests` tests `component:bin:omnisstream` (high)
+- `component:bin:omnisstream` depends_on `crates/omnisstream/src/lib.rs` (medium)
 External dependency edges (bounded):
-- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:anyhow.workspace` (high)
-- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:clap.workspace` (high)
-- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:rayon.workspace` (high)
-- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:tempfile.workspace` (high)
-- `component:cargo:crates/omnisstream_cli` depends_on `component:external:rust:tracing-subscriber.workspace` (high)
+- `component:bin:omnisstream` depends_on `component:external:rust:anyhow` (medium)
+- `component:bin:omnisstream` depends_on `component:external:rust:clap` (medium)
+- `component:bin:omnisstream` depends_on `component:external:rust:rayon` (medium)
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_cli`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_cli/src`
 - `docs/ffi_cmake.md`
 - `docs/monarchic-launch.md`
 - `README.md`
@@ -394,63 +398,71 @@ External dependency edges (bounded):
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
 </details>
 
 ## Why This Hotspot Matters
 
-Architectural role: Hotspot score 51 with 5 inbound and 11 outbound inferred edges marks `omnisstream_cli` as a coordination-heavy component. It bridges `external`. It also owns runtime entrypoints at `crates/omnisstream_cli/src/main.rs`.
+Architectural role: Hotspot score 276 with 40 inbound and 51 outbound inferred edges marks `omnisstream` as a coordination-heavy component. It bridges `external`. It also owns runtime entrypoints at `crates/omnisstream_cli/src/main.rs`.
 
 Main coupling surfaces:
-- Coupled components: `omnisstream`, `anyhow.workspace`, `clap.workspace`, `rayon.workspace`.
-- Call-heavy surface with 10 inferred call edges.
-- Dependency-heavy surface with 6 inferred dependency edges.
+- Coupled components: `Documentation`, `Tests`, `anyhow`, `clap`.
+- Call-heavy surface with 87 inferred call edges.
+- Dependency-heavy surface with 4 inferred dependency edges.
 
 Likely failure modes:
-- Upstream breakage risk: 5 inbound edges suggest downstream callers depend on this boundary staying stable.
-- Coordination risk: 11 outbound edges mean changes can ripple into neighboring components.
+- Upstream breakage risk: 40 inbound edges suggest downstream callers depend on this boundary staying stable.
+- Coordination risk: 51 outbound edges mean changes can ripple into neighboring components.
 - Cross-subsystem regression risk: changes can disrupt handoffs across `external`.
 
 <details>
 <summary>Supporting citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_cli/src`
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `crates/omnisstream/tests/api_surface.rs:5`
 </details>
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_cli/src`
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `crates/omnisstream/tests/api_surface.rs`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_cli/src`
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `crates/omnisstream/tests/api_surface.rs:5`
 </details>
 
 ## Operational Risk Surface
 
 Likely fault domains:
-- External dependency boundaries: `anyhow.workspace`, `clap.workspace`, `rayon.workspace`, `tempfile.workspace`.
+- External dependency boundaries: `anyhow`, `clap`, `rayon`.
 - Cross-subsystem handoffs: `external`.
 
 High-cost dependencies:
-- `anyhow.workspace` acts as a external dependency boundary.
-- `clap.workspace` acts as a external dependency boundary.
-- `rayon.workspace` acts as a external dependency boundary.
-- `tempfile.workspace` acts as a external dependency boundary.
+- `anyhow` acts as a external dependency boundary.
+- `clap` acts as a external dependency boundary.
+- `rayon` acts as a external dependency boundary.
+- 40 inbound edges raise the cost of breaking this component's callers.
 
 First validation checks:
 - Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
@@ -459,12 +471,8 @@ First validation checks:
 <details>
 <summary>Supporting citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_bench/Cargo.toml`
-- `crates/omnisstream_benchdiff/Cargo.toml`
-- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -472,12 +480,8 @@ First validation checks:
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_bench/Cargo.toml`
-- `crates/omnisstream_benchdiff/Cargo.toml`
-- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -485,12 +489,8 @@ First validation checks:
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_bench/Cargo.toml`
-- `crates/omnisstream_benchdiff/Cargo.toml`
-- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -510,7 +510,6 @@ Insufficient evidence to infer invariants and failure handling confidently.
 
 Likely change entry files:
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_cli/build.rs`
 - `crates/omnisstream_cli/Cargo.toml`
 
 Owned interfaces:
@@ -524,7 +523,6 @@ Nearby verification surfaces:
 <summary>Supporting citations:</summary>
 
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_cli/build.rs:110`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
@@ -534,7 +532,6 @@ Nearby verification surfaces:
 <summary>Related files:</summary>
 
 - `crates/omnisstream_cli/src/main.rs`
-- `crates/omnisstream_cli/build.rs`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
@@ -544,7 +541,6 @@ Nearby verification surfaces:
 <summary>Citations:</summary>
 
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_cli/build.rs:110`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
@@ -553,9 +549,9 @@ Nearby verification surfaces:
 ## Change Planning
 
 Impacted areas:
-- Downstream components likely affected: `omnisstream`, `anyhow.workspace`, `clap.workspace`, `rayon.workspace`.
+- Downstream components likely affected: `anyhow`, `clap`, `rayon`, `omnisstream`.
 - Cross-subsystem risk touches `external`.
-- Hotspot score 51 with 5 inbound and 11 outbound edges suggests higher coordination risk.
+- Hotspot score 276 with 40 inbound and 51 outbound edges suggests higher coordination risk.
 
 Suggested verification steps:
 - Validate with `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
@@ -564,9 +560,8 @@ Suggested verification steps:
 <details>
 <summary>Supporting citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -574,9 +569,8 @@ Suggested verification steps:
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_cli/build.rs`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -584,9 +578,8 @@ Suggested verification steps:
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_cli/build.rs:110`
-- `crates/omnisstream_cli/Cargo.toml`
 - `crates/omnisstream_cli/src/main.rs:16`
+- `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -600,17 +593,23 @@ Suggested verification steps:
 <details>
 <summary>Citations:</summary>
 
+- `crates/omnisstream_cli/src/main.rs:86`
+- `crates/omnisstream_cli/src/main.rs:521`
 - `crates/omnisstream_cli/src/main.rs:16`
-- `crates/omnisstream_cli/build.rs:1`
-- `crates/omnisstream_cli/build.rs:16`
-- `crates/omnisstream_cli/build.rs:31`
-- `crates/omnisstream_cli/build.rs:42`
-- `crates/omnisstream_cli/build.rs:62`
-- `crates/omnisstream_cli/build.rs:110`
+- `crates/omnisstream_cli/src/main.rs:26`
+- `crates/omnisstream_cli/src/main.rs:218`
+- `crates/omnisstream_cli/src/main.rs:433`
+- `crates/omnisstream_cli/src/main.rs:196`
+- `crates/omnisstream_cli/src/main.rs:714`
+- `crates/omnisstream/src/hashing.rs:209`
+- `crates/omnisstream_cli/src/main.rs:202`
+- `crates/omnisstream_cli/src/main.rs:751`
 - `crates/omnisstream_cli/Cargo.toml`
-- `crates/omnisstream_bench/Cargo.toml`
-- `crates/omnisstream_benchdiff/Cargo.toml`
-- `crates/omnisstream/Cargo.toml`
+- `crates/omnisstream_cli/src`
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `crates/omnisstream/tests/api_surface.rs:5`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>

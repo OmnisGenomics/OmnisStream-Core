@@ -2,8 +2,8 @@
 page_id: diagrams
 page_type: diagrams
 generation_mode: inferred
-freshness_status: updated
-updated_at: 2026-04-22T01:56:19.610Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:17.028Z
 ---
 
 <details>
@@ -11,15 +11,13 @@ updated_at: 2026-04-22T01:56:19.610Z
 
 ```json
 {
-  "freshnessKey": "097b06702df35cefd03cce90be554626892701ba",
+  "freshnessKey": "1a58dacf8f69015096b484b7ab47d92a8522f1ce",
   "plannerReason": "Generated to provide a compact architecture and dependency overview.",
   "changedPaths": [],
   "dependencyPaths": [],
   "dependencyEvidenceIds": [],
   "evidenceIds": [],
-  "qualityWarnings": [
-    "Diagrams has no citations."
-  ]
+  "qualityWarnings": []
 }
 
 ```
@@ -32,9 +30,9 @@ Generated 4 diagrams.
 ## Diagram Navigation
 
 - [Component Overview](#component-overview) (component-overview; 9 nodes; 8 edges; omitted 157 nodes / 157 edges)
-- [Dependency Graph](#dependency-graph) (dependency-graph; 15 nodes; 16 edges; omitted 0 nodes / 1190 edges)
+- [Dependency Graph](#dependency-graph) (dependency-graph; 15 nodes; 16 edges; omitted 0 nodes / 1191 edges)
 - [Directory Map](#directory-map) (directory-map; 7 nodes; 6 edges)
-- [Subsystem Clusters](#subsystem-clusters) (component-overview; 6 nodes; 2 edges; omitted 0 nodes / 714 edges)
+- [Subsystem Clusters](#subsystem-clusters) (component-overview; 6 nodes; 2 edges; omitted 0 nodes / 715 edges)
 
 ## Related Pages
 
@@ -129,6 +127,23 @@ Why these edges:
 - Repository contains OmnisStream-Core as a prominent component.
 - Repository contains OmnisStream-Core as a prominent component.
 
+<details>
+<summary>Citations:</summary>
+
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+</details>
+
 ## Dependency Graph
 
 Shows a sampled set of dependency and call relationships across indexed entities.
@@ -149,7 +164,7 @@ Node mix:
 
 Omitted surface:
 - omitted nodes: 0
-- omitted edges: 1190
+- omitted edges: 1191
 
 ```mermaid
 graph LR
@@ -226,8 +241,8 @@ Simplification:
 - rendered nodes: 15
 - rendered edges: 16
 - omitted nodes: 0
-- omitted edges: 1190
-- Omitted 1190 lower-priority dependency edges to avoid an unreadable graph.
+- omitted edges: 1191
+- Omitted 1191 lower-priority dependency edges to avoid an unreadable graph.
 - Kept a rank-ordered sample of stronger edges and switched to a left-to-right layout for denser graphs.
 
 Why these edges:
@@ -241,6 +256,23 @@ Why these edges:
 - symbol:crates/omnisstream_bench/src/main.rs:main:597 calls symbol:crates/omnisstream_bench/src/main.rs:from_args:115 via crates/omnisstream_bench/src/main.rs.
 - symbol:crates/omnisstream_bench/src/main.rs:main:597 calls symbol:crates/omnisstream_bench/src/main.rs:generated_unix_ms:510 via crates/omnisstream_bench/src/main.rs.
 - symbol:crates/omnisstream_bench/src/main.rs:main:597 calls symbol:crates/omnisstream_bench/src/main.rs:git_head:524 via crates/omnisstream_bench/src/main.rs.
+
+<details>
+<summary>Citations:</summary>
+
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+</details>
 
 ## Directory Map
 
@@ -312,6 +344,23 @@ Why these edges:
 - include/ is a top-level directory under the repository root.
 - spec/ is a top-level directory under the repository root.
 
+<details>
+<summary>Citations:</summary>
+
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+</details>
+
 ## Subsystem Clusters
 
 Shows a simplified subsystem graph grouped by dominant repository paths and graph-connected merges.
@@ -331,7 +380,7 @@ Node mix:
 
 Omitted surface:
 - omitted nodes: 0
-- omitted edges: 714
+- omitted edges: 715
 
 ```mermaid
 graph LR
@@ -387,8 +436,8 @@ Simplification:
 - rendered nodes: 6
 - rendered edges: 2
 - omitted nodes: 0
-- omitted edges: 714
-- Collapsed 714 additional subsystem edges from the rendered view.
+- omitted edges: 715
+- Collapsed 715 additional subsystem edges from the rendered view.
 - Grouped subsystem nodes by dominant path segment across 4 hierarchy buckets before rendering edges.
 - Added band-order guide links so large hierarchy groups stay visually ordered before cross-subsystem edges are rendered.
 - Used a left-to-right hierarchy-banded layout so dominant path groups stay ordered and visually clustered.
@@ -397,3 +446,39 @@ Simplification:
 Why these edges:
 - spec calls crates via spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py. 6 additional inferred edges reinforce this path. (7 inferred edges combined.)
 - crates depends_on external via crates/omnisstream_bench/Cargo.toml. 49 additional inferred edges reinforce this path. (50 inferred edges combined.)
+
+<details>
+<summary>Citations:</summary>
+
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+</details>
+
+## Citations
+
+<details>
+<summary>Citations:</summary>
+
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/tools/validator/README.md`
+- `crates/omnisstream_cli/src/main.rs`
+- `crates/omnisstream_cli/Cargo.toml`
+- `crates/omnisstream_bench/src/main.rs`
+- `crates/omnisstream_bench/Cargo.toml`
+- `crates/omnisstream_benchdiff/src/main.rs`
+</details>

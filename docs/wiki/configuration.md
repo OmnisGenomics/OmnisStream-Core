@@ -2,8 +2,8 @@
 page_id: configuration
 page_type: configuration
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.286Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:18.055Z
 ---
 
 <details>
@@ -11,9 +11,17 @@ updated_at: 2026-04-18T05:55:58.286Z
 
 ```json
 {
-  "freshnessKey": "7264e7feac5d0d3466f21fba8b6e18f47168cef6",
+  "freshnessKey": "c699ffd8cd252d67c04c456fb41735228d0aca7f",
   "plannerReason": "Generated when enough deterministic configuration evidence exists to separate required setup, optional knobs, and risk-sensitive settings.",
-  "changedPaths": [],
+  "changedPaths": [
+    "Cargo.toml",
+    "crates/omnisstream_backend_api/Cargo.toml",
+    "crates/omnisstream_bench/Cargo.toml",
+    "crates/omnisstream_benchdiff/Cargo.toml",
+    "crates/omnisstream_cli/Cargo.toml",
+    "spec/omnisstream-spec/.editorconfig",
+    "spec/omnisstream-spec/tools/validator/pyproject.toml"
+  ],
   "dependencyPaths": [
     "Cargo.toml",
     "crates/omnisstream_backend_api/Cargo.toml",
@@ -21,7 +29,6 @@ updated_at: 2026-04-18T05:55:58.286Z
     "crates/omnisstream_benchdiff/Cargo.toml",
     "crates/omnisstream_cli/Cargo.toml",
     "spec/omnisstream-spec/.editorconfig",
-    "target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json",
     "spec/omnisstream-spec/tools/validator/pyproject.toml"
   ],
   "dependencyEvidenceIds": [
@@ -31,7 +38,6 @@ updated_at: 2026-04-18T05:55:58.286Z
     "ingest:file:crates/omnisstream_benchdiff/Cargo.toml",
     "ingest:file:crates/omnisstream_cli/Cargo.toml",
     "ingest:file:spec/omnisstream-spec/.editorconfig",
-    "ingest:file:target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json",
     "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml"
   ],
   "evidenceIds": [
@@ -41,7 +47,6 @@ updated_at: 2026-04-18T05:55:58.286Z
     "ingest:file:crates/omnisstream_benchdiff/Cargo.toml",
     "ingest:file:crates/omnisstream_cli/Cargo.toml",
     "ingest:file:spec/omnisstream-spec/.editorconfig",
-    "ingest:file:target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json",
     "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml"
   ],
   "qualityWarnings": []
@@ -56,7 +61,6 @@ Configuration guide for OmnisStream-Core.
 
 ## Related Pages
 
-- [start-here](start-here.md)
 - [playbook](playbook.md)
 - [interfaces](interfaces.md)
 - [runtime](runtime.md)
@@ -79,7 +83,6 @@ Configuration guide for OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
@@ -92,14 +95,12 @@ Configuration guide for OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
 ## Optional Knobs
 
 - Review `spec/omnisstream-spec/.editorconfig` for optional tuning knobs and repo-local defaults.
-- Review `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json` for optional tuning knobs and repo-local defaults.
 - Review `spec/omnisstream-spec/tools/validator/pyproject.toml` for optional tuning knobs and repo-local defaults.
 - spec/omnisstream-spec/tools/validator/pyproject.toml: Configuration surface defined by spec/omnisstream-spec/tools/validator/pyproject.toml.
 
@@ -112,7 +113,6 @@ Configuration guide for OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
@@ -125,7 +125,6 @@ Configuration guide for OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
@@ -142,7 +141,6 @@ Insufficient evidence to infer risk-sensitive settings.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
@@ -155,7 +153,6 @@ Insufficient evidence to infer risk-sensitive settings.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
 
@@ -170,6 +167,5 @@ Insufficient evidence to infer risk-sensitive settings.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `crates/omnisstream_cli/Cargo.toml`
 - `spec/omnisstream-spec/.editorconfig`
-- `target/debug/.fingerprint/pkg-config-dd7065c4c3fc738a/lib-pkg_config.json`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>

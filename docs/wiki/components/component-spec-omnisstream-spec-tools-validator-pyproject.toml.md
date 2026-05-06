@@ -2,8 +2,8 @@
 page_id: component-component:spec/omnisstream-spec/tools/validator/pyproject.toml
 page_type: component
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:49.788Z
+freshness_status: new
+updated_at: 2026-05-06T23:01:39.348Z
 ---
 
 <details>
@@ -11,9 +11,30 @@ updated_at: 2026-04-18T05:55:49.788Z
 
 ```json
 {
-  "freshnessKey": "ec000a22522fe8fc0af66435dcd76e950034e023",
+  "freshnessKey": "8b94d4f4abf8521a5a8e1a1edac3bf1fd7684a89",
   "plannerReason": "Generated because the component was ranked as significant for repo navigation.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "spec/omnisstream-spec/tools/validator/README.md",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "docs/ffi_cmake.md",
+    "docs/monarchic-launch.md",
+    "README.md",
+    "spec/omnisstream-spec/proto/README.md",
+    "spec/omnisstream-spec/README.md",
+    "spec/omnisstream-spec/tools/validator",
+    "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/.editorconfig",
+    "spec/omnisstream-spec/.gitignore",
+    "spec/omnisstream-spec/CANONICAL_JSON.md",
+    "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "Cargo.toml"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "spec/omnisstream-spec/tools/validator/README.md",
@@ -23,119 +44,106 @@ updated_at: 2026-04-18T05:55:49.788Z
     "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
     "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
     "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "docs/ffi_cmake.md",
+    "docs/monarchic-launch.md",
+    "README.md",
+    "spec/omnisstream-spec/proto/README.md",
+    "spec/omnisstream-spec/README.md",
+    "spec/omnisstream-spec/tools/validator",
+    "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/.editorconfig",
+    "spec/omnisstream-spec/.gitignore",
+    "spec/omnisstream-spec/CANONICAL_JSON.md",
+    "spec/omnisstream-spec/CODE_OF_CONDUCT.md",
     "Cargo.toml"
   ],
   "dependencyEvidenceIds": [
     "component:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
     "ingest:file:spec/omnisstream-spec/proto/README.md",
     "ingest:file:spec/omnisstream-spec/README.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/README.md",
     "ingest:file:spec/omnisstream-spec/tools/validator/README.md",
     "ingest:file:crates/omnisstream/tests/api_surface.rs",
+    "ingest:file:spec/omnisstream-spec/.editorconfig",
+    "ingest:file:spec/omnisstream-spec/.gitignore",
+    "ingest:file:spec/omnisstream-spec/CANONICAL_JSON.md",
+    "ingest:file:spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "ingest:file:spec/omnisstream-spec/CONTRIBUTING.md",
+    "ingest:file:spec/omnisstream-spec/LICENSE",
+    "ingest:file:spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/NOTICE",
+    "ingest:file:spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "ingest:file:spec/omnisstream-spec/proto/protoc.sh",
+    "ingest:file:spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/SECURITY.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface",
-    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface.json",
-    "ingest:file:target/debug/build/cbindgen-741b44f13a1fd46a/out/tests.rs",
+    "ingest:file:spec/omnisstream-spec/VERSIONING.md",
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "workflow:Cargo.toml"
   ],
   "evidenceIds": [
     "component:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
     "ingest:file:spec/omnisstream-spec/proto/README.md",
     "ingest:file:spec/omnisstream-spec/README.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/README.md",
     "ingest:file:spec/omnisstream-spec/tools/validator/README.md",
     "ingest:file:crates/omnisstream/tests/api_surface.rs",
+    "ingest:file:spec/omnisstream-spec/.editorconfig",
+    "ingest:file:spec/omnisstream-spec/.gitignore",
+    "ingest:file:spec/omnisstream-spec/CANONICAL_JSON.md",
+    "ingest:file:spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "ingest:file:spec/omnisstream-spec/CONTRIBUTING.md",
+    "ingest:file:spec/omnisstream-spec/LICENSE",
+    "ingest:file:spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/NOTICE",
+    "ingest:file:spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "ingest:file:spec/omnisstream-spec/proto/protoc.sh",
+    "ingest:file:spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/SECURITY.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
+    "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/tests/test_vectors.py",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-7d160085694d4088/test-lib-omnisstream_backend_api.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api",
-    "ingest:file:target/debug/.fingerprint/omnisstream_backend_api-b6608906c17c3ad5/test-lib-omnisstream_backend_api.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-2116bac95fb410da/test-bin-omnisstream_bench.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench",
-    "ingest:file:target/debug/.fingerprint/omnisstream_bench-c3cab453de7b2fbc/test-bin-omnisstream_bench.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-d45b335813af65c9/test-bin-omnisstream_benchdiff.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff",
-    "ingest:file:target/debug/.fingerprint/omnisstream_benchdiff-eeab6b30bec50506/test-bin-omnisstream_benchdiff.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-7ffd4a492057dfac/test-bin-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream_cli-83428a8807066f41/test-bin-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-011df452a3647069/test-lib-omnisstream_ffi.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-2ec4543d5d4314f5/test-lib-omnisstream_ffi.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-4dd3812dc132fb84/test-bin-omnisstream_ffi_header.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header",
-    "ingest:file:target/debug/.fingerprint/omnisstream_ffi-9f701df7daebf619/test-bin-omnisstream_ffi_header.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface",
-    "ingest:file:target/debug/.fingerprint/omnisstream-d4b8a6fbbf212def/test-integration-test-api_surface.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f33ff188f38259aa/test-lib-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f6cf2cd55d9cd535/test-lib-omnisstream.json",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface",
-    "ingest:file:target/debug/.fingerprint/omnisstream-f88f61dd9cf6d8bc/test-integration-test-api_surface.json",
-    "ingest:file:target/debug/build/cbindgen-741b44f13a1fd46a/out/tests.rs",
+    "ingest:file:spec/omnisstream-spec/VERSIONING.md",
     "workflow:spec/omnisstream-spec/tools/validator/pyproject.toml",
     "workflow:Cargo.toml"
   ],
@@ -151,10 +159,10 @@ omnisstream-validator python component
 
 ## Related Pages
 
-- [components](components.md)
-- [workflows](workflows.md)
-- [interfaces](interfaces.md)
-- [dependencies](dependencies.md)
+- [components](../components.md)
+- [workflows](../workflows.md)
+- [interfaces](../interfaces.md)
+- [dependencies](../dependencies.md)
 
 ## Implementation Roles
 
@@ -262,6 +270,7 @@ Ecosystem: python
 
 ## Dependencies and Relationships
 
+Repository-owned edges:
 - `component:docs` documents `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (medium)
 - `repository` contains `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (high)
 - `component:tests` tests `component:spec/omnisstream-spec/tools/validator/pyproject.toml` (high)
@@ -277,6 +286,17 @@ Ecosystem: python
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/load.py`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/model.py`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/validate.py`
+- `docs/ffi_cmake.md`
+- `docs/monarchic-launch.md`
+- `README.md`
+- `spec/omnisstream-spec/proto/README.md`
+- `spec/omnisstream-spec/README.md`
+- `spec/omnisstream-spec/tools/validator`
+- `crates/omnisstream/tests/api_surface.rs`
+- `spec/omnisstream-spec/.editorconfig`
+- `spec/omnisstream-spec/.gitignore`
+- `spec/omnisstream-spec/CANONICAL_JSON.md`
+- `spec/omnisstream-spec/CODE_OF_CONDUCT.md`
 </details>
 
 <details>
@@ -333,8 +353,8 @@ Owned interfaces:
 
 Nearby verification surfaces:
 - Run `omnisstream-validate` (run) from `spec/omnisstream-spec/tools/validator`.
-- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
-- Validate with the README-backed workflow from `spec/omnisstream-spec`: expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+- Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
+- Validate with `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
 - Validate with `cargo test` (test) from `.`.
 
 <details>
@@ -378,7 +398,7 @@ Insufficient evidence to infer change-planning guidance.
 ## Nearby Workflows
 
 - `omnisstream-validate` (run)
-- `python -m unittest discover -s tools/validator/tests` (test, after exposing or installing `tools/validator` from `spec/omnisstream-spec`)
+- `python -m unittest discover -s tools/validator/tests` (test)
 
 <details>
 <summary>Related files:</summary>

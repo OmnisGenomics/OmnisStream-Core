@@ -2,8 +2,8 @@
 page_id: runtime
 page_type: runtime
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.289Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:15.052Z
 ---
 
 <details>
@@ -11,9 +11,23 @@ updated_at: 2026-04-18T05:55:58.289Z
 
 ```json
 {
-  "freshnessKey": "3ad6e5d1984f598a2629a1652b56c0c707d0fcb2",
+  "freshnessKey": "885c70ea8fef335fafb7ada3120e0d2ffe338c2c",
   "plannerReason": "Generated because agents often need to know how the repo runs before they modify it.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "omnisstream-validate",
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "Cargo.toml",
+    "crates/omnisstream_bench/src/main.rs",
+    "crates/omnisstream_bench/Cargo.toml",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml",
+    "crates/omnisstream_ffi/src/bin/header_gen.rs",
+    "crates/omnisstream_ffi/Cargo.toml",
+    "spec/omnisstream-spec/tools/validator/README.md",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "omnisstream-validate",
@@ -128,13 +142,14 @@ Owned components:
 ## Operational Workflow
 
 Steps:
-1. From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+1. Run `python -m unittest discover -s tools/validator/tests` for test from `spec/omnisstream-spec/tools/validator`.
 2. Run `cargo build` for build from `.`.
 3. Run `cargo test` for test from `.`.
 
 Owned components:
 - omnisstream-validate (application)
 - omnisstream-validator (application)
+- Tests (tests)
 - OmnisStream-Core (workspace)
 
 <details>

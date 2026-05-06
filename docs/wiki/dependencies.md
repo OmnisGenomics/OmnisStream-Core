@@ -2,8 +2,8 @@
 page_id: dependencies
 page_type: dependencies
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.251Z
+freshness_status: new
+updated_at: 2026-05-06T23:01:59.150Z
 ---
 
 <details>
@@ -11,9 +11,36 @@ updated_at: 2026-04-18T05:55:58.251Z
 
 ```json
 {
-  "freshnessKey": "d6d93eccf5abd233c40315b9f0a54b20ed2384da",
+  "freshnessKey": "211ff0526be3cfee6d5e0715568ae74d15eff8bf",
   "plannerReason": "Workspace template selected because deterministic evidence suggests a multi-package or multi-application repository.",
-  "changedPaths": [],
+  "changedPaths": [
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "crates/omnisstream_bench/src/main.rs",
+    "crates/omnisstream_bench/Cargo.toml",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml",
+    "crates/omnisstream_ffi/src/bin/header_gen.rs",
+    "crates/omnisstream_ffi/Cargo.toml",
+    "crates/omnisstream/build.rs",
+    "crates/omnisstream/Cargo.toml",
+    "crates/omnisstream_backend_api/Cargo.toml",
+    "crates/omnisstream_backend_api/src/lib.rs",
+    "crates/omnisstream_cli/build.rs",
+    "crates/omnisstream_ffi/cbindgen.toml",
+    "Cargo.toml",
+    "crates/omnisstream_ffi/src/lib.rs",
+    "crates/omnisstream/src/api.rs",
+    "crates/omnisstream/src/compression.rs",
+    "docs/ffi_cmake.md",
+    "docs/monarchic-launch.md",
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "spec/omnisstream-spec/tools/validator/README.md",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "crates/omnisstream/tests/api_surface.rs",
+    "spec/omnisstream-spec/.editorconfig"
+  ],
   "dependencyPaths": [
     "crates/omnisstream_cli/src/main.rs",
     "crates/omnisstream_cli/Cargo.toml",
@@ -34,13 +61,13 @@ updated_at: 2026-04-18T05:55:58.251Z
     "crates/omnisstream/src/api.rs",
     "crates/omnisstream/src/compression.rs",
     "docs/ffi_cmake.md",
-    "README.md",
+    "docs/monarchic-launch.md",
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "spec/omnisstream-spec/tools/validator/README.md",
     "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
     "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
     "crates/omnisstream/tests/api_surface.rs",
-    "spec/omnisstream-spec/test-vectors/README.md"
+    "spec/omnisstream-spec/.editorconfig"
   ],
   "dependencyEvidenceIds": [
     "ingest:file:crates/omnisstream_bench/src/main.rs",
@@ -79,6 +106,7 @@ updated_at: 2026-04-18T05:55:58.251Z
     "ingest:file:crates/omnisstream/src/compression.rs",
     "ingest:file:crates/omnisstream/src/durability.rs",
     "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
     "ingest:file:spec/omnisstream-spec/proto/README.md",
     "ingest:file:spec/omnisstream-spec/README.md",
@@ -89,17 +117,28 @@ updated_at: 2026-04-18T05:55:58.251Z
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
+    "ingest:file:spec/omnisstream-spec/.editorconfig",
+    "ingest:file:spec/omnisstream-spec/.gitignore",
+    "ingest:file:spec/omnisstream-spec/CANONICAL_JSON.md",
+    "ingest:file:spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "ingest:file:spec/omnisstream-spec/CONTRIBUTING.md",
+    "ingest:file:spec/omnisstream-spec/LICENSE",
+    "ingest:file:spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/NOTICE",
+    "ingest:file:spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "ingest:file:spec/omnisstream-spec/proto/protoc.sh",
+    "ingest:file:spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/SECURITY.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/VERSIONING.md"
   ],
   "evidenceIds": [
     "ingest:file:crates/omnisstream_bench/src/main.rs",
@@ -138,6 +177,7 @@ updated_at: 2026-04-18T05:55:58.251Z
     "ingest:file:crates/omnisstream/src/compression.rs",
     "ingest:file:crates/omnisstream/src/durability.rs",
     "ingest:file:docs/ffi_cmake.md",
+    "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
     "ingest:file:spec/omnisstream-spec/proto/README.md",
     "ingest:file:spec/omnisstream-spec/README.md",
@@ -148,17 +188,28 @@ updated_at: 2026-04-18T05:55:58.251Z
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/__init__.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/__init__.py",
     "ingest:file:spec/omnisstream-spec/tools/validator/src/omnisstream/v1/manifest_pb2.py",
+    "ingest:file:spec/omnisstream-spec/.editorconfig",
+    "ingest:file:spec/omnisstream-spec/.gitignore",
+    "ingest:file:spec/omnisstream-spec/CANONICAL_JSON.md",
+    "ingest:file:spec/omnisstream-spec/CODE_OF_CONDUCT.md",
+    "ingest:file:spec/omnisstream-spec/CONTRIBUTING.md",
+    "ingest:file:spec/omnisstream-spec/LICENSE",
+    "ingest:file:spec/omnisstream-spec/MANIFEST_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/NOTICE",
+    "ingest:file:spec/omnisstream-spec/proto/omnisstream/v1/manifest.proto",
+    "ingest:file:spec/omnisstream-spec/proto/protoc.sh",
+    "ingest:file:spec/omnisstream-spec/REPOSITORY_SPEC.md",
+    "ingest:file:spec/omnisstream-spec/SECURITY.md",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/manifest.pb",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-compressed/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/EXPECTED.txt",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.json",
-    "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/manifest.pb",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0001.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0002.bin",
     "ingest:file:spec/omnisstream-spec/test-vectors/vector-minimal/parts/part-0003.bin",
+    "ingest:file:spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "ingest:file:spec/omnisstream-spec/VERSIONING.md"
   ],
   "qualityWarnings": []
 }
@@ -168,9 +219,9 @@ updated_at: 2026-04-18T05:55:58.251Z
 
 # Dependencies
 
-Dependency and relationship guide for OmnisStream-Core. Stale build-artifact carryover removed; repo-local source files remain authoritative.
+Dependency and relationship guide for OmnisStream-Core.
 
-## Related Pages [build-artifact carryover removed]
+## Related Pages
 
 - [components](components.md)
 - [diagrams](diagrams.md)
@@ -263,20 +314,20 @@ Insufficient evidence to infer dependency boundaries confidently.
 - `symbol:crates/omnisstream_cli/build.rs:main:1` calls `symbol:crates/omnisstream_cli/build.rs:read_git_commit:62` (high)
 - `symbol:crates/omnisstream_cli/build.rs:read_git_commit:62` calls `symbol:crates/omnisstream_cli/build.rs:candidate_git_paths:110` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:find_manifest_paths:433` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:687` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:714` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:714` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:714` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:714` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:get_object_writes_expected_bytes:714` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:is_canonical_part_id:517` calls `symbol:crates/omnisstream_benchdiff/src/main.rs:bytes:481` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:is_single_normal_path_component:409` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:741` calls `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:741` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:768` calls `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:list_part_files_ignores_noncanonical_part_ids:768` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` calls `symbol:crates/omnisstream_cli/src/main.rs:is_canonical_part_id:517` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:674` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:674` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_missing_file_error_includes_path:662` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:701` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_decode_error_includes_path:701` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:load_manifest_missing_file_error_includes_path:689` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` calls `symbol:crates/omnisstream/src/hashing.rs:read:209` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` calls `symbol:crates/omnisstream/src/manifest.rs:from_pb_bytes:34` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
@@ -288,23 +339,25 @@ Insufficient evidence to infer dependency boundaries confidently.
 - `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:main:86` calls `symbol:crates/omnisstream/src/api.rs:verify:104` (low)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_absolute_ids:637` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:648` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:648` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:616` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
+- `symbol:crates/omnisstream_cli/src/main.rs:print_version:597` calls `symbol:crates/omnisstream_cli/src/main.rs:version_metadata_lines:603` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_absolute_ids:664` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:675` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_rejects_nested_latest_version:675` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path_uses_latest:624` calls `symbol:crates/omnisstream/src/api.rs:cat:100` (low)
 - `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` calls `symbol:crates/omnisstream_cli/src/main.rs:is_single_normal_path_component:409` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:resolve_object_manifest_path:327` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:run_gc:521` calls `symbol:crates/omnisstream_cli/src/main.rs:collect_referenced_part_ids:456` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:run_gc:521` calls `symbol:crates/omnisstream_cli/src/main.rs:list_part_files:480` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
-- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:724` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:version_metadata_matches_spec_pin:645` calls `symbol:crates/omnisstream_cli/src/main.rs:version_metadata_lines:603` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:751` calls `symbol:crates/omnisstream_cli/src/main.rs:load_manifest:196` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:751` calls `symbol:crates/omnisstream_cli/src/main.rs:reader_for_manifest:580` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:751` calls `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel:277` (high)
+- `symbol:crates/omnisstream_cli/src/main.rs:write_object_parallel_rejects_zero_jobs:751` calls `symbol:crates/omnisstream_cli/src/main.rs:write:225` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:write:240` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
 - `symbol:crates/omnisstream_cli/src/main.rs:write:265` calls `symbol:crates/omnisstream_cli/src/main.rs:new:218` (high)
 - `symbol:crates/omnisstream_ffi/src/lib.rs:manifest_load_pb_nulls_output_on_decode_failure:487` calls `symbol:crates/omnisstream_ffi/src/lib.rs:span_from_bytes:448` (high)
@@ -1427,13 +1480,13 @@ Insufficient evidence to infer dependency boundaries confidently.
 - `crates/omnisstream/src/api.rs`
 - `crates/omnisstream/src/compression.rs`
 - `docs/ffi_cmake.md`
-- `README.md`
+- `docs/monarchic-launch.md`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `spec/omnisstream-spec/tools/validator/README.md`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py`
 - `crates/omnisstream/tests/api_surface.rs`
-- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/.editorconfig`
 </details>
 
 <details>
@@ -1458,13 +1511,13 @@ Insufficient evidence to infer dependency boundaries confidently.
 - `crates/omnisstream/src/api.rs:100`
 - `crates/omnisstream/src/compression.rs:9`
 - `docs/ffi_cmake.md`
-- `README.md`
+- `docs/monarchic-launch.md`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `spec/omnisstream-spec/tools/validator/README.md`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:11`
 - `crates/omnisstream/tests/api_surface.rs:5`
-- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/.editorconfig`
 </details>
 
 ## Navigation Guidance
@@ -1497,11 +1550,11 @@ Insufficient evidence to infer dependency boundaries confidently.
 - `crates/omnisstream/src/api.rs:100`
 - `crates/omnisstream/src/compression.rs:9`
 - `docs/ffi_cmake.md`
-- `README.md`
+- `docs/monarchic-launch.md`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `spec/omnisstream-spec/tools/validator/README.md`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py`
 - `spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py:11`
 - `crates/omnisstream/tests/api_surface.rs:5`
-- `spec/omnisstream-spec/test-vectors/README.md`
+- `spec/omnisstream-spec/.editorconfig`
 </details>

@@ -1,9 +1,9 @@
 ---
-page_id: component-component:cargo:crates/omnisstream_ffi
+page_id: component-component:cargo:crates/omnisstream_backend_api
 page_type: component
 generation_mode: inferred
 freshness_status: new
-updated_at: 2026-05-06T23:01:52.945Z
+updated_at: 2026-05-06T23:01:56.135Z
 ---
 
 <details>
@@ -11,14 +11,13 @@ updated_at: 2026-05-06T23:01:52.945Z
 
 ```json
 {
-  "freshnessKey": "68eaeb65bd7d9ca37bcbe7f9bc2f7f8afabaf4b5",
+  "freshnessKey": "8f9ef14837896caad2e2a3d4f8cf7c4661f9a074",
   "plannerReason": "Generated because the component was ranked as significant for repo navigation.",
   "changedPaths": [
-    "crates/omnisstream_ffi/Cargo.toml",
-    "crates/omnisstream_ffi/cbindgen.toml",
-    "crates/omnisstream_ffi/src/bin/header_gen.rs",
-    "crates/omnisstream_ffi/src/lib.rs",
-    "crates/omnisstream_ffi",
+    "crates/omnisstream_backend_api/Cargo.toml",
+    "crates/omnisstream_backend_api/src/lib.rs",
+    "crates/omnisstream_backend_api",
+    "crates/omnisstream/Cargo.toml",
     "docs/ffi_cmake.md",
     "docs/monarchic-launch.md",
     "README.md",
@@ -33,11 +32,10 @@ updated_at: 2026-05-06T23:01:52.945Z
     "Cargo.toml"
   ],
   "dependencyPaths": [
-    "crates/omnisstream_ffi/Cargo.toml",
-    "crates/omnisstream_ffi/cbindgen.toml",
-    "crates/omnisstream_ffi/src/bin/header_gen.rs",
-    "crates/omnisstream_ffi/src/lib.rs",
-    "crates/omnisstream_ffi",
+    "crates/omnisstream_backend_api/Cargo.toml",
+    "crates/omnisstream_backend_api/src/lib.rs",
+    "crates/omnisstream_backend_api",
+    "crates/omnisstream/Cargo.toml",
     "docs/ffi_cmake.md",
     "docs/monarchic-launch.md",
     "README.md",
@@ -52,7 +50,8 @@ updated_at: 2026-05-06T23:01:52.945Z
     "Cargo.toml"
   ],
   "dependencyEvidenceIds": [
-    "component:crates/omnisstream_ffi/Cargo.toml",
+    "component:crates/omnisstream_backend_api/Cargo.toml",
+    "component:crates/omnisstream/Cargo.toml",
     "ingest:file:docs/ffi_cmake.md",
     "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
@@ -97,7 +96,8 @@ updated_at: 2026-05-06T23:01:52.945Z
     "workflow:Cargo.toml"
   ],
   "evidenceIds": [
-    "component:crates/omnisstream_ffi/Cargo.toml",
+    "component:crates/omnisstream_backend_api/Cargo.toml",
+    "component:crates/omnisstream/Cargo.toml",
     "ingest:file:docs/ffi_cmake.md",
     "ingest:file:docs/monarchic-launch.md",
     "ingest:file:README.md",
@@ -147,9 +147,9 @@ updated_at: 2026-05-06T23:01:52.945Z
 ```
 </details>
 
-# omnisstream_ffi
+# omnisstream_backend_api
 
-omnisstream_ffi rust component
+omnisstream_backend_api rust component
 
 ## Related Pages
 
@@ -226,28 +226,24 @@ Insufficient evidence to infer a bounded request lifecycle confidently.
 
 ## Responsibilities
 
-omnisstream_ffi rust component
+omnisstream_backend_api rust component
 
 Type: package
-Root path: `crates/omnisstream_ffi`
+Root path: `crates/omnisstream_backend_api`
 Ecosystem: rust
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs`
-- `crates/omnisstream_ffi/src/lib.rs`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs`
 </details>
 
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
-- `crates/omnisstream_ffi/src/lib.rs:53`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
 </details>
 
 ## Entrypoints and Runtime Surface
@@ -261,24 +257,18 @@ Ecosystem: rust
 ## Dependencies and Relationships
 
 Repository-owned edges:
-- `component:cargo:crates/omnisstream_ffi` depends_on `component:cargo:crates/omnisstream` (high)
-- `repository` contains `component:cargo:crates/omnisstream_ffi` (high)
-- `component:docs` documents `component:cargo:crates/omnisstream_ffi` (medium)
-- `component:tests` tests `component:cargo:crates/omnisstream_ffi` (high)
-External dependency edges (bounded):
-- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:cbindgen` (high)
-- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:name` (high)
-- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:path` (high)
-- `component:cargo:crates/omnisstream_ffi` depends_on `component:external:rust:required-features` (high)
+- `repository` contains `component:cargo:crates/omnisstream_backend_api` (high)
+- `component:cargo:crates/omnisstream` depends_on `component:cargo:crates/omnisstream_backend_api` (high)
+- `component:docs` documents `component:cargo:crates/omnisstream_backend_api` (medium)
+- `component:tests` tests `component:cargo:crates/omnisstream_backend_api` (high)
 
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs`
-- `crates/omnisstream_ffi/src/lib.rs`
-- `crates/omnisstream_ffi`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs`
+- `crates/omnisstream_backend_api`
+- `crates/omnisstream/Cargo.toml`
 - `docs/ffi_cmake.md`
 - `docs/monarchic-launch.md`
 - `README.md`
@@ -294,10 +284,8 @@ External dependency edges (bounded):
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
-- `crates/omnisstream_ffi/src/lib.rs:53`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
 </details>
 
 ## Why This Hotspot Matters
@@ -336,9 +324,8 @@ Insufficient evidence to infer invariants and failure handling confidently.
 ## Where to Edit
 
 Likely change entry files:
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs`
 
 Owned interfaces:
 - none
@@ -350,9 +337,8 @@ Nearby verification surfaces:
 <details>
 <summary>Supporting citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -360,9 +346,8 @@ Nearby verification surfaces:
 <details>
 <summary>Related files:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
@@ -370,52 +355,22 @@ Nearby verification surfaces:
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>
 
 ## Change Planning
 
-Impacted areas:
-- Downstream components likely affected: `omnisstream`, `cbindgen`, `name`, `path`.
-
-Suggested verification steps:
-- Validate with `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
-- Validate with `cargo test` (test) from `.`.
+Insufficient evidence to infer change-planning guidance.
 
 <details>
 <summary>Supporting citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
-- `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `Cargo.toml`
+- none
 </details>
 
-<details>
-<summary>Related files:</summary>
-
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs`
-- `crates/omnisstream_ffi/src/lib.rs`
-- `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `Cargo.toml`
-</details>
-
-<details>
-<summary>Citations:</summary>
-
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
-- `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `Cargo.toml`
-</details>
 
 ## Nearby Workflows
 
@@ -426,10 +381,8 @@ Suggested verification steps:
 <details>
 <summary>Citations:</summary>
 
-- `crates/omnisstream_ffi/Cargo.toml`
-- `crates/omnisstream_ffi/cbindgen.toml`
-- `crates/omnisstream_ffi/src/bin/header_gen.rs:3`
-- `crates/omnisstream_ffi/src/lib.rs:53`
+- `crates/omnisstream_backend_api/Cargo.toml`
+- `crates/omnisstream_backend_api/src/lib.rs:15`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 - `Cargo.toml`
 </details>

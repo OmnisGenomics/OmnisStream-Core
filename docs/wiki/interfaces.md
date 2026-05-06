@@ -2,8 +2,8 @@
 page_id: interfaces
 page_type: interfaces
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.242Z
+freshness_status: new
+updated_at: 2026-05-06T23:01:58.856Z
 ---
 
 <details>
@@ -11,9 +11,11 @@ updated_at: 2026-04-18T05:55:58.242Z
 
 ```json
 {
-  "freshnessKey": "f23989cc81656c0f88ea013e5ae4d60eb862f41c",
+  "freshnessKey": "c53fc96ecc954980d0904ba96ad77936dbf6ac9c",
   "plannerReason": "Generated because interface surfaces are central to safe code changes.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml"
   ],
@@ -42,8 +44,13 @@ Interface and configuration surface inventory.
 
 ## Interface Inventory
 
-- omnisstream-validate (cli)
-- spec/omnisstream-spec/tools/validator/pyproject.toml (config)
+### CLI surfaces
+
+- omnisstream-validate
+
+### Config surfaces
+
+- spec/omnisstream-spec/tools/validator/pyproject.toml
 
 <details>
 <summary>Related files:</summary>
@@ -56,6 +63,10 @@ Interface and configuration surface inventory.
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
 </details>
+
+## Contract Surfaces
+
+- none
 
 ## Ownership and Components
 

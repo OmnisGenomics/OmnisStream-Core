@@ -2,8 +2,8 @@
 page_id: workflows
 page_type: workflows
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.241Z
+freshness_status: new
+updated_at: 2026-05-06T23:01:58.627Z
 ---
 
 <details>
@@ -13,7 +13,10 @@ updated_at: 2026-04-18T05:55:58.241Z
 {
   "freshnessKey": "b509458c5ae2abd1c68595e8ab3e16adaddf97bc",
   "plannerReason": "Generated because workflows are one of the primary agent interaction surfaces.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "Cargo.toml"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml"
@@ -44,7 +47,7 @@ Workflow guide for OmnisStream-Core.
 ## Workflow Inventory
 
 - `omnisstream-validate` (run, confidence medium)
-- `python -m unittest discover -s tools/validator/tests` from `spec/omnisstream-spec` after exposing or installing `tools/validator` (test, README-backed)
+- `python -m unittest discover -s tools/validator/tests` (test, confidence high)
 - `cargo build` (build, confidence high)
 - `cargo check` (check, confidence high)
 - `cargo test` (test, confidence high)
@@ -53,7 +56,6 @@ Workflow guide for OmnisStream-Core.
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -61,20 +63,18 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
 ## Testing and Validation
 
-- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+- `python -m unittest discover -s tools/validator/tests`
 - `cargo test`
 
 <details>
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -82,7 +82,6 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -108,6 +107,5 @@ Workflow guide for OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>

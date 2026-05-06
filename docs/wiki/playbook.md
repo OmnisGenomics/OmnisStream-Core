@@ -2,8 +2,8 @@
 page_id: playbook
 page_type: playbook
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.252Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:00.909Z
 ---
 
 <details>
@@ -11,9 +11,25 @@ updated_at: 2026-04-18T05:55:58.252Z
 
 ```json
 {
-  "freshnessKey": "b769612cea1e10d2870bb380fbe03860e9aa484d",
+  "freshnessKey": "234ab09467a0c213aa1b93cf97edb8545f24f754",
   "plannerReason": "Generated when enough workflow, runtime, and hotspot evidence exists to assemble an operational guide.",
-  "changedPaths": [],
+  "changedPaths": [
+    "spec/omnisstream-spec/tools/validator/pyproject.toml",
+    "Cargo.toml",
+    "crates/omnisstream/build.rs",
+    "crates/omnisstream/Cargo.toml",
+    "crates/omnisstream/src/api.rs",
+    "crates/omnisstream/src/compression.rs",
+    "crates/omnisstream/src/durability.rs",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/__init__.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/cli.py",
+    "spec/omnisstream-spec/tools/validator/src/omnisstream_validate/hashes.py",
+    "crates/omnisstream_cli/build.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml"
+  ],
   "dependencyPaths": [
     "spec/omnisstream-spec/tools/validator/pyproject.toml",
     "Cargo.toml",
@@ -102,7 +118,7 @@ Operational guide for validating and debugging OmnisStream-Core.
 
 ## Validation Order
 
-1. From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+1. Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
 2. Run `cargo build` (build) from `.`.
 3. Run `cargo check` (check) from `.`.
 4. Run `cargo test` (test) from `.`.
@@ -111,7 +127,6 @@ Operational guide for validating and debugging OmnisStream-Core.
 <summary>Related files:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -119,7 +134,6 @@ Operational guide for validating and debugging OmnisStream-Core.
 <summary>Citations:</summary>
 
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 - `Cargo.toml`
 </details>
 
@@ -165,7 +179,7 @@ Operational guide for validating and debugging OmnisStream-Core.
 ## Change-Safety Notes
 
 - crates/omnisstream/src: score 1797; validate around inbound 297, outbound 300, and 2 bridged subsystem boundaries.
-- omnisstream: score 264; validate around inbound 38, outbound 49, and 1 bridged subsystem boundary.
+- omnisstream: score 276; validate around inbound 40, outbound 51, and 1 bridged subsystem boundary.
 - omnisstream_benchdiff: score 255; validate around inbound 41, outbound 42, and 2 bridged subsystem boundaries.
 
 <details>

@@ -2,8 +2,8 @@
 page_id: change-guide
 page_type: change-guide
 generation_mode: inferred
-freshness_status: reused
-updated_at: 2026-04-18T05:55:58.275Z
+freshness_status: new
+updated_at: 2026-05-06T23:02:03.057Z
 ---
 
 <details>
@@ -11,9 +11,20 @@ updated_at: 2026-04-18T05:55:58.275Z
 
 ```json
 {
-  "freshnessKey": "867b72b417f6fc041f63eb4883549997d4ad8d81",
+  "freshnessKey": "62150aa9cd3182c572e4ecfc5007ed835569a70c",
   "plannerReason": "Generated when deterministic critical-component, edit-surface, and validation evidence is strong enough to assemble a bounded change-oriented reader path.",
-  "changedPaths": [],
+  "changedPaths": [
+    "crates/omnisstream/src/api.rs",
+    "crates/omnisstream/src/compression.rs",
+    "crates/omnisstream/src/durability.rs",
+    "crates/omnisstream/src/fs_util.rs",
+    "crates/omnisstream_cli/src/main.rs",
+    "crates/omnisstream_cli/Cargo.toml",
+    "crates/omnisstream_benchdiff/src/main.rs",
+    "crates/omnisstream_benchdiff/Cargo.toml",
+    "Cargo.toml",
+    "spec/omnisstream-spec/tools/validator/pyproject.toml"
+  ],
   "dependencyPaths": [
     "crates/omnisstream/src/api.rs",
     "crates/omnisstream/src/compression.rs",
@@ -78,7 +89,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 ## Change Priorities
 
 1. `crates/omnisstream/src`: Hotspot score 1797 with 297 inbound and 300 outbound inferred edges. Touches 30 inferred dependency edges.
-2. `omnisstream`: Hotspot score 264 with 38 inbound and 49 outbound inferred edges. Contributes 1 runtime-facing entrypoint or service signal. Touches 7 inferred dependency edges.
+2. `omnisstream`: Hotspot score 276 with 40 inbound and 51 outbound inferred edges. Contributes 1 runtime-facing entrypoint or service signal. Touches 7 inferred dependency edges.
 3. `omnisstream_benchdiff`: Hotspot score 255 with 41 inbound and 42 outbound inferred edges. Contributes 1 runtime-facing entrypoint or service signal. Touches 6 inferred dependency edges.
 
 <details>
@@ -113,8 +124,8 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 ## Where to Start Editing
 
 - Start with `crates/omnisstream/src` via `crates/omnisstream/src/api.rs`, `crates/omnisstream/src/compression.rs`. Then read [crates/omnisstream/src](components/component-crates-omnisstream-src.md) for the bounded component guide.
-- Start with `omnisstream` via `crates/omnisstream_cli/src/main.rs`, `crates/omnisstream_cli/Cargo.toml`. Then read [omnisstream_cli](components/component-cargo-crates-omnisstream_cli.md) for the bounded component guide behind the `omnisstream` binary.
-- Start with `omnisstream_benchdiff` via `crates/omnisstream_benchdiff/src/main.rs`, `crates/omnisstream_benchdiff/Cargo.toml`. Then cross-check [components](components.md) for the current component inventory; this wiki snapshot does not include a dedicated `omnisstream_benchdiff` page.
+- Start with `omnisstream` via `crates/omnisstream_cli/src/main.rs`, `crates/omnisstream_cli/Cargo.toml`. Then read [omnisstream](components/component-bin-omnisstream.md) for the bounded component guide.
+- Start with `omnisstream_benchdiff` via `crates/omnisstream_benchdiff/src/main.rs`, `crates/omnisstream_benchdiff/Cargo.toml`. Then read [omnisstream_benchdiff](components/component-bin-omnisstream_benchdiff.md) for the bounded component guide.
 
 <details>
 <summary>Related files:</summary>
@@ -149,7 +160,7 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 
 1. Fast feedback: run `cargo build` (build) from `.`.
 1. Fast feedback: run `cargo check` (check) from `.`.
-2. Behavioral verification: from `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+2. Behavioral verification: run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
 2. Behavioral verification: run `cargo test` (test) from `.`.
 3. Release-safety validation: run `cargo build` (build) from `.`.
 
@@ -166,7 +177,6 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -181,7 +191,6 @@ Task-first guide for making bounded changes in OmnisStream-Core.
 - `crates/omnisstream_benchdiff/Cargo.toml`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 ## Common Change Paths
@@ -205,7 +214,7 @@ Risk boundary:
 
 Validate with:
 - Run `cargo build` (build) from `.`.
-- From `spec/omnisstream-spec`, expose the validator package first, for example with `pip install -e tools/validator`, then run `python -m unittest discover -s tools/validator/tests`.
+- Run `python -m unittest discover -s tools/validator/tests` (test) from `spec/omnisstream-spec/tools/validator`.
 
 <details>
 <summary>Supporting citations:</summary>
@@ -214,7 +223,6 @@ Validate with:
 - `crates/omnisstream/src/compression.rs:9`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -224,7 +232,6 @@ Validate with:
 - `crates/omnisstream/src/compression.rs`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 <details>
@@ -234,7 +241,6 @@ Validate with:
 - `crates/omnisstream/src/compression.rs:9`
 - `Cargo.toml`
 - `spec/omnisstream-spec/tools/validator/pyproject.toml`
-- `spec/omnisstream-spec/tools/validator/README.md`
 </details>
 
 ## Citations
