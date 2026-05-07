@@ -502,6 +502,19 @@ mod tests {
     }
 
     #[test]
+    fn validate_rejects_manifest_version_outside_supported_schema() {
+        let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
+        let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
+        pb.manifest_version = "1.0.0".to_string();
+        let err = Manifest::new(pb).validate_basic().unwrap_err();
+        assert!(matches!(
+            err,
+            ManifestValidationError::InvalidManifestVersion { manifest_version }
+                if manifest_version == "1.0.0"
+        ));
+    }
+
+    #[test]
     fn validate_rejects_manifest_version_with_whitespace() {
         let bytes = read_spec("test-vectors/vector-minimal/manifest.pb");
         let mut pb = Manifest::from_pb_bytes(&bytes).unwrap().into_pb();
