@@ -282,6 +282,9 @@ pub(crate) fn range(
     manifest.validate_basic()?;
 
     if len == 0 {
+        if offset > manifest.pb().object_length {
+            return Err(ReaderError::RangeOutOfBounds);
+        }
         return Ok(());
     }
     let end = offset
@@ -608,6 +611,29 @@ mod tests {
 
         let err = verify(&manifest, &resolver).unwrap_err();
         assert!(matches!(err, ReaderError::Io(e) if e.kind() == io::ErrorKind::InvalidData));
+    }
+
+    #[test]
+    fn range_zero_length_at_object_end_is_ok() {
+        let manifest = load_manifest("vector-minimal");
+        let base_dir = spec_root().join("test-vectors/vector-minimal");
+        let resolver = PartResolver::new(&base_dir);
+
+        let mut got = Vec::new();
+        range(&manifest, &resolver, manifest.pb().object_length, 0, &mut got).unwrap();
+        assert!(got.is_empty());
+    }
+
+    #[test]
+    fn range_zero_length_past_object_end_is_out_of_bounds() {
+        let manifest = load_manifest("vector-minimal");
+        let base_dir = spec_root().join("test-vectors/vector-minimal");
+        let resolver = PartResolver::new(&base_dir);
+
+        let mut got = Vec::new();
+        let err = range(&manifest, &resolver, manifest.pb().object_length + 1, 0, &mut got)
+            .unwrap_err();
+        assert!(matches!(err, ReaderError::RangeOutOfBounds));
     }
 
     #[test]
