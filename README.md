@@ -24,6 +24,30 @@ Performance benchmarks live in the OmnisStream Service repo: https://github.com/
 * Rust toolchain (stable)
 * Git with submodules enabled
 
+## First run for operators
+
+Start with [docs/first-run.md](docs/first-run.md) for the supported clone,
+submodule, validation, CLI, and troubleshooting path.
+
+For the short path:
+
+```sh
+git submodule update --init --recursive
+cargo build
+cargo check
+cargo test
+cd spec/omnisstream-spec
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -e tools/validator
+python -m unittest discover -s tools/validator/tests
+```
+
+If the validator package is installed from `spec/omnisstream-spec`, the
+`omnisstream-validate` command can be used directly for manifest checks.
+Run `bash scripts/check-first-run-docs.sh` to verify the first-run documentation
+still references supported commands.
+
 ## Get the spec submodule
 
 ```sh
