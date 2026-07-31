@@ -23,14 +23,16 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            runner: ${{ fromJSON(vars.CI_RUNNER_LABELS) }}
             target: x86_64-unknown-linux-gnu
             exe_ext: ""
             ffi_lib: libomnisstream_ffi.a
           - os: windows-latest
+            runner: windows-latest
             target: x86_64-pc-windows-msvc
             exe_ext: ".exe"
             ffi_lib: omnisstream_ffi.lib
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -150,7 +152,7 @@ jobs:
           if-no-files-found: error
 
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.CI_RUNNER_LABELS) }}
     needs: build
     steps:
       - uses: actions/download-artifact@v4
