@@ -21,8 +21,8 @@ Performance benchmarks live in the OmnisStream Service repo: https://github.com/
 
 ## Prerequisites
 
-* Rust toolchain (stable)
-* Git with submodules enabled
+* Nix with flakes enabled
+* Git with submodules enabled for direct Cargo development
 
 ## First run for operators
 
@@ -33,9 +33,8 @@ For the short path:
 
 ```sh
 git submodule update --init --recursive
-cargo build
-cargo check
-cargo test
+nix build
+nix flake check
 cd spec/omnisstream-spec
 python3 -m venv .venv
 . .venv/bin/activate
@@ -57,13 +56,13 @@ git submodule update --init --recursive
 ## Build
 
 ```sh
-cargo build
+nix build
 ```
 
 ## Test
 
 ```sh
-cargo test
+nix flake check
 ```
 
 ## Quick start with release artifacts
@@ -71,8 +70,6 @@ cargo test
 Download the zip for your platform from GitHub Releases:
 
 Linux x86_64: `omnisstream-vX.Y.Z-x86_64-unknown-linux-gnu.zip`
-
-Windows x86_64: `omnisstream-vX.Y.Z-x86_64-pc-windows-msvc.zip`
 
 Unzip and run:
 
@@ -127,9 +124,11 @@ cargo run -p omnisstream_cli -- range spec/omnisstream-spec/test-vectors/vector-
 
 ## Common dev checks
 
-Optional but recommended:
+CI runs these through `nix flake check`. For direct Cargo development, enter
+the flake shell first:
 
 ```sh
+nix develop
 cargo fmt --all -- --check
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test --all-features

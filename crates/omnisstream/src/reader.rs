@@ -60,10 +60,7 @@ impl ZstdDecoderCache {
     }
 
     fn get(&mut self, key: &ZstdDecoderCacheKey) -> Option<Arc<Mutex<ZstdSeekableReader>>> {
-        let v = match self.map.get(key) {
-            Some(v) => Arc::clone(v),
-            None => return None,
-        };
+        let v = Arc::clone(self.map.get(key)?);
         self.touch(key);
         Some(v)
     }
@@ -620,7 +617,14 @@ mod tests {
         let resolver = PartResolver::new(&base_dir);
 
         let mut got = Vec::new();
-        range(&manifest, &resolver, manifest.pb().object_length, 0, &mut got).unwrap();
+        range(
+            &manifest,
+            &resolver,
+            manifest.pb().object_length,
+            0,
+            &mut got,
+        )
+        .unwrap();
         assert!(got.is_empty());
     }
 
@@ -631,8 +635,14 @@ mod tests {
         let resolver = PartResolver::new(&base_dir);
 
         let mut got = Vec::new();
-        let err = range(&manifest, &resolver, manifest.pb().object_length + 1, 0, &mut got)
-            .unwrap_err();
+        let err = range(
+            &manifest,
+            &resolver,
+            manifest.pb().object_length + 1,
+            0,
+            &mut got,
+        )
+        .unwrap_err();
         assert!(matches!(err, ReaderError::RangeOutOfBounds));
     }
 
